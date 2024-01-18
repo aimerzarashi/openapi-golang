@@ -29,7 +29,7 @@ type ResponseData struct {
 // ハンドラーを定義
 func hello(c echo.Context) error {
 	data := ResponseData{
-		Message: "Hello World",
+		Message: "Hello, World!",
 	}
 	return c.JSON(http.StatusOK, data)
 }
