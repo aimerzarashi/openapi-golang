@@ -16,10 +16,14 @@ func main() {
   e.Use(middleware.Recover())
 
   // ルートを設定
-  e.GET("/", hello) // ローカル環境の場合、http://localhost:3000/ にGETアクセスされるとhelloハンドラーを実行する
+  Router(e)
 
   // サーバーをポート番号3000で起動
   e.Logger.Fatal(e.Start(":3000"))
+}
+
+func Router(e *echo.Echo) {
+  e.GET("/", hello)
 }
 
 type ResponseData struct {
