@@ -5,7 +5,7 @@ import (
 
 	cmp "github.com/google/go-cmp/cmp"
 
-	oapi "openapi/generated"
+	oapi "openapi/codegen"
 
 	"encoding/json"
 	"io"
