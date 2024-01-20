@@ -3,6 +3,10 @@ package main
 import (
 	"testing"
 
+	cmp "github.com/google/go-cmp/cmp"
+
+	oapi "openapi/generated"
+
 	"encoding/json"
 	"io"
 	"net/http"
@@ -21,14 +25,14 @@ func TestHello(t *testing.T) {
 	}
 
 	resBodyByte, _ := io.ReadAll(res.Body)
-	var data ResponseData = ResponseData{}
-	json.Unmarshal(resBodyByte, &data)
+	var actual = &oapi.Hello{}
+	json.Unmarshal(resBodyByte, &actual)
 
-	var expect ResponseData = ResponseData{
+	var expect = &oapi.Hello{
 		Message: "Hello, World!",
 	}
 
-	if data != expect {
-			t.Errorf("want %s, got %s", "Hello, World!", data.Message)
+	if !cmp.Equal(actual, expect) {
+		t.Errorf("expected %s, actual %s", expect, actual)		
 	}
 }
