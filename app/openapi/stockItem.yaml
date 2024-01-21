@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: Stock Item API
+  version: 1.0.0
+paths:
+  /stock/items:
+    post:
+      summary: Create Stock Item
+      description: Create Stock Item
+      operationId: PostStockItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+      responses:
+        "201":
+          $ref: "#/components/responses/Created"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  responses:
+    Created:
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreatedResponse"
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BadRequestResponse"
+    InternalServerError:
+      description: Internal Server Error
+  schemas:
+    CreatedResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+    BadRequestResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          message:
+            type: string
+    StockItem:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
