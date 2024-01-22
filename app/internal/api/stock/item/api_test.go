@@ -15,7 +15,7 @@ import (
 // http://localhost:3000/ にGETでアクセスし、戻り値を検証する
 func TestHello(t *testing.T) {
 	request := new(PostStockItemJSONBody)
-	request.Name = "test"
+	request.Name = uuid.NewString()
 	requestJson, _ := json.Marshal(request)
 	res, err := http.Post("http://localhost:3000/stock/items",
 		"application/json",

@@ -14,6 +14,7 @@ services:
       - ./app:/usr/src/app
 
   openapi-db:
+    container_name: openapi-db
     image: postgres:16.1
     ports:
       - 5432:5432
@@ -21,6 +22,7 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: openapi
       
   pgadmin:
     container_name: pgadmin
