@@ -1,11 +1,15 @@
 package main
 
 import (
+	"database/sql"
+
+	_ "github.com/lib/pq"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	HelloApi "openapi/internal/api/hello"
-	StockItemApi "openapi/internal/api/stock/item"
+	"openapi/internal/usecase/hello"
+	"openapi/internal/usecase/stock_item"
 )
 
 func main() {
@@ -16,11 +20,20 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	dbDriver := "postgres"
+	dsn := "host=openapi-db port=5432 user=user password=password dbname=openapi sslmode=disable"
+
+	db, openErr := sql.Open(dbDriver, dsn)
+	if openErr != nil {
+		e.Logger.Fatal(openErr)
+	}
+	defer db.Close()
+
 	// OpenAPI の仕様を満たす構造体をハンドラーとして登録する
-	helloApi := HelloApi.Server{}
-	HelloApi.RegisterHandlers(e, helloApi)
-	stockItemApi := StockItemApi.Server{}
-	StockItemApi.RegisterHandlers(e, stockItemApi)
+	e.GET("/", hello.GetHello)
+	e.POST("/stock/items", func(ctx echo.Context) error {
+		return stock_item.PostStockItem(ctx, db)
+	})
 
 	// サーバーをポート番号3000で起動
 	e.Logger.Fatal(e.Start(":3000"))

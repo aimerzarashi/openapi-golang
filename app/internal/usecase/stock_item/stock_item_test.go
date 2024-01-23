@@ -1,21 +1,23 @@
-package stock_item_api
+package stock_item
 
 import (
 	"bytes"
 	"testing"
 
-	cmp "github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 
 	"encoding/json"
 	"io"
 	"net/http"
+
+	"openapi/internal/presentation/stock_item_api"
 )
 
 // http://localhost:3000/ にGETでアクセスし、戻り値を検証する
-func TestHello(t *testing.T) {
-	request := new(PostStockItemJSONBody)
-	request.Name = uuid.NewString()
+func TestPostStockItem(t *testing.T) {
+	request := stock_item_api.PostStockItemJSONBody{
+		Name: uuid.NewString(),
+	}
 	requestJson, _ := json.Marshal(request)
 	res, err := http.Post("http://localhost:3000/stock/items",
 		"application/json",
@@ -30,13 +32,10 @@ func TestHello(t *testing.T) {
 	}
 
 	resBodyByte, _ := io.ReadAll(res.Body)
-	var actual = &CreatedResponse{}
+	var actual = &stock_item_api.CreatedResponse{}
 	json.Unmarshal(resBodyByte, &actual)
 
-	expect := new(CreatedResponse)
-	expect.Id = uuid.New()
-
-	if !cmp.Equal(actual, expect) {
-		t.Errorf("expected %s, actual %s", expect, actual)		
+	if actual.Id == uuid.Nil {
+		t.Errorf("want not nil, got nil")
 	}
 }

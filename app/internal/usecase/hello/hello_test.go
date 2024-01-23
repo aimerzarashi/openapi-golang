@@ -1,4 +1,4 @@
-package hello_api
+package hello
 
 import (
 	"testing"
@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+
+	"openapi/internal/presentation/hello_api"
 )
 
 // http://localhost:3000/ にGETでアクセスし、戻り値を検証する
@@ -23,10 +25,10 @@ func TestHello(t *testing.T) {
 	}
 
 	resBodyByte, _ := io.ReadAll(res.Body)
-	var actual = &Hello{}
+	var actual = &hello_api.Hello{}
 	json.Unmarshal(resBodyByte, &actual)
 
-	var expect = &Hello{
+	var expect = &hello_api.Hello{
 		Message: "Hello, World!",
 	}
 
