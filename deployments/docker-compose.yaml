@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+
+  openapi-golang:
+    container_name: openapi-golang
+    image: golang:1.21.6-alpine3.19
+    tty: true
+    ports:
+      - 3000:3000
+    working_dir: /usr/src/app/pkg/main
+    command: /bin/sh -c "go install github.com/cosmtrek/air@latest && air"
+    volumes:
+      - ./../:/usr/src/app
+    environment:
+      DATABASE_URL: "postgresql://user:password@openapi-db:5432/openapi?schema=public"
+
+  openapi-db:
+    container_name: openapi-db
+    image: postgres:16.1
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: openapi
