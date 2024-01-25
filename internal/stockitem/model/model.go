@@ -9,8 +9,6 @@ type StockItem struct {
 	Name string
 }
 
-
-
 func New(id StockItemId, name string) *StockItem {
 	return &StockItem{
 		Id:   id,
