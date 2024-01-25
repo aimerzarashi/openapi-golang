@@ -6,16 +6,20 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewTestModel(t *testing.T) {
+func TestNew(t *testing.T) {
 	// When
-	uuid := uuid.New()
-	id := uuid
+	generatedUuid := uuid.New()
+	id := StockItemId(generatedUuid)
 	name := "test"
 	stockItem := New(id, name)
 
 	// Then
-	if stockItem.Id != uuid {
-		t.Errorf("expected %s, got %s", uuid, stockItem.Id)
+	if stockItem.Id != id {
+		t.Errorf("expected %s, got %s", id, stockItem.Id)
+	}
+	castedId := uuid.UUID(stockItem.Id)
+	if castedId != generatedUuid {
+		t.Errorf("expected %s, got %s", generatedUuid, castedId)
 	}
 	if stockItem.Name != name {
 		t.Errorf("expected %s, got %s", name, stockItem.Name)
