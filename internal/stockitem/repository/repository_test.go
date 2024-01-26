@@ -42,12 +42,15 @@ func TestCreateSuccess(t *testing.T) {
 	if data.ID != generatedUuid.String() {
 		t.Errorf("expected %s, got %s", generatedUuid.String(), data.ID)
 	}
+	
 	if data.Name != name {
 		t.Errorf("expected %s, got %s", name, data.Name)
 	}
+
 	if data.CreatedAt.Before(currentDateTime) == true {
 		t.Errorf("expected %s, got %s", currentDateTime, data.CreatedAt)		
 	}
+
 	if data.UpdatedAt.Before(currentDateTime) == true {
 		t.Errorf("expected %s, got %s", currentDateTime, data.UpdatedAt)		
 	}
@@ -104,12 +107,15 @@ func TestUpdateSuccess(t *testing.T) {
 	if data.ID != generatedUuid.String() {
 		t.Errorf("expected %s, got %s", generatedUuid.String(), data.ID)
 	}
+
 	if data.Name != afterModel.Name {
 		t.Errorf("expected %s, got %s", afterModel.Name, data.Name)
 	}
+
 	if data.CreatedAt.Equal(beforeData.CreatedAt) != true {
 		t.Errorf("expected %s, got %s", beforeData.CreatedAt, data.CreatedAt)		
 	}
+
 	if data.UpdatedAt.Before(currentDateTime) == true {
 		t.Errorf("expected %s, got %s", currentDateTime, data.UpdatedAt)		
 	}

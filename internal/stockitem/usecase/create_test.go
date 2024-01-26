@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"openapi/internal/infra/database"
+	"openapi/internal/stockitem/domain"
+	"openapi/internal/stockitem/repository"
 	"testing"
 
 	"github.com/google/uuid"
@@ -32,4 +34,12 @@ func TestCreateSuccess(t *testing.T) {
 		t.Errorf("expected %s, got %s", uuid.Nil, resDto.Id)
 	}
 
+	model, err := repository.Get(db, domain.StockItemId(resDto.Id))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if model.Name != reqDto.Name {
+		t.Errorf("expected %s, got %s", reqDto.Name, model.Name)
+	}	
 }
