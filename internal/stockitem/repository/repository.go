@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 
-	"openapi/internal/infra/database"
 	"openapi/internal/infra/sqlboiler"
 	"openapi/internal/stockitem/domain"
 
@@ -11,22 +11,17 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-func Save(stockItem *domain.StockItem) error {
-	db, err := database.New()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
+func Save(db *sql.DB, model *domain.StockItem) error {
 
-	id := uuid.UUID(stockItem.Id)
+	id := uuid.UUID(model.Id)
 	isExist, err := sqlboiler.StockItemExists(context.Background(), db, id.String())
 	if err != nil {
 		return err
 	}
 
 	data := &sqlboiler.StockItem{
-		ID:   uuid.UUID(stockItem.Id).String(),
-		Name: stockItem.Name,
+		ID:   uuid.UUID(model.Id).String(),
+		Name: model.Name,
 	}
 	if isExist {
 		data.Update(context.Background(), db, boil.Infer())
@@ -43,12 +38,7 @@ func Save(stockItem *domain.StockItem) error {
 	return nil
 }
 
-func Get(id domain.StockItemId) (*domain.StockItem, error) {
-	db, err := database.New()
-	if err != nil {
-		return &domain.StockItem{}, err
-	}
-	defer db.Close()
+func Get(db *sql.DB, id domain.StockItemId) (*domain.StockItem, error) {
 
 	uuid := uuid.UUID(id)
 	data, err := sqlboiler.FindStockItem(context.Background(), db, uuid.String())
@@ -56,7 +46,7 @@ func Get(id domain.StockItemId) (*domain.StockItem, error) {
 		return &domain.StockItem{}, err
 	}
 
-	stockItem := domain.NewStockItem(domain.StockItemId(uuid), data.Name)
+	model := domain.NewStockItem(domain.StockItemId(uuid), data.Name)
 	
-	return stockItem, nil
+	return model, nil
 }

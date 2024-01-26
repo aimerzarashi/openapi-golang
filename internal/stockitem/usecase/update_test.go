@@ -1,12 +1,20 @@
 package usecase
 
 import (
+	"openapi/internal/infra/database"
 	"testing"
 
 	"github.com/google/uuid"
 )
 
 func TestUpdateSuccess(t *testing.T) {
+	// Setup
+	db, err := database.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
 	// Given
 	beforeName := uuid.NewString()
 	afterName := uuid.NewString()
@@ -15,7 +23,7 @@ func TestUpdateSuccess(t *testing.T) {
 		Name: beforeName,
 	}
 
-	resCreateDto, err := Create(reqCreateDto)
+	resCreateDto, err := Create(reqCreateDto, db)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -26,7 +34,7 @@ func TestUpdateSuccess(t *testing.T) {
 		Name: afterName,
 	}
 
-	resUpdateDto, err := Update(reqUpdateDto)
+	resUpdateDto, err := Update(reqUpdateDto, db)
 	if err != nil {
 		t.Fatal(err)
 	}

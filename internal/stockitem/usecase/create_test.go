@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"openapi/internal/infra/database"
 	"testing"
 
 	"github.com/google/uuid"
@@ -8,13 +9,20 @@ import (
 
 
 func TestCreateSuccess(t *testing.T) {
+	// Setup
+	db, err := database.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	
 	// Given
 	reqDto := &CreateRequestDto{
 		Name: uuid.NewString(),
 	}
 
 	// When	
-	resDto, err := Create(reqDto)
+	resDto, err := Create(reqDto, db)
 	if err != nil {
 		t.Fatal(err)
 	}

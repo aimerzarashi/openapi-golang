@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"openapi/internal/infra/database"
 	oapicodegen "openapi/internal/infra/oapicodegen/stockitem"
 	"openapi/internal/stockitem/usecase"
 )
@@ -18,7 +19,13 @@ func Post(c echo.Context) error {
 		Name: req.Name,
 	}
 
-	resDto, err := usecase.Create(reqDto)
+	db, err := database.New()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	
+	resDto, err := usecase.Create(reqDto, db)
 	if err != nil {
 		return err
 	}
