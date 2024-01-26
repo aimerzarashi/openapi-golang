@@ -19,63 +19,64 @@ func TestPutSuccess(t *testing.T) {
 
 	// Setup
 	client := http.Client{}
-	stockItemName := uuid.NewString()
-	updatedStockItemName := uuid.NewString()
+	bforeName := uuid.NewString()
+	afterName := uuid.NewString()
 
-	// Given
-	postRequestBody := &oapicodegen.PostStockItemJSONBody{
-		Name: stockItemName,
+	// When
+	postReqBody := &oapicodegen.PostStockItemJSONBody{
+		Name: bforeName,
 	}
-	postRequestBodyJson, _ := json.Marshal(postRequestBody)
-	postRequest, newReqErr := http.NewRequest(
+	postReqBodyJson, _ := json.Marshal(postReqBody)
+	postReq, err := http.NewRequest(
 		http.MethodPost,
 		"http://localhost:3000/stock/items",
-		bytes.NewBuffer(postRequestBodyJson))
-	if newReqErr != nil {
-		t.Fatal(newReqErr)
+		bytes.NewBuffer(postReqBodyJson))
+	if err != nil {
+		t.Fatal(err)
 	}
-	postRequest.Header.Set("Content-Type", "application/json")
-	postResponse, reqErr := client.Do(postRequest)
-	if reqErr != nil {
-		t.Fatal(reqErr)
+	postReq.Header.Set("Content-Type", "application/json")
+	postRes, err := client.Do(postReq)
+	if err != nil {
+		t.Fatal(err)
 	}
-	defer postResponse.Body.Close()
-	postResponseBodyByte, _ := io.ReadAll(postResponse.Body)
-	postResponseBody := &oapicodegen.Created{}
-	json.Unmarshal(postResponseBodyByte, &postResponseBody)
+	defer postRes.Body.Close()
 
-	if postResponse.StatusCode != http.StatusCreated {
-		t.Fatal(reqErr)
+	if postRes.StatusCode != http.StatusCreated {
+		t.Fatal(err)
 	}
 
-	if postResponseBody.Id == uuid.Nil {
-		t.Fatal(reqErr)
+	postResBodyByte, _ := io.ReadAll(postRes.Body)
+	postResBody := &oapicodegen.Created{}
+	json.Unmarshal(postResBodyByte, &postResBody)
+	if postResBody.Id == uuid.Nil {
+		t.Errorf("expected not empty, actual empty")
 	}
 
 	// When
-	putRequestBody := &oapicodegen.PutStockItemJSONBody{
-		Name: updatedStockItemName,
+	putReqBody := &oapicodegen.PutStockItemJSONBody{
+		Name: afterName,
 	}
-	putRequestBodyJson, _ := json.Marshal(putRequestBody)
-	putRequest, newReqErr := http.NewRequest(
+	putReqBodyJson, _ := json.Marshal(putReqBody)
+	putReq, newReqErr := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:3000/stock/items/"+postResponseBody.Id.String(),
-		bytes.NewBuffer(putRequestBodyJson))
+		"http://localhost:3000/stock/items/"+postResBody.Id.String(),
+		bytes.NewBuffer(putReqBodyJson))
 	if newReqErr != nil {
 		t.Fatal(newReqErr)
 	}
-	putRequest.Header.Set("Content-Type", "application/json")
-	putResponse, reqErr := client.Do(putRequest)
+	putReq.Header.Set("Content-Type", "application/json")
+	putRes, reqErr := client.Do(putReq)
 	if reqErr != nil {
 		t.Fatal(reqErr)
 	}
-	defer putResponse.Body.Close()
-	putResponseBodyByte, _ := io.ReadAll(putResponse.Body)
-	putResponseBody := &oapicodegen.Created{}
-	json.Unmarshal(putResponseBodyByte, &putResponseBody)
+	defer putRes.Body.Close()
+
+	putResBodyByte, _ := io.ReadAll(putRes.Body)
+	putResBody := &oapicodegen.Created{}
+	json.Unmarshal(putResBodyByte, &putResBody)
 
 	// Then
-	if putResponse.StatusCode != http.StatusOK {
-		t.Errorf("want %d, got %d", http.StatusOK, putResponse.StatusCode)
+	if putRes.StatusCode != http.StatusOK {
+		t.Errorf("want %d, got %d", http.StatusOK, putRes.StatusCode)
 	}
 }

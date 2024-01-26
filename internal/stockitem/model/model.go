@@ -1,4 +1,4 @@
-package model
+package domain
 
 import "github.com/google/uuid"
 
@@ -9,7 +9,7 @@ type StockItem struct {
 	Name string
 }
 
-func New(id StockItemId, name string) *StockItem {
+func NewStockItem(id StockItemId, name string) *StockItem {
 	return &StockItem{
 		Id:   id,
 		Name: name,

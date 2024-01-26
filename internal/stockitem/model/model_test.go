@@ -1,4 +1,4 @@
-package model
+package domain
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ func TestNew(t *testing.T) {
 	generatedUuid := uuid.New()
 	id := StockItemId(generatedUuid)
 	name := "test"
-	stockItem := New(id, name)
+	stockItem := NewStockItem(id, name)
 
 	// Then
 	if stockItem.Id != id {

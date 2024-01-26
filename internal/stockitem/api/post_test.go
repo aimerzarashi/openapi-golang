@@ -19,36 +19,36 @@ func TestPostSuccess(t *testing.T) {
 
 	// Setup
 	client := http.Client{}
-	stockItemName := uuid.NewString()
+	name := uuid.NewString()
 
 	// When
-	postRequestBody := &oapicodegen.PostStockItemJSONBody{
-		Name: stockItemName,
+	postReqBody := &oapicodegen.PostStockItemJSONBody{
+		Name: name,
 	}
-	postRequestBodyJson, _ := json.Marshal(postRequestBody)
-	postRequest, newReqErr := http.NewRequest(
+	postReqBodyJson, _ := json.Marshal(postReqBody)
+	postReq, err := http.NewRequest(
 		http.MethodPost,
 		"http://localhost:3000/stock/items",
-		bytes.NewBuffer(postRequestBodyJson))
-	if newReqErr != nil {
-		t.Fatal(newReqErr)
+		bytes.NewBuffer(postReqBodyJson))
+	if err != nil {
+		t.Fatal(err)
 	}
-	postRequest.Header.Set("Content-Type", "application/json")
-	postResponse, reqErr := client.Do(postRequest)
-	if reqErr != nil {
-		t.Fatal(reqErr)
+	postReq.Header.Set("Content-Type", "application/json")
+	postRes, err := client.Do(postReq)
+	if err != nil {
+		t.Fatal(err)
 	}
-	defer postResponse.Body.Close()
-	postResponseBodyByte, _ := io.ReadAll(postResponse.Body)
-	postResponseBody := &oapicodegen.Created{}
-	json.Unmarshal(postResponseBodyByte, &postResponseBody)
+	defer postRes.Body.Close()
 
 	// Then
-	if postResponse.StatusCode != http.StatusCreated {
-		t.Errorf("want %d, got %d", http.StatusCreated, postResponse.StatusCode)
+	if postRes.StatusCode != http.StatusCreated {
+		t.Errorf("want %d, got %d", http.StatusCreated, postRes.StatusCode)
 	}
 
-	if postResponseBody.Id == uuid.Nil {
+	postResBodyByte, _ := io.ReadAll(postRes.Body)
+	postResBody := &oapicodegen.Created{}
+	json.Unmarshal(postResBodyByte, &postResBody)
+	if postResBody.Id == uuid.Nil {
 		t.Errorf("expected not empty, actual empty")
 	}
 
