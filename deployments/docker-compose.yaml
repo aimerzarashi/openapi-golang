@@ -7,7 +7,7 @@ services:
     image: golang:1.21.6-alpine3.19
     tty: true
     ports:
-      - 3000:3000
+      - 1323:1323
     working_dir: /usr/src/app/pkg/main
     command: /bin/sh -c "go install github.com/cosmtrek/air@latest && air"
     volumes:

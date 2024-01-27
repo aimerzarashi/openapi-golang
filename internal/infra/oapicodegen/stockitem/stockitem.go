@@ -20,8 +20,8 @@ import (
 )
 
 // BadRequestResponse defines model for BadRequestResponse.
-type BadRequestResponse = []struct {
-	Message *string `json:"message,omitempty"`
+type BadRequestResponse struct {
+	Message string `json:"message"`
 }
 
 // NewStockItem defines model for NewStockItem.
@@ -63,6 +63,9 @@ type ServerInterface interface {
 	// Create Stock Item
 	// (POST /stock/items)
 	PostStockItem(ctx echo.Context) error
+	// Delete Stock Item
+	// (DELETE /stock/items/{stockitemId})
+	DeleteStockItem(ctx echo.Context, stockitemId StockItemId) error
 	// Update Stock Item
 	// (PUT /stock/items/{stockitemId})
 	PutStockItem(ctx echo.Context, stockitemId StockItemId) error
@@ -79,6 +82,22 @@ func (w *ServerInterfaceWrapper) PostStockItem(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.PostStockItem(ctx)
+	return err
+}
+
+// DeleteStockItem converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteStockItem(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "stockitemId" -------------
+	var stockitemId StockItemId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "stockitemId", runtime.ParamLocationPath, ctx.Param("stockitemId"), &stockitemId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter stockitemId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteStockItem(ctx, stockitemId)
 	return err
 }
 
@@ -127,6 +146,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.POST(baseURL+"/stock/items", wrapper.PostStockItem)
+	router.DELETE(baseURL+"/stock/items/:stockitemId", wrapper.DeleteStockItem)
 	router.PUT(baseURL+"/stock/items/:stockitemId", wrapper.PutStockItem)
 
 }
@@ -134,16 +154,17 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/8xUT0/bThD9Ktb8fsdN7JT2YolDqXqIkACBekIctvYkLPX+YXZNiaL97tWsTRyTtKQC",
-	"tb15ZmffPM97O2uorHbWoAkeyjUQemeNxxScyPoS71v0gaPKmoAmfUrnGlXJoKzJ77w1nPPVLWrJX/8T",
-	"LqCE//IBOu9OfT5AXvadIMYooEZfkXKMCCU3zp46RwGfCGXA+s1IXAVbfZsH1Pt6PzWLAuYmIBnZXCE9",
-	"IH0mssTQ4/qnoqyryrqyKOD89M8QPj8FTva1Y902Qy7XoALqdOzIOqSgOpE1ei+XqSKsHEIJPpAyywTa",
-	"Z+zXO6ySFH1CEskVx2f4fSDH/9g05wsorw/8nzOpEeJNFPAalDmr9evaEc9xw3m9OxSVcgtLWgYooW1V",
-	"DeLZfAQ8Tqx0alLZGpdoJvgYSE6CXCaIB9moWga+QHjfKmJP8Uw3UXnNfUZc0jx22Jg+q+Wj0q2GclYU",
-	"ArQyffR6ZmIZ8HgmmnA8K4pdmonATUors7DJKyo0jJCoZ8w9+3gxBwEPSL4z5mxaTAs2iXVopFNQwtG0",
-	"mB6BACfDbeKSe76fD9603bLZ9yazoRckUEpvifWDC+vDIHDHHn04sfXqzV7h2EPjGQVqMSW21ue7YvYz",
-	"yE1dvrVu3hfFy/VbOzkK+HDIlX1rLG2MVmtJq73z5fNtbfJ1ClR6LzEp1e4R6ourXxKqHenkJEmNAcmn",
-	"564YhM0Bonc9bPWF5xMXv7s/eVPEm3/FHgdox8v9bzpjV9AYY/wRAAD//x7YJfU2CAAA",
+	"H4sIAAAAAAAC/8xVW0/bTBD9K9Z83+Mmdgp9scRD6UWKkACB+oR4WNmTsK33wu6YgqL979WsQ2LjlItA",
+	"LW/Z2dkzx+fMTFZQWe2sQUMByhV4DM6agOlwKOszvG4xEJ8qawhN+imda1QlSVmT/wjWcCxUV6gl//rf",
+	"4wJK+C/fQufdbci3kGfrShBjFFBjqLxyjAglF87uK0cBnz1KwvrNSJyTrX7OCfWu2vfFooC5IfRGNufo",
+	"b9B/9d56hh7m3ydlXVbWpUUBx5a+2dbU4yfHlrLuKgo4Ofo733VyBBxc5w7t3XhRrsB569CT6lpAYwhy",
+	"mS7oziGUEMgrs0xYHq9b5dmYi03iJX85/tpS4S9qmpMFlBfPZH8sNUJkoNegzFndx3MHPIcF5/VYC5Vi",
+	"C+u1JCihbVUN4oEsAm4nVjo1qWyNSzQTvCUvJySXCeJGNqqWxA824sWHUqoaBlySHiM2Zh3V8lbpVkM5",
+	"KwoBWpn16fXMxJLwYCYaOpgVxZhmInCZwsosbGoRRQ0jJOoZc88+nc5BwA360LXhbFpMC+5769BIp6CE",
+	"vWkx3QMBTtJV4pIHfp8rQp3OznYbaNegZttakEB9mhz2D05toK3BHXsMdGjruzebuWEPDTUi32IK9Hbq",
+	"h2L2J8hNXt7bQftF8XR+b1FHAR+f82TXbkv7odVa+rud+vJ935t8lQ4qzUvsHGqQcOzVlxR/zKsuo++W",
+	"k15qJPQhDb1iHG4REOveh151eKi7eOnO5H0RL0duPUNK3qxs1P7TqZv/hLezaSxtFODaHQPz3dVPDUxL",
+	"78KB9zCmLzD+xRP6r3pl3AExxvg7AAD//6rz4Q0ECgAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

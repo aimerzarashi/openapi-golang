@@ -28,7 +28,7 @@ func Put(c echo.Context) error {
 
 	db, err := database.New()
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	defer db.Close()
 	
@@ -39,7 +39,7 @@ func Put(c echo.Context) error {
 
 	_, err = usecase.Update(reqDto, db)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	res := &oapicodegen.OK{}

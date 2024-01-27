@@ -30,7 +30,7 @@ func TestPutOk(t *testing.T) {
 	postReqBodyJson, _ := json.Marshal(postReqBody)
 	postReq, err := http.NewRequest(
 		http.MethodPost,
-		"http://localhost:3000/stock/items",
+		"http://localhost:1323/stock/items",
 		bytes.NewBuffer(postReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -58,17 +58,17 @@ func TestPutOk(t *testing.T) {
 		Name: afterName,
 	}
 	putReqBodyJson, _ := json.Marshal(putReqBody)
-	putReq, newReqErr := http.NewRequest(
+	putReq, err := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:3000/stock/items/"+postResBody.Id.String(),
+		"http://localhost:1323/stock/items/"+postResBody.Id.String(),
 		bytes.NewBuffer(putReqBodyJson))
-	if newReqErr != nil {
-		t.Fatal(newReqErr)
+	if err != nil {
+		t.Fatal(err)
 	}
 	putReq.Header.Set("Content-Type", "application/json")
-	putRes, reqErr := client.Do(putReq)
-	if reqErr != nil {
-		t.Fatal(reqErr)
+	putRes, err := client.Do(putReq)
+	if err != nil {
+		t.Fatal(err)
 	}
 	defer putRes.Body.Close()
 
@@ -82,6 +82,40 @@ func TestPutOk(t *testing.T) {
 	}
 }
 
+
+func TestPutNotFound(t *testing.T) {
+	// Setup
+	client := http.Client{}
+	name := strings.Repeat("a", 100)
+
+	putReqBody := &oapicodegen.PutStockItemJSONRequestBody{
+		Name: name,
+	}
+	putReqBodyJson, _ := json.Marshal(putReqBody)
+	putReq, err := http.NewRequest(
+		http.MethodPut,
+		"http://localhost:1323/stock/items/"+uuid.NewString(),
+		bytes.NewBuffer(putReqBodyJson))
+	if err != nil {
+		t.Fatal(err)
+	}
+	putReq.Header.Set("Content-Type", "application/json")
+	putRes, err := client.Do(putReq)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer putRes.Body.Close()
+
+	putResBodyByte, _ := io.ReadAll(putRes.Body)
+	putResBody := &oapicodegen.Created{}
+	json.Unmarshal(putResBodyByte, &putResBody)
+
+	// Then
+	if putRes.StatusCode != http.StatusNotFound {
+		t.Errorf("want %d, got %d", http.StatusNotFound, putRes.StatusCode)
+	}
+}
+
 func TestPutBadRequest1(t *testing.T) {
 	// Setup
 	client := http.Client{}
@@ -91,17 +125,17 @@ func TestPutBadRequest1(t *testing.T) {
 		Name: name,
 	}
 	putReqBodyJson, _ := json.Marshal(putReqBody)
-	putReq, newReqErr := http.NewRequest(
+	putReq, err := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:3000/stock/items/"+uuid.NewString(),
+		"http://localhost:1323/stock/items/"+uuid.NewString(),
 		bytes.NewBuffer(putReqBodyJson))
-	if newReqErr != nil {
-		t.Fatal(newReqErr)
+	if err != nil {
+		t.Fatal(err)
 	}
 	putReq.Header.Set("Content-Type", "application/json")
-	putRes, reqErr := client.Do(putReq)
-	if reqErr != nil {
-		t.Fatal(reqErr)
+	putRes, err := client.Do(putReq)
+	if err != nil {
+		t.Fatal(err)
 	}
 	defer putRes.Body.Close()
 
@@ -125,17 +159,17 @@ func TestPutBadRequest2(t *testing.T) {
 		Name: name,
 	}
 	putReqBodyJson, _ := json.Marshal(putReqBody)
-	putReq, newReqErr := http.NewRequest(
+	putReq, err := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:3000/stock/items/"+uuid.NewString(),
+		"http://localhost:1323/stock/items/"+uuid.NewString(),
 		bytes.NewBuffer(putReqBodyJson))
-	if newReqErr != nil {
-		t.Fatal(newReqErr)
+	if err != nil {
+		t.Fatal(err)
 	}
 	putReq.Header.Set("Content-Type", "application/json")
-	putRes, reqErr := client.Do(putReq)
-	if reqErr != nil {
-		t.Fatal(reqErr)
+	putRes, err := client.Do(putReq)
+	if err != nil {
+		t.Fatal(err)
 	}
 	defer putRes.Body.Close()
 

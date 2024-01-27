@@ -37,5 +37,6 @@ func main() {
 	e.GET("/", hello.Get)
 	e.POST("/stock/items", stockitem.Post)
 	e.PUT("/stock/items/:stockitemId", stockitem.Put)
-	e.Logger.Fatal(e.Start(":3000"))
+	e.DELETE("/stock/items/:stockitemId", stockitem.Delete)
+	e.Logger.Fatal(e.Start(":1323"))
 }

@@ -12,7 +12,7 @@ import (
 )
 
 func TestGetSuccess(t *testing.T) {
-	res, err := http.Get("http://localhost:3000")
+	res, err := http.Get("http://localhost:1323")
 	if err != nil {
 		t.Fatal(err)
 	}

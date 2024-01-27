@@ -8,7 +8,7 @@ import (
 
 // http://localhost:3000/ にGETでアクセスし、戻り値を検証する
 func TestMain(t *testing.T) {
-	res, err := http.Get("http://localhost:3000")
+	res, err := http.Get("http://localhost:1323")
 	if err != nil {
 		t.Fatal(err)
 	}
