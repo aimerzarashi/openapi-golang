@@ -25,3 +25,20 @@ func TestNew(t *testing.T) {
 		t.Errorf("expected %s, got %s", name, stockItem.Name)
 	}
 }
+
+
+func TestDelete(t *testing.T) {
+	// Given
+	generatedUuid := uuid.New()
+	id := StockItemId(generatedUuid)
+	name := "test"
+	stockItem := NewStockItem(id, name)
+
+	// When
+	stockItem.Delete()
+
+	// Then
+	if stockItem.Deleted != true {
+		t.Errorf("expected %t, got %t", true, stockItem.Deleted)
+	}
+}

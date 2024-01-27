@@ -27,6 +27,7 @@ type StockItem struct {
 	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	Deleted   bool      `boil:"deleted" json:"deleted" toml:"deleted" yaml:"deleted"`
 
 	R *stockItemR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L stockItemL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -37,11 +38,13 @@ var StockItemColumns = struct {
 	Name      string
 	CreatedAt string
 	UpdatedAt string
+	Deleted   string
 }{
 	ID:        "id",
 	Name:      "name",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
+	Deleted:   "deleted",
 }
 
 // Generated where
@@ -90,16 +93,27 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
 
+type whereHelperbool struct{ field string }
+
+func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperbool) NEQ(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
+
 var StockItemWhere = struct {
 	ID        whereHelperstring
 	Name      whereHelperstring
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
+	Deleted   whereHelperbool
 }{
 	ID:        whereHelperstring{field: "\"stock_item\".\"id\""},
 	Name:      whereHelperstring{field: "\"stock_item\".\"name\""},
 	CreatedAt: whereHelpertime_Time{field: "\"stock_item\".\"created_at\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"stock_item\".\"updated_at\""},
+	Deleted:   whereHelperbool{field: "\"stock_item\".\"deleted\""},
 }
 
 // StockItemRels is where relationship names are stored.
@@ -119,9 +133,9 @@ func (*stockItemR) NewStruct() *stockItemR {
 type stockItemL struct{}
 
 var (
-	stockItemAllColumns            = []string{"id", "name", "created_at", "updated_at"}
+	stockItemAllColumns            = []string{"id", "name", "created_at", "updated_at", "deleted"}
 	stockItemColumnsWithoutDefault = []string{"id", "name", "updated_at"}
-	stockItemColumnsWithDefault    = []string{"created_at"}
+	stockItemColumnsWithDefault    = []string{"created_at", "deleted"}
 	stockItemPrimaryKeyColumns     = []string{"id"}
 )
 
