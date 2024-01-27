@@ -23,7 +23,7 @@ func TestPutSuccess(t *testing.T) {
 	afterName := uuid.NewString()
 
 	// When
-	postReqBody := &oapicodegen.PostStockItemJSONBody{
+	postReqBody := &oapicodegen.PostStockItemJSONRequestBody{
 		Name: bforeName,
 	}
 	postReqBodyJson, _ := json.Marshal(postReqBody)
@@ -53,7 +53,7 @@ func TestPutSuccess(t *testing.T) {
 	}
 
 	// When
-	putReqBody := &oapicodegen.PutStockItemJSONBody{
+	putReqBody := &oapicodegen.PutStockItemJSONRequestBody{
 		Name: afterName,
 	}
 	putReqBodyJson, _ := json.Marshal(putReqBody)

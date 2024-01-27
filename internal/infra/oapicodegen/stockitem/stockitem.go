@@ -12,7 +12,6 @@ import (
 	"net/url"
 	"path"
 	"strings"
-	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
@@ -25,12 +24,23 @@ type BadRequestResponse = []struct {
 	Message *string `json:"message,omitempty"`
 }
 
+// NewStockItem defines model for NewStockItem.
+type NewStockItem = StockItemName
+
 // StockItem defines model for StockItem.
 type StockItem struct {
-	CreatedAt time.Time          `json:"createdAt"`
-	Id        openapi_types.UUID `json:"id"`
-	Name      string             `json:"name"`
-	UpdatedAt time.Time          `json:"updatedAt"`
+	Id   openapi_types.UUID `json:"id" validate:"required"`
+	Name string             `json:"name" validate:"required,gte=1,lt=100"`
+}
+
+// StockItemId defines model for StockItemId.
+type StockItemId struct {
+	Id openapi_types.UUID `json:"id" validate:"required"`
+}
+
+// StockItemName defines model for StockItemName.
+type StockItemName struct {
+	Name string `json:"name" validate:"required,gte=1,lt=100"`
 }
 
 // BadRequest defines model for BadRequest.
@@ -42,21 +52,11 @@ type Created = StockItem
 // OK defines model for OK.
 type OK = StockItem
 
-// PostStockItemJSONBody defines parameters for PostStockItem.
-type PostStockItemJSONBody struct {
-	Name string `json:"name"`
-}
-
-// PutStockItemJSONBody defines parameters for PutStockItem.
-type PutStockItemJSONBody struct {
-	Name string `json:"name"`
-}
-
 // PostStockItemJSONRequestBody defines body for PostStockItem for application/json ContentType.
-type PostStockItemJSONRequestBody PostStockItemJSONBody
+type PostStockItemJSONRequestBody = NewStockItem
 
 // PutStockItemJSONRequestBody defines body for PutStockItem for application/json ContentType.
-type PutStockItemJSONRequestBody PutStockItemJSONBody
+type PutStockItemJSONRequestBody = NewStockItem
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -64,8 +64,8 @@ type ServerInterface interface {
 	// (POST /stock/items)
 	PostStockItem(ctx echo.Context) error
 	// Update Stock Item
-	// (PUT /stock/items/{id})
-	PutStockItem(ctx echo.Context, id openapi_types.UUID) error
+	// (PUT /stock/items/{stockitemId})
+	PutStockItem(ctx echo.Context, stockitemId StockItemId) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -85,16 +85,16 @@ func (w *ServerInterfaceWrapper) PostStockItem(ctx echo.Context) error {
 // PutStockItem converts echo context to params.
 func (w *ServerInterfaceWrapper) PutStockItem(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "id" -------------
-	var id openapi_types.UUID
+	// ------------- Path parameter "stockitemId" -------------
+	var stockitemId StockItemId
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "stockitemId", runtime.ParamLocationPath, ctx.Param("stockitemId"), &stockitemId)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter stockitemId: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.PutStockItem(ctx, id)
+	err = w.Handler.PutStockItem(ctx, stockitemId)
 	return err
 }
 
@@ -127,23 +127,23 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.POST(baseURL+"/stock/items", wrapper.PostStockItem)
-	router.PUT(baseURL+"/stock/items/:id", wrapper.PutStockItem)
+	router.PUT(baseURL+"/stock/items/:stockitemId", wrapper.PutStockItem)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/9xUTW/UMBD9K9HA0WyyFC6+tYjDqodWrThVPZhktnVZf3Q8qVit/N+RnU2TsIFtJQQS",
-	"t9h+fjN57413UDvjnUXLAeQOCIN3NmBenKnmCh9bDJxWtbOMNn8q7ze6VqydLR+Cs2kv1PdoVPp6S7gG",
-	"CW/KgbrsTkM5UF7tK0GMUUCDoSbtEyPIVLjoK0cBnwgVY/PHmrhmV39bMZq52n2xKGBlGcmqzTXSE9Jn",
-	"IkeJeorvQUWHKjpYFHBx/ncavjiHtLnHTn17FlnuQDOafOzJeSTWnckGQ1B3GcFbjyAhMGl7l0n3O+7r",
-	"A9bZiv2GIlLbtB46OyCuOyFP87+vHRnFIKFRjO9YGwTxcz0Buplg21Y3czCrzFy/AlrfvK5kFED42GpK",
-	"6bqBXC6zi1H7Y97bA00Sh7ZrlxvSvElnWZUiyVKcXq5AwBNS6NxaLqpFlXp1Hq3yGiScLKrFCQjwiu+z",
-	"cmVI98vBMNdN4FxQi6EWZFLKAVs1IOHSBR4M6n4VA5+5ZvuqaE597dU36rs2rQG5rCoBRtv96pjI+f68",
-	"jgOMqcW8MXqO3lfLXw3KM64cje+HqjqOH71xUcDHl1yZexbyBLbGKNrOWpPOx7aWO93ErG07Y+2XnLff",
-	"WttOnPWKlEFGCiBvdqATSYpTH2fZRXuqrxhZfGTm4u1/kJ4XWJve0n8ZnEPjY4zxRwAAAP//pIXeXKUH",
-	"AAA=",
+	"H4sIAAAAAAAC/8xUT0/bThD9Ktb8fsdN7JT2YolDqXqIkACBekIctvYkLPX+YXZNiaL97tWsTRyTtKQC",
+	"tb15ZmffPM97O2uorHbWoAkeyjUQemeNxxScyPoS71v0gaPKmoAmfUrnGlXJoKzJ77w1nPPVLWrJX/8T",
+	"LqCE//IBOu9OfT5AXvadIMYooEZfkXKMCCU3zp46RwGfCGXA+s1IXAVbfZsH1Pt6PzWLAuYmIBnZXCE9",
+	"IH0mssTQ4/qnoqyryrqyKOD89M8QPj8FTva1Y902Qy7XoALqdOzIOqSgOpE1ei+XqSKsHEIJPpAyywTa",
+	"Z+zXO6ySFH1CEskVx2f4fSDH/9g05wsorw/8nzOpEeJNFPAalDmr9evaEc9xw3m9OxSVcgtLWgYooW1V",
+	"DeLZfAQ8Tqx0alLZGpdoJvgYSE6CXCaIB9moWga+QHjfKmJP8Uw3UXnNfUZc0jx22Jg+q+Wj0q2GclYU",
+	"ArQyffR6ZmIZ8HgmmnA8K4pdmonATUors7DJKyo0jJCoZ8w9+3gxBwEPSL4z5mxaTAs2iXVopFNQwtG0",
+	"mB6BACfDbeKSe76fD9603bLZ9yazoRckUEpvifWDC+vDIHDHHn04sfXqzV7h2EPjGQVqMSW21ue7YvYz",
+	"yE1dvrVu3hfFy/VbOzkK+HDIlX1rLG2MVmtJq73z5fNtbfJ1ClR6LzEp1e4R6ourXxKqHenkJEmNAcmn",
+	"564YhM0Bonc9bPWF5xMXv7s/eVPEm3/FHgdox8v9bzpjV9AYY/wRAAD//x7YJfU2CAAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

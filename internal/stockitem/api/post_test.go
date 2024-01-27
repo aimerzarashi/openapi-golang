@@ -2,6 +2,7 @@ package api
 
 import (
 	oapicodegen "openapi/internal/infra/oapicodegen/stockitem"
+	"strings"
 	"testing"
 
 	"bytes"
@@ -15,14 +16,13 @@ import (
 	"net/http"
 )
 
-func TestPostSuccess(t *testing.T) {
-
+func TestPostCreated(t *testing.T) {
 	// Setup
 	client := http.Client{}
 	name := uuid.NewString()
 
 	// When
-	postReqBody := &oapicodegen.PostStockItemJSONBody{
+	postReqBody := &oapicodegen.PostStockItemJSONRequestBody{
 		Name: name,
 	}
 	postReqBodyJson, _ := json.Marshal(postReqBody)
@@ -52,4 +52,64 @@ func TestPostSuccess(t *testing.T) {
 		t.Errorf("expected not empty, actual empty")
 	}
 
+}
+
+func TestPostBadRequest1(t *testing.T) {
+	// Setup
+	client := http.Client{}
+	name := strings.Repeat("a", 101)
+
+	// When
+	postReqBody := &oapicodegen.PostStockItemJSONRequestBody{
+		Name: name,
+	}
+	postReqBodyJson, _ := json.Marshal(postReqBody)
+	postReq, err := http.NewRequest(
+		http.MethodPost,
+		"http://localhost:3000/stock/items",
+		bytes.NewBuffer(postReqBodyJson))
+	if err != nil {
+		t.Fatal(err)
+	}
+	postReq.Header.Set("Content-Type", "application/json")
+	postRes, err := client.Do(postReq)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer postRes.Body.Close()
+
+	// Then
+	if postRes.StatusCode != http.StatusBadRequest {
+		t.Errorf("want %d, got %d", http.StatusBadRequest, postRes.StatusCode)
+	}	
+}
+
+func TestPostBadRequest2(t *testing.T) {
+	// Setup
+	client := http.Client{}
+	name := ""
+
+	// When
+	postReqBody := &oapicodegen.PostStockItemJSONRequestBody{
+		Name: name,
+	}
+	postReqBodyJson, _ := json.Marshal(postReqBody)
+	postReq, err := http.NewRequest(
+		http.MethodPost,
+		"http://localhost:3000/stock/items",
+		bytes.NewBuffer(postReqBodyJson))
+	if err != nil {
+		t.Fatal(err)
+	}
+	postReq.Header.Set("Content-Type", "application/json")
+	postRes, err := client.Do(postReq)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer postRes.Body.Close()
+
+	// Then
+	if postRes.StatusCode != http.StatusBadRequest {
+		t.Errorf("want %d, got %d", http.StatusBadRequest, postRes.StatusCode)
+	}	
 }
