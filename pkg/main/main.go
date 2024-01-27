@@ -31,6 +31,7 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	
   e.Validator = &CustomValidator{validator: validator.New()}
 
 	e.GET("/", hello.Get)
