@@ -55,23 +55,23 @@ func Save(db *sql.DB, model *domain.StockItem) error {
 	return nil
 }
 
-func Get(db *sql.DB, id domain.StockItemId) (*domain.StockItem, error) {
+func Get(db *sql.DB, stockItemId domain.StockItemId) (*domain.StockItem, error) {
 
-	uuid := uuid.UUID(id)
-	data, err := sqlboiler.FindStockItem(context.Background(), db, uuid.String())
+	id := uuid.UUID(stockItemId).String()
+	data, err := sqlboiler.FindStockItem(context.Background(), db, id)
 	if err != nil {
 		return &domain.StockItem{}, err
 	}
 
-	model := domain.NewStockItem(domain.StockItemId(uuid), data.Name)
+	model := domain.NewStockItem(stockItemId, data.Name)
 	
 	return model, nil
 }
 
 
-func Find(db *sql.DB, id domain.StockItemId) (bool, error) {
-	uuid := uuid.UUID(id).String()
-	found, err := sqlboiler.StockItemExists(context.Background(), db, uuid)
+func Find(db *sql.DB, stockItemId domain.StockItemId) (bool, error) {
+	id := uuid.UUID(stockItemId).String()
+	found, err := sqlboiler.StockItemExists(context.Background(), db, id)
 	if err != nil {
 		return false, err
 	}

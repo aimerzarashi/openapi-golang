@@ -46,12 +46,12 @@ func TestCreateSuccess(t *testing.T) {
 		t.Errorf("expected %s, got %s", name, data.Name)
 	}
 
-	if data.CreatedAt.UTC().Before(currentDateTime.UTC()) == true {
-		t.Errorf("expected %s, got %s", currentDateTime.UTC(), data.CreatedAt.UTC())		
+	if data.CreatedAt.Before(currentDateTime) == true {
+		t.Errorf("expected %s, got %s", currentDateTime, data.CreatedAt)		
 	}
 
-	if data.UpdatedAt.UTC().Before(currentDateTime.UTC()) == true {
-		t.Errorf("expected %s, got %s", currentDateTime.UTC(), data.UpdatedAt.UTC())		
+	if data.UpdatedAt.Before(currentDateTime) == true {
+		t.Errorf("expected %s, got %s", currentDateTime, data.UpdatedAt)		
 	}
 }
 
@@ -111,12 +111,12 @@ func TestUpdateSuccess(t *testing.T) {
 		t.Errorf("expected %s, got %s", afterModel.Name, data.Name)
 	}
 
-	if data.CreatedAt.UTC().Equal(beforeData.CreatedAt.UTC()) != true {
-		t.Errorf("expected %s, got %s", beforeData.CreatedAt.UTC(), data.CreatedAt.UTC())		
+	if data.CreatedAt.Equal(beforeData.CreatedAt) != true {
+		t.Errorf("expected %s, got %s", beforeData.CreatedAt, data.CreatedAt)		
 	}
 
-	if data.UpdatedAt.UTC().Before(currentDateTime.UTC()) == true {
-		t.Errorf("expected %s, got %s", currentDateTime.UTC(), data.UpdatedAt.UTC())		
+	if data.UpdatedAt.Before(currentDateTime) == true {
+		t.Errorf("expected %s, got %s", currentDateTime, data.UpdatedAt)		
 	}
 }
 
