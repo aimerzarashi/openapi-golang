@@ -13,27 +13,6 @@ import (
 
 func Save(db *sql.DB, model *domain.StockItem) error {
 
-	// id := uuid.UUID(model.Id)
-	// isExist, err := sqlboiler.StockItemExists(context.Background(), db, id.String())
-	// if err != nil {
-	// 	return err
-	// }
-
-	// data := &sqlboiler.StockItem{
-	// 	ID:   uuid.UUID(model.Id).String(),
-	// 	Name: model.Name,
-	// }
-	// if isExist {
-	// 	data.Update(context.Background(), db, boil.Infer())
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// } else {
-	// 	data.Insert(context.Background(), db, boil.Infer())
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
 	data := &sqlboiler.StockItem{
 		ID:   uuid.UUID(model.Id).String(),
 		Name: model.Name,
