@@ -13,7 +13,8 @@ services:
     volumes:
       - ./../:/usr/src/app
     environment:
-      DATABASE_URL: "postgresql://user:password@openapi-db:5432/openapi?schema=public"
+       DB_DRIVER: "postgres"
+       DB_DSN: "host=openapi-db port=5432 user=user password=password dbname=openapi sslmode=disable"
 
   openapi-db:
     container_name: openapi-db
