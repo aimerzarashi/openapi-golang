@@ -13,8 +13,9 @@ services:
     volumes:
       - ./../:/usr/src/app
     environment:
-       DB_DRIVER: "postgres"
-       DB_DSN: "host=openapi-db port=5432 user=user password=password dbname=openapi sslmode=disable"
+      SERVICE_URL: "http://localhost:1323"
+      DB_DRIVER: "postgres"
+      DB_DSN: "host=openapi-db port=5432 user=user password=password dbname=openapi sslmode=disable"
 
   openapi-db:
     container_name: openapi-db

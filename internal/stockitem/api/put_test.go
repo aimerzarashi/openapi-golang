@@ -1,6 +1,7 @@
 package api
 
 import (
+	"openapi/internal/infra/environment"
 	oapicodegen "openapi/internal/infra/oapicodegen/stockitem"
 	"strings"
 	"testing"
@@ -30,7 +31,7 @@ func TestPutOk(t *testing.T) {
 	postReqBodyJson, _ := json.Marshal(postReqBody)
 	postReq, err := http.NewRequest(
 		http.MethodPost,
-		"http://localhost:1323/stock/items",
+		environment.GetServiceUrl()+"/stock/items",
 		bytes.NewBuffer(postReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -60,7 +61,7 @@ func TestPutOk(t *testing.T) {
 	putReqBodyJson, _ := json.Marshal(putReqBody)
 	putReq, err := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:1323/stock/items/"+postResBody.Id.String(),
+		environment.GetServiceUrl()+"/stock/items/"+postResBody.Id.String(),
 		bytes.NewBuffer(putReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -94,7 +95,7 @@ func TestPutNotFound(t *testing.T) {
 	putReqBodyJson, _ := json.Marshal(putReqBody)
 	putReq, err := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:1323/stock/items/"+uuid.NewString(),
+		environment.GetServiceUrl()+"/stock/items/"+uuid.NewString(),
 		bytes.NewBuffer(putReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -129,7 +130,7 @@ func TestPutBadRequest1(t *testing.T) {
 	postReqBodyJson, _ := json.Marshal(postReqBody)
 	postReq, err := http.NewRequest(
 		http.MethodPost,
-		"http://localhost:1323/stock/items",
+		environment.GetServiceUrl()+"/stock/items",
 		bytes.NewBuffer(postReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -159,7 +160,7 @@ func TestPutBadRequest1(t *testing.T) {
 	putReqBodyJson, _ := json.Marshal(putReqBody)
 	putReq, err := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:1323/stock/items/"+postResBody.Id.String(),
+		environment.GetServiceUrl()+"/stock/items/"+postResBody.Id.String(),
 		bytes.NewBuffer(putReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -194,7 +195,7 @@ func TestPutBadRequest2(t *testing.T) {
 	postReqBodyJson, _ := json.Marshal(postReqBody)
 	postReq, err := http.NewRequest(
 		http.MethodPost,
-		"http://localhost:1323/stock/items",
+		environment.GetServiceUrl()+"/stock/items",
 		bytes.NewBuffer(postReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -224,7 +225,7 @@ func TestPutBadRequest2(t *testing.T) {
 	putReqBodyJson, _ := json.Marshal(putReqBody)
 	putReq, err := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:1323/stock/items/"+postResBody.Id.String(),
+		environment.GetServiceUrl()+"/stock/items/"+postResBody.Id.String(),
 		bytes.NewBuffer(putReqBodyJson))
 	if err != nil {
 		t.Fatal(err)

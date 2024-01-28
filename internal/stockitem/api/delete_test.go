@@ -1,6 +1,7 @@
 package api
 
 import (
+	"openapi/internal/infra/environment"
 	oapicodegen "openapi/internal/infra/oapicodegen/stockitem"
 	"testing"
 
@@ -83,7 +84,7 @@ func TestDeleteNotFound(t *testing.T) {
 
 	deleteReq, err := http.NewRequest(
 		http.MethodDelete,
-		"http://localhost:1323/stock/items/"+uuid.NewString(),
+		environment.GetServiceUrl()+"/stock/items/"+uuid.NewString(),
 		nil,
 	)
 	if err != nil {
