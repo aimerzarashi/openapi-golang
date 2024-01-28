@@ -26,7 +26,6 @@ func TestCreateSuccess(t *testing.T) {
 	name := uuid.NewString()
 	model := domain.NewStockItem(id, name)
 	currentDateTime := time.Now()
-
 	// When
 	err = Save(db, model)
 	if err != nil {
@@ -47,12 +46,12 @@ func TestCreateSuccess(t *testing.T) {
 		t.Errorf("expected %s, got %s", name, data.Name)
 	}
 
-	if data.CreatedAt.Before(currentDateTime) == true {
-		t.Errorf("expected %s, got %s", currentDateTime, data.CreatedAt)		
+	if data.CreatedAt.UTC().Before(currentDateTime.UTC()) == true {
+		t.Errorf("expected %s, got %s", currentDateTime.UTC(), data.CreatedAt.UTC())		
 	}
 
-	if data.UpdatedAt.Before(currentDateTime) == true {
-		t.Errorf("expected %s, got %s", currentDateTime, data.UpdatedAt)		
+	if data.UpdatedAt.UTC().Before(currentDateTime.UTC()) == true {
+		t.Errorf("expected %s, got %s", currentDateTime.UTC(), data.UpdatedAt.UTC())		
 	}
 }
 
@@ -112,11 +111,69 @@ func TestUpdateSuccess(t *testing.T) {
 		t.Errorf("expected %s, got %s", afterModel.Name, data.Name)
 	}
 
-	if data.CreatedAt.Equal(beforeData.CreatedAt) != true {
-		t.Errorf("expected %s, got %s", beforeData.CreatedAt, data.CreatedAt)		
+	if data.CreatedAt.UTC().Equal(beforeData.CreatedAt.UTC()) != true {
+		t.Errorf("expected %s, got %s", beforeData.CreatedAt.UTC(), data.CreatedAt.UTC())		
 	}
 
-	if data.UpdatedAt.Before(currentDateTime) == true {
-		t.Errorf("expected %s, got %s", currentDateTime, data.UpdatedAt)		
+	if data.UpdatedAt.UTC().Before(currentDateTime.UTC()) == true {
+		t.Errorf("expected %s, got %s", currentDateTime.UTC(), data.UpdatedAt.UTC())		
 	}
+}
+
+func TestFindSuccess(t *testing.T) {
+	// Setup
+	db, err := database.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	// Given
+	generatedUuid := uuid.New()
+	id := domain.StockItemId(generatedUuid)
+	name := uuid.NewString()
+	model := domain.NewStockItem(id, name)
+
+	err = Save(db, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	found, err := Find(db, id)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Then
+	if found != true {
+		t.Errorf("expected %t, got %t", true, found)
+	}
+
+}
+
+
+func TestFindFailure(t *testing.T) {
+	// Setup
+	db, err := database.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	// Given
+	generatedUuid := uuid.New()
+	id := domain.StockItemId(generatedUuid)
+
+	// When
+	found, err := Find(db, id)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Then
+	if found != false {
+		t.Errorf("expected %t, got %t", false, found)
+	}
+
 }

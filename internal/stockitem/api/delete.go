@@ -8,10 +8,12 @@ import (
 
 	"openapi/internal/infra/database"
 	oapicodegen "openapi/internal/infra/oapicodegen/stockitem"
+	"openapi/internal/stockitem/domain"
+	"openapi/internal/stockitem/repository"
 	"openapi/internal/stockitem/usecase"
 )
 
-// Put is a function that handles the HTTP PUT request for updating an existing stock item.
+// Delete is a function that handles the HTTP DELETE request for deleting an existing stock item.
 func Delete(c echo.Context) error {
 	stockitemId := uuid.MustParse(c.Param("stockitemId"))
 	if stockitemId == uuid.Nil {
@@ -23,6 +25,14 @@ func Delete(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	defer db.Close()
+
+	found, err := repository.Find(db, domain.StockItemId(stockitemId))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	if !found {
+		return echo.NewHTTPError(http.StatusNotFound, "stock item not found")
+	}
 	
 	reqDto := &usecase.DeleteRequestDto{
 		Id:   stockitemId,

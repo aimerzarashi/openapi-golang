@@ -8,6 +8,8 @@ import (
 
 	"openapi/internal/infra/database"
 	oapicodegen "openapi/internal/infra/oapicodegen/stockitem"
+	"openapi/internal/stockitem/domain"
+	"openapi/internal/stockitem/repository"
 	"openapi/internal/stockitem/usecase"
 )
 
@@ -18,6 +20,20 @@ func Put(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid stock item id")
 	}
 
+	db, err := database.New()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	defer db.Close()
+
+	found, err := repository.Find(db, domain.StockItemId(stockitemId))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	if !found {
+		return echo.NewHTTPError(http.StatusNotFound, "stock item not found")
+	}
+
 	req := &oapicodegen.PutStockItemJSONRequestBody{}
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -26,12 +42,6 @@ func Put(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	db, err := database.New()
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-	defer db.Close()
-	
 	reqDto := &usecase.UpdateRequestDto{
 		Id:   stockitemId,
 		Name: req.Name,

@@ -86,7 +86,7 @@ func TestPutOk(t *testing.T) {
 func TestPutNotFound(t *testing.T) {
 	// Setup
 	client := http.Client{}
-	name := strings.Repeat("a", 100)
+	name := uuid.NewString()
 
 	putReqBody := &oapicodegen.PutStockItemJSONRequestBody{
 		Name: name,
