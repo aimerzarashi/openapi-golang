@@ -119,15 +119,47 @@ func TestPutNotFound(t *testing.T) {
 func TestPutBadRequest1(t *testing.T) {
 	// Setup
 	client := http.Client{}
-	name := strings.Repeat("a", 101)
+	bforeName := uuid.NewString()
+	afterName := ""
 
+	// Given
+	postReqBody := &oapicodegen.PostStockItemJSONRequestBody{
+		Name: bforeName,
+	}
+	postReqBodyJson, _ := json.Marshal(postReqBody)
+	postReq, err := http.NewRequest(
+		http.MethodPost,
+		"http://localhost:1323/stock/items",
+		bytes.NewBuffer(postReqBodyJson))
+	if err != nil {
+		t.Fatal(err)
+	}
+	postReq.Header.Set("Content-Type", "application/json")
+	postRes, err := client.Do(postReq)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer postRes.Body.Close()
+
+	if postRes.StatusCode != http.StatusCreated {
+		t.Fatal(err)
+	}
+
+	postResBodyByte, _ := io.ReadAll(postRes.Body)
+	postResBody := &oapicodegen.Created{}
+	json.Unmarshal(postResBodyByte, &postResBody)
+	if postResBody.Id == uuid.Nil {
+		t.Errorf("expected not empty, actual empty")
+	}
+
+	// When
 	putReqBody := &oapicodegen.PutStockItemJSONRequestBody{
-		Name: name,
+		Name: afterName,
 	}
 	putReqBodyJson, _ := json.Marshal(putReqBody)
 	putReq, err := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:1323/stock/items/"+uuid.NewString(),
+		"http://localhost:1323/stock/items/"+postResBody.Id.String(),
 		bytes.NewBuffer(putReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -149,19 +181,50 @@ func TestPutBadRequest1(t *testing.T) {
 	}
 }
 
-
 func TestPutBadRequest2(t *testing.T) {
 	// Setup
 	client := http.Client{}
-	name := ""
+	bforeName := uuid.NewString()
+	afterName := strings.Repeat("a", 101)
 
+	// Given
+	postReqBody := &oapicodegen.PostStockItemJSONRequestBody{
+		Name: bforeName,
+	}
+	postReqBodyJson, _ := json.Marshal(postReqBody)
+	postReq, err := http.NewRequest(
+		http.MethodPost,
+		"http://localhost:1323/stock/items",
+		bytes.NewBuffer(postReqBodyJson))
+	if err != nil {
+		t.Fatal(err)
+	}
+	postReq.Header.Set("Content-Type", "application/json")
+	postRes, err := client.Do(postReq)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer postRes.Body.Close()
+
+	if postRes.StatusCode != http.StatusCreated {
+		t.Fatal(err)
+	}
+
+	postResBodyByte, _ := io.ReadAll(postRes.Body)
+	postResBody := &oapicodegen.Created{}
+	json.Unmarshal(postResBodyByte, &postResBody)
+	if postResBody.Id == uuid.Nil {
+		t.Errorf("expected not empty, actual empty")
+	}
+
+	// When
 	putReqBody := &oapicodegen.PutStockItemJSONRequestBody{
-		Name: name,
+		Name: afterName,
 	}
 	putReqBodyJson, _ := json.Marshal(putReqBody)
 	putReq, err := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:1323/stock/items/"+uuid.NewString(),
+		"http://localhost:1323/stock/items/"+postResBody.Id.String(),
 		bytes.NewBuffer(putReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
