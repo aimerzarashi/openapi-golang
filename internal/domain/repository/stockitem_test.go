@@ -16,7 +16,7 @@ import (
 
 func TestCreateSuccess(t *testing.T) {
 	// Setup
-	db, err := database.New()
+	db, err := database.Open()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func TestCreateSuccess(t *testing.T) {
 
 func TestUpdateSuccess(t *testing.T) {
 	// Setup
-	db, err := database.New()
+	db, err := database.Open()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,7 +127,7 @@ func TestUpdateSuccess(t *testing.T) {
 
 func TestFindSuccess(t *testing.T) {
 	// Setup
-	db, err := database.New()
+	db, err := database.Open()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -161,7 +161,7 @@ func TestFindSuccess(t *testing.T) {
 
 func TestFindFailure(t *testing.T) {
 	// Setup
-	db, err := database.New()
+	db, err := database.Open()
 	if err != nil {
 		t.Fatal(err)
 	}

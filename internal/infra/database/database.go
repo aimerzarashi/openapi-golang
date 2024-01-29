@@ -7,7 +7,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func New() (*sql.DB, error) {
+func Open() (*sql.DB, error) {
 	driverName := env.GetDbDriver()
 	dataSourceName := env.GetDbDataSourceName()
 

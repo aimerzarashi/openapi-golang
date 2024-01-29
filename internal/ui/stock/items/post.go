@@ -14,7 +14,7 @@ import (
 // PostStockItem is a function that handles the HTTP POST request for creating a new stock item.
 func Post(c echo.Context) error {
 	// Pre Process
-	db, err := database.New()
+	db, err := database.Open()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

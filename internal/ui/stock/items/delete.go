@@ -16,7 +16,7 @@ import (
 // Delete is a function that handles the HTTP DELETE request for deleting an existing stock item.
 func Delete(c echo.Context) error {
 	// Pre Process
-	db, err := database.New()
+	db, err := database.Open()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

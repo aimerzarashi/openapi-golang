@@ -12,7 +12,7 @@ import (
 
 func TestUpdateSuccess(t *testing.T) {
 	// Setup
-	db, err := database.New()
+	db, err := database.Open()
 	if err != nil {
 		t.Fatal(err)
 	}

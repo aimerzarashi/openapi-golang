@@ -16,7 +16,7 @@ import (
 // Put is a function that handles the HTTP PUT request for updating an existing stock item.
 func Put(c echo.Context) error {
 	// Pre Process
-	db, err := database.New()
+	db, err := database.Open()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
