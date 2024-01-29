@@ -13,6 +13,15 @@ import (
 
 // PostStockItem is a function that handles the HTTP POST request for creating a new stock item.
 func Post(c echo.Context) error {
+	// Pre Process
+	db, err := database.New()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	defer db.Close()
+	repository := &repository.StockItem{DB: db}
+
+	// Validation
 	req := &oapicodegen.PostStockItemJSONRequestBody{}
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -21,22 +30,16 @@ func Post(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	db, err := database.New()
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-	defer db.Close()
-	repository := &repository.StockItem{DB: db}
-
+	// Main Process
 	reqDto := &stockitem.CreateRequestDto{
 		Name: req.Name,
 	}
-
 	resDto, err := stockitem.Create(reqDto, repository)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
+	// Post Process
 	res := &oapicodegen.Created{
 		Id: resDto.Id,
 	}

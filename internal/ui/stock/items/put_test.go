@@ -1,4 +1,4 @@
-package items
+package items_test
 
 import (
 	"openapi/internal/infra/env"

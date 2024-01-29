@@ -15,17 +15,19 @@ import (
 
 // Put is a function that handles the HTTP PUT request for updating an existing stock item.
 func Put(c echo.Context) error {
-	stockitemId := uuid.MustParse(c.Param("stockitemId"))
-	if stockitemId == uuid.Nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid stock item id")
-	}
-
+	// Pre Process
 	db, err := database.New()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	defer db.Close()
 	repository := &repository.StockItem{DB: db}
+
+	// Validation
+	stockitemId := uuid.MustParse(c.Param("stockitemId"))
+	if stockitemId == uuid.Nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid stock item id")
+	}
 
 	found, err := repository.Find(model.StockItemId(stockitemId))
 	if err != nil {
@@ -43,6 +45,7 @@ func Put(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	// Main Process
 	reqDto := &stockitem.UpdateRequestDto{
 		Id:   stockitemId,
 		Name: req.Name,
@@ -53,6 +56,7 @@ func Put(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
+	// Post Process
 	res := &oapicodegen.OK{}
 
 	return c.JSON(http.StatusOK, res)
