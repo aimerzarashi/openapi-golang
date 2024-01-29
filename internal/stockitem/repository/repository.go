@@ -11,7 +11,18 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-func Save(db *sql.DB, model *domain.StockItem) error {
+type IRepository interface {
+	Save(model *domain.StockItem) error
+	Get(stockItemId domain.StockItemId) (*domain.StockItem, error)
+	Find(stockItemId domain.StockItemId) (bool, error)
+}
+
+type Repository struct {
+	IRepository
+	*sql.DB
+}
+
+func (r *Repository) Save(model *domain.StockItem) error {
 
 	data := &sqlboiler.StockItem{
 		ID:   uuid.UUID(model.Id).String(),
@@ -20,13 +31,12 @@ func Save(db *sql.DB, model *domain.StockItem) error {
 
 	err := data.Upsert(
 		context.Background(),
-		db,
+		r.DB,
 		true,
 		[]string{"id"},
 		boil.Whitelist("name","deleted"),
 		boil.Infer(),
 	)
-
 	if err != nil {
 		return err
 	}
@@ -34,10 +44,10 @@ func Save(db *sql.DB, model *domain.StockItem) error {
 	return nil
 }
 
-func Get(db *sql.DB, stockItemId domain.StockItemId) (*domain.StockItem, error) {
+func (r *Repository) Get(stockItemId domain.StockItemId) (*domain.StockItem, error) {
 
 	id := uuid.UUID(stockItemId).String()
-	data, err := sqlboiler.FindStockItem(context.Background(), db, id)
+	data, err := sqlboiler.FindStockItem(context.Background(), r.DB, id)
 	if err != nil {
 		return &domain.StockItem{}, err
 	}
@@ -48,9 +58,9 @@ func Get(db *sql.DB, stockItemId domain.StockItemId) (*domain.StockItem, error) 
 }
 
 
-func Find(db *sql.DB, stockItemId domain.StockItemId) (bool, error) {
+func (r *Repository) Find(stockItemId domain.StockItemId) (bool, error) {
 	id := uuid.UUID(stockItemId).String()
-	found, err := sqlboiler.StockItemExists(context.Background(), db, id)
+	found, err := sqlboiler.StockItemExists(context.Background(), r.DB, id)
 	if err != nil {
 		return false, err
 	}

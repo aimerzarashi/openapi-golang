@@ -16,6 +16,7 @@ func TestUpdateSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
+	repository := &repository.Repository{DB: db}
 
 	// Given
 	beforeName := uuid.NewString()
@@ -25,7 +26,7 @@ func TestUpdateSuccess(t *testing.T) {
 		Name: beforeName,
 	}
 
-	resCreateDto, err := Create(reqCreateDto, db)
+	resCreateDto, err := Create(reqCreateDto, repository)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +37,7 @@ func TestUpdateSuccess(t *testing.T) {
 		Name: afterName,
 	}
 
-	resUpdateDto, err := Update(reqUpdateDto, db)
+	resUpdateDto, err := Update(reqUpdateDto, repository)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +47,7 @@ func TestUpdateSuccess(t *testing.T) {
 		t.Errorf("expected not empty, actual empty")
 	}
 
-	model, err := repository.Get(db, domain.StockItemId(resCreateDto.Id))
+	model, err := repository.Get(domain.StockItemId(resCreateDto.Id))
 	if err != nil {
 		t.Fatal(err)
 	}

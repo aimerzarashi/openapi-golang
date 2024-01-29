@@ -1,7 +1,7 @@
 package api
 
 import (
-	"openapi/internal/infra/environment"
+	"openapi/internal/infra/env"
 	oapicodegen "openapi/internal/infra/oapicodegen/stockitem"
 	"strings"
 	"testing"
@@ -29,7 +29,7 @@ func TestPostCreated(t *testing.T) {
 	postReqBodyJson, _ := json.Marshal(postReqBody)
 	postReq, err := http.NewRequest(
 		http.MethodPost,
-		environment.GetServiceUrl()+"/stock/items",
+		env.GetServiceUrl()+"/stock/items",
 		bytes.NewBuffer(postReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -67,7 +67,7 @@ func TestPostBadRequest1(t *testing.T) {
 	postReqBodyJson, _ := json.Marshal(postReqBody)
 	postReq, err := http.NewRequest(
 		http.MethodPost,
-		environment.GetServiceUrl()+"/stock/items",
+		env.GetServiceUrl()+"/stock/items",
 		bytes.NewBuffer(postReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -97,7 +97,7 @@ func TestPostBadRequest2(t *testing.T) {
 	postReqBodyJson, _ := json.Marshal(postReqBody)
 	postReq, err := http.NewRequest(
 		http.MethodPost,
-		environment.GetServiceUrl()+"/stock/items",
+		env.GetServiceUrl()+"/stock/items",
 		bytes.NewBuffer(postReqBodyJson))
 	if err != nil {
 		t.Fatal(err)

@@ -7,6 +7,7 @@ import (
 
 	"openapi/internal/infra/database"
 	oapicodegen "openapi/internal/infra/oapicodegen/stockitem"
+	"openapi/internal/stockitem/repository"
 	"openapi/internal/stockitem/usecase"
 )
 
@@ -25,12 +26,13 @@ func Post(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	defer db.Close()
+	repository := &repository.Repository{DB: db}
 
 	reqDto := &usecase.CreateRequestDto{
 		Name: req.Name,
 	}
 
-	resDto, err := usecase.Create(reqDto, db)
+	resDto, err := usecase.Create(reqDto, repository)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

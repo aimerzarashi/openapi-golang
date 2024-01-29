@@ -1,8 +1,6 @@
 package usecase
 
 import (
-	"database/sql"
-
 	"github.com/google/uuid"
 
 	"openapi/internal/stockitem/domain"
@@ -17,12 +15,12 @@ type CreateResponseDto struct {
 	Id uuid.UUID
 }
 
-func Create(req *CreateRequestDto, db *sql.DB) (*CreateResponseDto, error) {
+func Create(req *CreateRequestDto, r repository.IRepository) (*CreateResponseDto, error) {
 
 	id := domain.StockItemId(uuid.New())
 	model := domain.NewStockItem(id, req.Name)
 
-	err := repository.Save(db, model)
+	err := r.Save(model)
 	if err != nil {
 		return nil, err
 	}

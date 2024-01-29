@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"openapi/internal/infra/database"
+	"openapi/internal/stockitem/repository"
 	"testing"
 
 	"github.com/google/uuid"
@@ -15,13 +16,14 @@ func TestDeleteSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
+	repository := &repository.Repository{DB: db}
 
 	// Given
 	reqCreateDto := &CreateRequestDto{
 		Name: uuid.NewString(),
 	}
 
-	resCreateDto, err := Create(reqCreateDto, db)
+	resCreateDto, err := Create(reqCreateDto, repository)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +33,7 @@ func TestDeleteSuccess(t *testing.T) {
 		Id: resCreateDto.Id,
 	}
 
-	resDeleteDto, err := Delete(reqDeleteDto, db)
+	resDeleteDto, err := Delete(reqDeleteDto, repository)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -17,6 +17,7 @@ func TestCreateSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
+	repository := &repository.Repository{DB: db}
 	
 	// Given
 	reqDto := &CreateRequestDto{
@@ -24,7 +25,7 @@ func TestCreateSuccess(t *testing.T) {
 	}
 
 	// When	
-	resDto, err := Create(reqDto, db)
+	resDto, err := Create(reqDto, repository)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +35,7 @@ func TestCreateSuccess(t *testing.T) {
 		t.Errorf("expected %s, got %s", uuid.Nil, resDto.Id)
 	}
 
-	model, err := repository.Get(db, domain.StockItemId(resDto.Id))
+	model, err := repository.Get(domain.StockItemId(resDto.Id))
 	if err != nil {
 		t.Fatal(err)
 	}

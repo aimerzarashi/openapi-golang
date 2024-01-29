@@ -1,7 +1,7 @@
 package api
 
 import (
-	"openapi/internal/infra/environment"
+	"openapi/internal/infra/env"
 	oapicodegen "openapi/internal/infra/oapicodegen/hello"
 	"testing"
 
@@ -13,7 +13,7 @@ import (
 )
 
 func TestGetSuccess(t *testing.T) {
-	res, err := http.Get(environment.GetServiceUrl()+"")
+	res, err := http.Get(env.GetServiceUrl()+"")
 	if err != nil {
 		t.Fatal(err)
 	}

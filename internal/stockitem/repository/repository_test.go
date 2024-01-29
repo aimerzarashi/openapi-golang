@@ -19,6 +19,7 @@ func TestCreateSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
+	r := &Repository{DB: db}
 
 	// Given
 	generatedUuid := uuid.New()
@@ -26,8 +27,9 @@ func TestCreateSuccess(t *testing.T) {
 	name := uuid.NewString()
 	model := domain.NewStockItem(id, name)
 	currentDateTime := time.Now()
+
 	// When
-	err = Save(db, model)
+	err = r.Save(model)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,6 +64,7 @@ func TestUpdateSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
+	r := &Repository{DB: db}
 
 	// Given
 	generatedUuid := uuid.New()
@@ -71,12 +74,12 @@ func TestUpdateSuccess(t *testing.T) {
 	model := domain.NewStockItem(id, beforeName)
 	currentDateTime := time.Now()
 
-	err = Save(db, model)
+	err = r.Save(model)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	beforeModel, err := Get(db, id)
+	beforeModel, err := r.Get(id)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,12 +90,12 @@ func TestUpdateSuccess(t *testing.T) {
 
 	// When
 	beforeModel.Name = afterName
-	err = Save(db, beforeModel)
+	err = r.Save( beforeModel)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	afterModel, err := Get(db, id)
+	afterModel, err := r.Get(id)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,6 +130,7 @@ func TestFindSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
+	r := &Repository{DB: db}
 
 	// Given
 	generatedUuid := uuid.New()
@@ -134,13 +138,13 @@ func TestFindSuccess(t *testing.T) {
 	name := uuid.NewString()
 	model := domain.NewStockItem(id, name)
 
-	err = Save(db, model)
+	err = r.Save( model)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// When
-	found, err := Find(db, id)
+	found, err := r.Find( id)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -160,13 +164,14 @@ func TestFindFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
+	r := &Repository{DB: db}
 
 	// Given
 	generatedUuid := uuid.New()
 	id := domain.StockItemId(generatedUuid)
 
 	// When
-	found, err := Find(db, id)
+	found, err := r.Find(id)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -25,8 +25,9 @@ func Delete(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	defer db.Close()
+	repository := &repository.Repository{DB: db}
 
-	found, err := repository.Find(db, domain.StockItemId(stockitemId))
+	found, err := repository.Find(domain.StockItemId(stockitemId))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -38,7 +39,7 @@ func Delete(c echo.Context) error {
 		Id:   stockitemId,
 	}
 
-	_, err = usecase.Delete(reqDto, db)
+	_, err = usecase.Delete(reqDto, repository)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

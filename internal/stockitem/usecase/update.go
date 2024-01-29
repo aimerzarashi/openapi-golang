@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"database/sql"
 	"openapi/internal/stockitem/repository"
 
 	"openapi/internal/stockitem/domain"
@@ -16,17 +15,17 @@ type UpdateRequestDto struct {
 
 type UpdateResponseDto struct {}
 
-func Update(req *UpdateRequestDto, db *sql.DB) (*UpdateResponseDto, error) {
+func Update(req *UpdateRequestDto, r repository.IRepository) (*UpdateResponseDto, error) {
 
 	id := domain.StockItemId(req.Id)
-	model, err := repository.Get(db, id)
+	model, err := r.Get( id)
 	if err != nil {
 		return &UpdateResponseDto{}, err
 	}
 
 	model.Name = req.Name
 
-	err = repository.Save(db, model)
+	err = r.Save(model)
 	if err != nil {
 		return &UpdateResponseDto{}, err
 	}

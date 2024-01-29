@@ -1,7 +1,7 @@
 package api
 
 import (
-	"openapi/internal/infra/environment"
+	"openapi/internal/infra/env"
 	oapicodegen "openapi/internal/infra/oapicodegen/stockitem"
 	"testing"
 
@@ -29,7 +29,7 @@ func TestDeleteOk(t *testing.T) {
 	postReqBodyJson, _ := json.Marshal(postReqBody)
 	postReq, err := http.NewRequest(
 		http.MethodPost,
-		"http://localhost:1323/stock/items",
+		env.GetServiceUrl()+"/stock/items",
 		bytes.NewBuffer(postReqBodyJson))
 	if err != nil {
 		t.Fatal(err)
@@ -55,7 +55,7 @@ func TestDeleteOk(t *testing.T) {
 	// When
 	deleteReq, err := http.NewRequest(
 		http.MethodDelete,
-		"http://localhost:1323/stock/items/"+postResBody.Id.String(),
+		env.GetServiceUrl()+"/stock/items/"+postResBody.Id.String(),
 		nil,
 	)
 	if err != nil {
@@ -84,7 +84,7 @@ func TestDeleteNotFound(t *testing.T) {
 
 	deleteReq, err := http.NewRequest(
 		http.MethodDelete,
-		environment.GetServiceUrl()+"/stock/items/"+uuid.NewString(),
+		env.GetServiceUrl()+"/stock/items/"+uuid.NewString(),
 		nil,
 	)
 	if err != nil {
