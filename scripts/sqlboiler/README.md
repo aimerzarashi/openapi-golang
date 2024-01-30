@@ -1,1 +1,1 @@
-rm -rf ./../../internal/infra/sqlboiler && docker run --rm -v ./:/sqlboiler --network deployments_default curvegrid/sqlboiler:psql psql --output ./sqlboiler --pkgname sqlboiler && sudo chown -R k8suser ./sqlboiler && mv ./sqlboiler ./../../internal/infra && go mod tidy
+rm -rf ./../../internal/infrastructure/sqlboiler && docker run --rm -v ./:/sqlboiler --network deployments_default curvegrid/sqlboiler:psql psql --output ./sqlboiler --pkgname sqlboiler && sudo chown -R k8suser ./sqlboiler && mv ./sqlboiler ./../../internal/infrastructure && go mod tidy

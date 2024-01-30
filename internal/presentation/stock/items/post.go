@@ -5,10 +5,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"openapi/internal/application/stockitem"
-	"openapi/internal/domain/repository"
-	"openapi/internal/infra/database"
-	oapicodegen "openapi/internal/infra/oapicodegen/stockitem"
+	"openapi/internal/application/stock/item"
+	domain "openapi/internal/domain/stock/item"
+	"openapi/internal/infrastructure/database"
+	oapicodegen "openapi/internal/infrastructure/oapicodegen/stock"
 )
 
 // PostStockItem is a function that handles the HTTP POST request for creating a new stock item.
@@ -19,7 +19,7 @@ func Post(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	defer db.Close()
-	repository := &repository.StockItem{DB: db}
+	repository := &domain.Repository{Db: db}
 
 	// Validation
 	req := &oapicodegen.PostStockItemJSONRequestBody{}
@@ -31,10 +31,10 @@ func Post(c echo.Context) error {
 	}
 
 	// Main Process
-	reqDto := &stockitem.CreateRequestDto{
+	reqDto := &item.CreateRequestDto{
 		Name: req.Name,
 	}
-	resDto, err := stockitem.Create(reqDto, repository)
+	resDto, err := item.Create(reqDto, repository)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

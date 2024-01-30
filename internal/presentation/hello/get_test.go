@@ -1,8 +1,8 @@
 package api
 
 import (
-	"openapi/internal/infra/env"
-	oapicodegen "openapi/internal/infra/oapicodegen/hello"
+	"openapi/internal/infrastructure/env"
+	oapicodegen "openapi/internal/infrastructure/oapicodegen/hello"
 	"testing"
 
 	cmp "github.com/google/go-cmp/cmp"

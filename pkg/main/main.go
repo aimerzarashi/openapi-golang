@@ -9,8 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	hello "openapi/internal/ui/hello"
-	stockitem "openapi/internal/ui/stock/items"
+	hello "openapi/internal/presentation/hello"
+	stockitem "openapi/internal/presentation/stock/items"
 )
 
 

@@ -2,7 +2,7 @@ package database
 
 import (
 	"database/sql"
-	"openapi/internal/infra/env"
+	"openapi/internal/infrastructure/env"
 
 	_ "github.com/lib/pq"
 )
