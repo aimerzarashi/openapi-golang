@@ -1,4 +1,4 @@
-package api
+package hello_test
 
 import (
 	"openapi/internal/infrastructure/env"
