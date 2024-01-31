@@ -21,11 +21,13 @@ func Post(c echo.Context) error {
 	defer db.Close()
 	repository := &domain.Repository{Db: db}
 
-	// Validation
+	// Binding
 	req := &oapicodegen.PostStockItemJSONRequestBody{}
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+
+	// Validation
 	if err := c.Validate(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

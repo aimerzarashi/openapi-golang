@@ -22,8 +22,10 @@ func Put(c echo.Context) error {
 	defer db.Close()
 	repository := &domain.Repository{Db: db}
 
-	// Validation
+	// Binding
 	stockitemId := uuid.MustParse(c.Param("stockitemId"))
+
+	// Validation
 	if stockitemId == uuid.Nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid stock item id")
 	}
