@@ -44,6 +44,7 @@ func Post(c echo.Context) error {
 	// Post Process
 	res := &oapicodegen.Created{
 		Id: resDto.Id,
+		Name: resDto.Name,
 	}
 	return c.JSON(http.StatusCreated, res)
 }

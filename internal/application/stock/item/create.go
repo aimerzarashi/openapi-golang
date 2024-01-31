@@ -12,6 +12,7 @@ type CreateRequestDto struct {
 
 type CreateResponseDto struct {
 	Id uuid.UUID
+	Name string	
 }
 
 func Create(req *CreateRequestDto, r item.IRepository) (*CreateResponseDto, error) {
@@ -25,5 +26,6 @@ func Create(req *CreateRequestDto, r item.IRepository) (*CreateResponseDto, erro
 
 	return &CreateResponseDto{
 		Id: a.GetId().UUID(),
+		Name: a.GetName(),
 	}, nil
 }

@@ -11,7 +11,10 @@ type UpdateRequestDto struct {
 	Name string	
 }
 
-type UpdateResponseDto struct {}
+type UpdateResponseDto struct {
+	Id   uuid.UUID
+	Name string	
+}
 
 func Update(req *UpdateRequestDto, r item.IRepository) (*UpdateResponseDto, error) {
 
@@ -28,5 +31,8 @@ func Update(req *UpdateRequestDto, r item.IRepository) (*UpdateResponseDto, erro
 		return &UpdateResponseDto{}, err
 	}
 	
-	return &UpdateResponseDto{}, nil
+	return &UpdateResponseDto{
+		Id: a.GetId().UUID(),
+		Name: a.GetName(),
+	}, nil
 }

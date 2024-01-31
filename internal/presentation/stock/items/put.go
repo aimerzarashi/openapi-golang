@@ -53,13 +53,16 @@ func Put(c echo.Context) error {
 		Name: req.Name,
 	}
 
-	_, err = item.Update(reqDto, repository)
+	resDto, err := item.Update(reqDto, repository)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	// Post Process
-	res := &oapicodegen.OK{}
+	res := &oapicodegen.OK{
+		Id: resDto.Id,
+		Name: resDto.Name,
+	}
 
 	return c.JSON(http.StatusOK, res)
 }
