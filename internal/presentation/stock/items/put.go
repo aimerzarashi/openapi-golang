@@ -25,6 +25,11 @@ func Put(c echo.Context) error {
 	// Binding
 	stockitemId := uuid.MustParse(c.Param("stockitemId"))
 
+	req := &oapicodegen.PutStockItemJSONRequestBody{}
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
 	// Validation
 	if stockitemId == uuid.Nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid stock item id")
@@ -38,10 +43,6 @@ func Put(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "stock item not found")
 	}
 
-	req := &oapicodegen.PutStockItemJSONRequestBody{}
-	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
 	if err := c.Validate(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
