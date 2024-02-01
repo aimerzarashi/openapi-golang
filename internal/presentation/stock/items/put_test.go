@@ -75,6 +75,7 @@ func TestPutNotFound(t *testing.T) {
 	rh := RequestHelper{
 		client: &http.Client{},
 	}
+
 	name := uuid.NewString()
 
 	putRes, err := rh.Put(
@@ -151,8 +152,24 @@ func TestPutBadRequest(t *testing.T) {
 	if putResZeroLen.StatusCode != http.StatusBadRequest {
 		t.Errorf("want %d, got %d", http.StatusBadRequest, putResZeroLen.StatusCode)
 	}
+
+	putResBodyZeroLen, err := rch.AsBadRequest(putResZeroLen)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if putResBodyZeroLen.Message == "" {
+		t.Errorf("expected not empty, actual empty")
+	}
 	
 	if putResOverLen.StatusCode != http.StatusBadRequest {
 		t.Errorf("want %d, got %d", http.StatusBadRequest, putResOverLen.StatusCode)
+	}
+
+	putResBodyOverLen, err := rch.AsBadRequest(putResOverLen)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if putResBodyOverLen.Message == "" {
+		t.Errorf("expected not empty, actual empty")
 	}
 }
