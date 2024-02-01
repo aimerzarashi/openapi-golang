@@ -27,11 +27,12 @@ paths:
       description: Update Stock Item
       operationId: PutStockItem
       parameters:
-        - name: stockitemId
-          in: path
+        - in: path
+          name: stockitemId
           required: true
           schema:
-            $ref: "#/components/schemas/StockItemId"
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -52,11 +53,12 @@ paths:
       description: Delete Stock Item
       operationId: DeleteStockItem
       parameters:
-        - name: stockitemId
-          in: path
+        - in: path
+          name: stockitemId
           required: true
           schema:
-            $ref: "#/components/schemas/StockItemId"
+            type: string
+            format: uuid
       responses:
         "200":
           $ref: "#/components/responses/OK"
@@ -118,7 +120,6 @@ components:
       properties:
         name:
           type: string
-          minimum: 1
           maximum: 100
           x-oapi-codegen-extra-tags:
-            validate: required,gte=1,lt=100
+            validate: required,lt=100

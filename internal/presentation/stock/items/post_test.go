@@ -1,41 +1,32 @@
 package items_test
 
 import (
-	"openapi/internal/infrastructure/env"
 	oapicodegen "openapi/internal/infrastructure/oapicodegen/stock"
 	"strings"
 	"testing"
-
-	"bytes"
 
 	_ "github.com/lib/pq"
 
 	"github.com/google/uuid"
 
-	"encoding/json"
-	"io"
 	"net/http"
 )
 
 func TestPostCreated(t *testing.T) {
 	// Setup
-	client := http.Client{}
+	rh := RequestHelper{
+		client: &http.Client{},
+	}
+	rch := ResponseConvertHelper{}
+
 	name := uuid.NewString()
 
 	// When
-	postReqBody := &oapicodegen.PostStockItemJSONRequestBody{
-		Name: name,
-	}
-	postReqBodyJson, _ := json.Marshal(postReqBody)
-	postReq, err := http.NewRequest(
-		http.MethodPost,
-		env.GetServiceUrl()+"/stock/items",
-		bytes.NewBuffer(postReqBodyJson))
-	if err != nil {
-		t.Fatal(err)
-	}
-	postReq.Header.Set("Content-Type", "application/json")
-	postRes, err := client.Do(postReq)
+	postRes, err := rh.Post(
+		&oapicodegen.PostStockItemJSONRequestBody{
+			Name: name,
+		},
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,71 +37,56 @@ func TestPostCreated(t *testing.T) {
 		t.Errorf("want %d, got %d", http.StatusCreated, postRes.StatusCode)
 	}
 
-	postResBodyByte, _ := io.ReadAll(postRes.Body)
-	postResBody := &oapicodegen.Created{}
-	json.Unmarshal(postResBodyByte, &postResBody)
+	postResBody, err := rch.AsCreated(postRes)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if postResBody.Id == uuid.Nil {
 		t.Errorf("expected not empty, actual empty")
 	}
 
+	if postResBody.Name != name {
+		t.Errorf("expected %s, actual %s", name, postResBody.Name)
+	}
 }
 
-func TestPostBadRequest1(t *testing.T) {
+func TestPostBadRequest(t *testing.T) {
 	// Setup
-	client := http.Client{}
-	name := strings.Repeat("a", 101)
+	rh := RequestHelper{
+		client: &http.Client{},
+	}
+	
+	zeroLenName := ""
+	overLenName := strings.Repeat("a", 101)
 
 	// When
-	postReqBody := &oapicodegen.PostStockItemJSONRequestBody{
-		Name: name,
-	}
-	postReqBodyJson, _ := json.Marshal(postReqBody)
-	postReq, err := http.NewRequest(
-		http.MethodPost,
-		env.GetServiceUrl()+"/stock/items",
-		bytes.NewBuffer(postReqBodyJson))
+	postResZeroLen, err := rh.Post(
+		&oapicodegen.PostStockItemJSONRequestBody{
+			Name: zeroLenName,
+		},
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
-	postReq.Header.Set("Content-Type", "application/json")
-	postRes, err := client.Do(postReq)
+	defer postResZeroLen.Body.Close()
+
+	postResOverLen, err := rh.Post(
+		&oapicodegen.PostStockItemJSONRequestBody{
+			Name: overLenName,
+		},
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer postRes.Body.Close()
+	defer postResOverLen.Body.Close()
 
 	// Then
-	if postRes.StatusCode != http.StatusBadRequest {
-		t.Errorf("want %d, got %d", http.StatusBadRequest, postRes.StatusCode)
+	if postResZeroLen.StatusCode != http.StatusBadRequest {
+		t.Errorf("want %d, got %d", http.StatusBadRequest, postResZeroLen.StatusCode)
 	}	
-}
 
-func TestPostBadRequest2(t *testing.T) {
-	// Setup
-	client := http.Client{}
-	name := ""
-
-	// When
-	postReqBody := &oapicodegen.PostStockItemJSONRequestBody{
-		Name: name,
-	}
-	postReqBodyJson, _ := json.Marshal(postReqBody)
-	postReq, err := http.NewRequest(
-		http.MethodPost,
-		env.GetServiceUrl()+"/stock/items",
-		bytes.NewBuffer(postReqBodyJson))
-	if err != nil {
-		t.Fatal(err)
-	}
-	postReq.Header.Set("Content-Type", "application/json")
-	postRes, err := client.Do(postReq)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer postRes.Body.Close()
-
-	// Then
-	if postRes.StatusCode != http.StatusBadRequest {
-		t.Errorf("want %d, got %d", http.StatusBadRequest, postRes.StatusCode)
+	if postResOverLen.StatusCode != http.StatusBadRequest {
+		t.Errorf("want %d, got %d", http.StatusBadRequest, postResOverLen.StatusCode)
 	}	
 }

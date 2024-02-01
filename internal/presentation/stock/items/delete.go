@@ -10,10 +10,12 @@ import (
 	domain "openapi/internal/domain/stock/item"
 	"openapi/internal/infrastructure/database"
 	oapicodegen "openapi/internal/infrastructure/oapicodegen/stock"
+
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Delete is a function that handles the HTTP DELETE request for deleting an existing stock item.
-func Delete(c echo.Context) error {
+func DeleteStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error {
 	// Pre Process
 	db, err := database.Open()
 	if err != nil {
@@ -21,9 +23,6 @@ func Delete(c echo.Context) error {
 	}
 	defer db.Close()
 	repository := &domain.Repository{Db: db}
-
-	// Binding
-	stockitemId := uuid.MustParse(c.Param("stockitemId"))
 
 	// Validation
 	if stockitemId == uuid.Nil {
@@ -50,5 +49,5 @@ func Delete(c echo.Context) error {
 	// Post Process
 	res := &oapicodegen.OK{}
 
-	return c.JSON(http.StatusOK, res)
+	return ctx.JSON(http.StatusOK, res)
 }

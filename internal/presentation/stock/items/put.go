@@ -10,10 +10,12 @@ import (
 	domain "openapi/internal/domain/stock/item"
 	"openapi/internal/infrastructure/database"
 	oapicodegen "openapi/internal/infrastructure/oapicodegen/stock"
+
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Put is a function that handles the HTTP PUT request for updating an existing stock item.
-func Put(c echo.Context) error {
+func PutStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error {
 	// Pre Process
 	db, err := database.Open()
 	if err != nil {
@@ -23,10 +25,8 @@ func Put(c echo.Context) error {
 	repository := &domain.Repository{Db: db}
 
 	// Binding
-	stockitemId := uuid.MustParse(c.Param("stockitemId"))
-
 	req := &oapicodegen.PutStockItemJSONRequestBody{}
-	if err := c.Bind(&req); err != nil {
+	if err := ctx.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
@@ -43,7 +43,7 @@ func Put(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "stock item not found")
 	}
 
-	if err := c.Validate(req); err != nil {
+	if err := ctx.Validate(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
@@ -64,5 +64,5 @@ func Put(c echo.Context) error {
 		Name: resDto.Name,
 	}
 
-	return c.JSON(http.StatusOK, res)
+	return ctx.JSON(http.StatusOK, res)
 }

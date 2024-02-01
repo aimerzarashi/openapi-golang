@@ -30,7 +30,7 @@ type NewStockItem = StockItemName
 // StockItem defines model for StockItem.
 type StockItem struct {
 	Id   openapi_types.UUID `json:"id" validate:"required"`
-	Name string             `json:"name" validate:"required,gte=1,lt=100"`
+	Name string             `json:"name" validate:"required,lt=100"`
 }
 
 // StockItemId defines model for StockItemId.
@@ -40,7 +40,7 @@ type StockItemId struct {
 
 // StockItemName defines model for StockItemName.
 type StockItemName struct {
-	Name string `json:"name" validate:"required,gte=1,lt=100"`
+	Name string `json:"name" validate:"required,lt=100"`
 }
 
 // BadRequest defines model for BadRequest.
@@ -65,10 +65,10 @@ type ServerInterface interface {
 	PostStockItem(ctx echo.Context) error
 	// Delete Stock Item
 	// (DELETE /stock/items/{stockitemId})
-	DeleteStockItem(ctx echo.Context, stockitemId StockItemId) error
+	DeleteStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error
 	// Update Stock Item
 	// (PUT /stock/items/{stockitemId})
-	PutStockItem(ctx echo.Context, stockitemId StockItemId) error
+	PutStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -89,7 +89,7 @@ func (w *ServerInterfaceWrapper) PostStockItem(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteStockItem(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "stockitemId" -------------
-	var stockitemId StockItemId
+	var stockitemId openapi_types.UUID
 
 	err = runtime.BindStyledParameterWithLocation("simple", false, "stockitemId", runtime.ParamLocationPath, ctx.Param("stockitemId"), &stockitemId)
 	if err != nil {
@@ -105,7 +105,7 @@ func (w *ServerInterfaceWrapper) DeleteStockItem(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) PutStockItem(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "stockitemId" -------------
-	var stockitemId StockItemId
+	var stockitemId openapi_types.UUID
 
 	err = runtime.BindStyledParameterWithLocation("simple", false, "stockitemId", runtime.ParamLocationPath, ctx.Param("stockitemId"), &stockitemId)
 	if err != nil {
@@ -154,17 +154,17 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/8xVW0/bTBD9K9Z83+Mmdgp9scRD6UWKkACB+oR4WNmTsK33wu6YgqL979WsQ2LjlItA",
-	"LW/Z2dkzx+fMTFZQWe2sQUMByhV4DM6agOlwKOszvG4xEJ8qawhN+imda1QlSVmT/wjWcCxUV6gl//rf",
-	"4wJK+C/fQufdbci3kGfrShBjFFBjqLxyjAglF87uK0cBnz1KwvrNSJyTrX7OCfWu2vfFooC5IfRGNufo",
-	"b9B/9d56hh7m3ydlXVbWpUUBx5a+2dbU4yfHlrLuKgo4Ofo733VyBBxc5w7t3XhRrsB569CT6lpAYwhy",
-	"mS7oziGUEMgrs0xYHq9b5dmYi03iJX85/tpS4S9qmpMFlBfPZH8sNUJkoNegzFndx3MHPIcF5/VYC5Vi",
-	"C+u1JCihbVUN4oEsAm4nVjo1qWyNSzQTvCUvJySXCeJGNqqWxA824sWHUqoaBlySHiM2Zh3V8lbpVkM5",
-	"KwoBWpn16fXMxJLwYCYaOpgVxZhmInCZwsosbGoRRQ0jJOoZc88+nc5BwA360LXhbFpMC+5769BIp6CE",
-	"vWkx3QMBTtJV4pIHfp8rQp3OznYbaNegZttakEB9mhz2D05toK3BHXsMdGjruzebuWEPDTUi32IK9Hbq",
-	"h2L2J8hNXt7bQftF8XR+b1FHAR+f82TXbkv7odVa+rud+vJ935t8lQ4qzUvsHGqQcOzVlxR/zKsuo++W",
-	"k15qJPQhDb1iHG4REOveh151eKi7eOnO5H0RL0duPUNK3qxs1P7TqZv/hLezaSxtFODaHQPz3dVPDUxL",
-	"78KB9zCmLzD+xRP6r3pl3AExxvg7AAD//6rz4Q0ECgAA",
+	"H4sIAAAAAAAC/8xUTW/bMAz9Kwa3oxI7a3cxsMO6DyAo0BYtdip6EGwm1WZ9VKK7BIH++yA5H3acJSka",
+	"rLtZFPX4/B7JBRRaGq1QkYN8ARad0cphPFzw8hafanQUToVWhCp+cmMqUXASWqU/nVYh5opHlDx8vbc4",
+	"gRzepRvotLl16QbydlkJvPcMSnSFFSYgQh4KJ6vKnsEXi5ywPBmJO9LFrzGh3FV7VcwzGCtCq3h1h/YZ",
+	"7TdrtQ3Q3fxVUtJkJU2aZ3Cl6buuVdl/cqUpaa48g+vLf/Nf15cQgsvcrr1rL/IFGKsNWhJNC0h0jk/j",
+	"Bc0NQg6OrFDTiGXxqRY2GHO/TnwIf46/N1TCH1XV9QTy+yPZX3GJ4APQa1DGQd39uR2e3YLjsq+FiLGJ",
+	"tpIT5FDXogS2JQuD2UBzIwaFLnGKaoAzsnxAfBohnnklSk7hwVo8vy2lKKHDJerRY6OWUclnQtYS8lGW",
+	"vZ4Nq+jTKMv6pGK5hxgWaqJjQwiqwttINAlMk883Y2DwjNY1TTcaZsMsdLk2qLgRkMPZMBueAQPD6TGy",
+	"SF14nwpCGc9GN/tm11gmm1oQQW2ck+AW3GhHGzsb9ujoQpfzk01Yt2O6GpGtMQZaG/RDNvob5DovbW2c",
+	"8yw7nN9ay57Bx2Oe7NpkcRvUUnI736lvuG97ky7iQcTp8I1DFRL2vfoa4/u8ajLabhluuURC6+KIi4AT",
+	"WgTYstOhVR22dWct//YPqPcPPY+OEDBsz2DP+eHU9d4/nTl9QT0DU+8Ykx+mPDQmNb2h7v/DSL7A7hdP",
+	"41t1SN93773/EwAA//+hNCuL3gkAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

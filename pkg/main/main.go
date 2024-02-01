@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	hello "openapi/internal/presentation/hello"
-	stockitem "openapi/internal/presentation/stock/items"
+	stock "openapi/internal/presentation/stock"
 )
 
 
@@ -34,9 +34,8 @@ func main() {
 	
   e.Validator = &CustomValidator{validator: validator.New()}
 
-	e.GET("/", hello.Get)
-	e.POST("/stock/items", stockitem.Post)
-	e.PUT("/stock/items/:stockitemId", stockitem.Put)
-	e.DELETE("/stock/items/:stockitemId", stockitem.Delete)
+	hello.RegisterHandlers(e, hello.New())
+	stock.RegisterHandlers(e, stock.New())
+
 	e.Logger.Fatal(e.Start(":1323"))
 }
