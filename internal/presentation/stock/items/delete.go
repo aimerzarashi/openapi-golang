@@ -9,7 +9,6 @@ import (
 	"openapi/internal/application/stock/item"
 	domain "openapi/internal/domain/stock/item"
 	"openapi/internal/infrastructure/database"
-	oapicodegen "openapi/internal/infrastructure/oapicodegen/stock"
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -41,13 +40,10 @@ func DeleteStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error {
 	reqDto := &item.DeleteRequestDto{
 		Id:   stockitemId,
 	}
-	_, err = item.Delete(reqDto, repository)
-	if err != nil {
+	if err := item.Delete(reqDto, repository); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	// Post Process
-	res := &oapicodegen.OK{}
-
-	return ctx.JSON(http.StatusOK, res)
+	return ctx.JSON(http.StatusOK, nil)
 }

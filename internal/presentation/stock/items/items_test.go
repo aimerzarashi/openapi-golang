@@ -91,18 +91,6 @@ func (h *ResponseConvertHelper) AsCreated(res *http.Response) (*oapicodegen.Crea
 	return resBody, nil
 }
 
-func (h *ResponseConvertHelper) AsOk(res *http.Response) (*oapicodegen.OK, error) {
-	resBodyByte, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	resBody := &oapicodegen.OK{}
-	json.Unmarshal(resBodyByte, &resBody)
-
-	return resBody, nil
-}
-
 func (h *ResponseConvertHelper) AsBadRequest(res *http.Response) (*oapicodegen.BadRequestResponse, error) {
 	resBodyByte, err := io.ReadAll(res.Body)
 	if err != nil {

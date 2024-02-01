@@ -11,28 +11,19 @@ type UpdateRequestDto struct {
 	Name string	
 }
 
-type UpdateResponseDto struct {
-	Id   uuid.UUID
-	Name string	
-}
-
-func Update(req *UpdateRequestDto, r item.IRepository) (*UpdateResponseDto, error) {
-
+func Update(req *UpdateRequestDto, r item.IRepository) error {
 	id := item.Id(req.Id)
 	a, err := r.Get( id)
 	if err != nil {
-		return &UpdateResponseDto{}, err
+		return err
 	}
 
 	a.ChangeName(req.Name)
 
 	err = r.Save(a)
 	if err != nil {
-		return &UpdateResponseDto{}, err
+		return err
 	}
 	
-	return &UpdateResponseDto{
-		Id: a.GetId().UUID(),
-		Name: a.GetName(),
-	}, nil
+	return nil
 }

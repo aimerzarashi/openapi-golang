@@ -53,16 +53,10 @@ func PutStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error {
 		Name: req.Name,
 	}
 
-	resDto, err := item.Update(reqDto, repository)
-	if err != nil {
+	if err := item.Update(reqDto, repository); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	// Post Process
-	res := &oapicodegen.OK{
-		Id: resDto.Id,
-		Name: resDto.Name,
-	}
-
-	return ctx.JSON(http.StatusOK, res)
+	return ctx.JSON(http.StatusOK, nil)
 }

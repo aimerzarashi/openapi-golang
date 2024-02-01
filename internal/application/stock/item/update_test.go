@@ -37,22 +37,18 @@ func TestUpdateSuccess(t *testing.T) {
 		Name: afterName,
 	}
 
-	resUpdateDto, err := item.Update(reqUpdateDto, repository)
+	err = item.Update(reqUpdateDto, repository)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// Then
-	if resUpdateDto == nil {
-		t.Errorf("expected not empty, actual empty")
-	}
-
-	model, err := repository.Get(domain.Id(resCreateDto.Id))
+	a, err := repository.Get(domain.Id(resCreateDto.Id))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if model.GetName() != afterName {
-		t.Errorf("expected %s, got %s", afterName, model.GetName())
+	if a.GetName() != afterName {
+		t.Errorf("expected %s, got %s", afterName, a.GetName())
 	}
 }

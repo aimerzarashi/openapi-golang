@@ -45,10 +45,6 @@ func TestPostCreated(t *testing.T) {
 	if postResBody.Id == uuid.Nil {
 		t.Errorf("expected not empty, actual empty")
 	}
-
-	if postResBody.Name != name {
-		t.Errorf("expected %s, actual %s", name, postResBody.Name)
-	}
 }
 
 func TestPostBadRequest(t *testing.T) {

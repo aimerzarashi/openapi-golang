@@ -42,9 +42,6 @@ func PostStockItem(ctx echo.Context) error {
 	}
 
 	// Post Process
-	res := &oapicodegen.Created{
-		Id: resDto.Id,
-		Name: resDto.Name,
-	}
+	res := &oapicodegen.Created{Id: resDto.Id}
 	return ctx.JSON(http.StatusCreated, res)
 }

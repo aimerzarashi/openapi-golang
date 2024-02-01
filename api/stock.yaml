@@ -69,18 +69,14 @@ paths:
 
 components:
   responses:
-    OK:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/StockItem"
     Created:
       description: Created
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/StockItem"
+            $ref: "#/components/schemas/StockItemId"
+    OK:
+      description: OK
     BadRequest:
       description: Bad Request
       content:
@@ -98,10 +94,6 @@ components:
       properties:
         message:
           type: string
-    StockItem:
-      allOf:
-        - $ref: "#/components/schemas/StockItemId"
-        - $ref: "#/components/schemas/NewStockItem"
     NewStockItem:
       allOf:
         - $ref: "#/components/schemas/StockItemName"

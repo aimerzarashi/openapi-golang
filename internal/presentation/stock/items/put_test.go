@@ -53,19 +53,10 @@ func TestPutOk(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer putRes.Body.Close()
-
-	putResBody, err := rch.AsOk(putRes)
-	if err != nil {
-		t.Fatal(err)
-	}
 	
 	// Then
 	if putRes.StatusCode != http.StatusOK {
 		t.Errorf("want %d, got %d", http.StatusOK, putRes.StatusCode)
-	}
-
-	if putResBody.Name != afterName {
-		t.Errorf("expected %s, actual %s", afterName, putResBody.Name)
 	}
 }
 
