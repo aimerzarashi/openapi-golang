@@ -19,6 +19,17 @@ func PostStockLocation(ctx echo.Context) error {
 	}
 	defer db.Close()
 
+	// Binding
+	req := &oapicodegen.PostStockLocationJSONRequestBody{}
+	if err := ctx.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Precondition Validation
+	if err := ctx.Validate(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
 	// Postprocess
 	res := &oapicodegen.Created{Id: uuid.New()}
 
