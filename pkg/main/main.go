@@ -32,7 +32,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	
-  e.Validator = &CustomValidator{validator: validator.New()}
+	e.Validator = &CustomValidator{validator: validator.New()}
 
 	hello.RegisterHandlers(e, hello.New())
 	stock.RegisterHandlers(e, stock.New())

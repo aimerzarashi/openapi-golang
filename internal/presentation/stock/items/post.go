@@ -13,7 +13,7 @@ import (
 
 // PostStockItem is a function that handles the HTTP POST request for creating a new stock item.
 func PostStockItem(ctx echo.Context) error {
-	// Pre Process
+	// Preprocess
 	db, err := database.Open()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -27,7 +27,7 @@ func PostStockItem(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	// Validation
+	// Precondition Validation
 	if err := ctx.Validate(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -41,7 +41,12 @@ func PostStockItem(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	// Post Process
+	// Postprocess
 	res := &oapicodegen.Created{Id: resDto.Id}
+
+	// Postcondition Validation
+	if err := ctx.Validate(res); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
 	return ctx.JSON(http.StatusCreated, res)
 }

@@ -16,7 +16,7 @@ import (
 
 // Put is a function that handles the HTTP PUT request for updating an existing stock item.
 func PutStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error {
-	// Pre Process
+	// Preprocess
 	db, err := database.Open()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -30,7 +30,7 @@ func PutStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	// Validation
+	// Preprocess Validation
 	if stockitemId == uuid.Nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid stock item id")
 	}
@@ -57,6 +57,6 @@ func PutStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	// Post Process
+	// Postprocess
 	return ctx.JSON(http.StatusOK, nil)
 }

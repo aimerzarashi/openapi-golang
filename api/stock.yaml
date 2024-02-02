@@ -2,6 +2,12 @@ openapi: 3.0.3
 info:
   title: Stock Item API
   version: 1.0.0
+  description: Stock Item API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://localhost:1323
 paths:
   /stock/items:
     post:
@@ -74,7 +80,14 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/StockItemId"
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                format: uuid
+                x-oapi-codegen-extra-tags:
+                  validate: required
     OK:
       description: OK
     BadRequest:
@@ -95,18 +108,6 @@ components:
         message:
           type: string
     NewStockItem:
-      allOf:
-        - $ref: "#/components/schemas/StockItemName"
-    StockItemId:
-      required:
-        - id
-      properties:
-        id:
-          type: string
-          format: uuid
-          x-oapi-codegen-extra-tags:
-            validate: required
-    StockItemName:
       required:
         - name
       properties:
