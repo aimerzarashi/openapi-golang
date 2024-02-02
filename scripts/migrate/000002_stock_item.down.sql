@@ -1,1 +1,0 @@
-ALTER TABLE stock_item DROP COLUMN IF EXISTS deleted

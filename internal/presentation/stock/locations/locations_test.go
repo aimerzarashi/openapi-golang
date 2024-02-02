@@ -1,4 +1,4 @@
-package items_test
+package locations_test
 
 import (
 	"bytes"
@@ -16,11 +16,11 @@ type RequestHelper struct {
 	client *http.Client
 }
 
-func (h *RequestHelper) Post(reqBody *oapicodegen.PostStockItemJSONRequestBody) (*http.Response, error) {
+func (h *RequestHelper) Post(reqBody *oapicodegen.PostStockLocationJSONRequestBody) (*http.Response, error) {
 	reqBodyJson, _ := json.Marshal(reqBody)
 	req, err := http.NewRequest(
 		http.MethodPost,
-		env.GetServiceUrl()+"/stock/items",
+		env.GetServiceUrl()+"/stock/locations",
 		bytes.NewBuffer(reqBodyJson),
 	)
 	if err != nil {
@@ -36,11 +36,11 @@ func (h *RequestHelper) Post(reqBody *oapicodegen.PostStockItemJSONRequestBody) 
 	return res, nil
 }
 
-func (h *RequestHelper) Put( stockItemId uuid.UUID, reqBody *oapicodegen.PutStockItemJSONRequestBody) (*http.Response, error) {
+func (h *RequestHelper) Put( stockLocationsId uuid.UUID, reqBody *oapicodegen.PutStockLocationJSONRequestBody) (*http.Response, error) {
 	reqBodyJson, _ := json.Marshal(reqBody)
 	req, err := http.NewRequest(
 		http.MethodPut,
-		env.GetServiceUrl()+"/stock/items/"+stockItemId.String(),
+		env.GetServiceUrl()+"/stock/locations/"+stockLocationsId.String(),
 		bytes.NewBuffer(reqBodyJson),
 	)
 	if err != nil {
@@ -56,10 +56,10 @@ func (h *RequestHelper) Put( stockItemId uuid.UUID, reqBody *oapicodegen.PutStoc
 	return res, nil
 }
 
-func (h *RequestHelper) Delete(stockItemId uuid.UUID) (*http.Response, error) {
+func (h *RequestHelper) Delete(stockLocationsId uuid.UUID) (*http.Response, error) {
 	req, err := http.NewRequest(
 		http.MethodDelete,
-		env.GetServiceUrl()+"/stock/items/"+stockItemId.String(),
+		env.GetServiceUrl()+"/stock/locations/"+stockLocationsId.String(),
 		nil,
 	)
 	if err != nil {

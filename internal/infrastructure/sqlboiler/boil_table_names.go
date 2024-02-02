@@ -4,7 +4,9 @@
 package sqlboiler
 
 var TableNames = struct {
-	StockItem string
+	StockItem     string
+	StockLocation string
 }{
-	StockItem: "stock_item",
+	StockItem:     "stock_item",
+	StockLocation: "stock_location",
 }

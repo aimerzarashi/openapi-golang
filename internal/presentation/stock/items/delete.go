@@ -14,7 +14,7 @@ import (
 )
 
 // Delete is a function that handles the HTTP DELETE request for deleting an existing stock item.
-func DeleteStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error {
+func DeleteStockItem(ctx echo.Context, stockItemId openapi_types.UUID) error {
 	// Preprocess
 	db, err := database.Open()
 	if err != nil {
@@ -24,11 +24,11 @@ func DeleteStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error {
 	repository := &domain.Repository{Db: db}
 
 	// Precondition Validation
-	if stockitemId == uuid.Nil {
+	if stockItemId == uuid.Nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid stock item id")
 	}
 
-	found, err := repository.Find(domain.Id(stockitemId))
+	found, err := repository.Find(domain.Id(stockItemId))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -38,7 +38,7 @@ func DeleteStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error {
 	
 	// Main Process
 	reqDto := &item.DeleteRequestDto{
-		Id:   stockitemId,
+		Id:   stockItemId,
 	}
 	if err := item.Delete(reqDto, repository); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

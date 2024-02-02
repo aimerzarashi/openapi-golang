@@ -29,6 +29,11 @@ type NewStockItem struct {
 	Name string `json:"name" validate:"required,lt=100"`
 }
 
+// NewStockLocation defines model for NewStockLocation.
+type NewStockLocation struct {
+	Name string `json:"name" validate:"required,lt=100"`
+}
+
 // BadRequest defines model for BadRequest.
 type BadRequest = BadRequestResponse
 
@@ -43,17 +48,32 @@ type PostStockItemJSONRequestBody = NewStockItem
 // PutStockItemJSONRequestBody defines body for PutStockItem for application/json ContentType.
 type PutStockItemJSONRequestBody = NewStockItem
 
+// PostStockLocationJSONRequestBody defines body for PostStockLocation for application/json ContentType.
+type PostStockLocationJSONRequestBody = NewStockLocation
+
+// PutStockLocationJSONRequestBody defines body for PutStockLocation for application/json ContentType.
+type PutStockLocationJSONRequestBody = NewStockLocation
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Create Stock Item
 	// (POST /stock/items)
 	PostStockItem(ctx echo.Context) error
 	// Delete Stock Item
-	// (DELETE /stock/items/{stockitemId})
-	DeleteStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error
+	// (DELETE /stock/items/{stockItemId})
+	DeleteStockItem(ctx echo.Context, stockItemId openapi_types.UUID) error
 	// Update Stock Item
-	// (PUT /stock/items/{stockitemId})
-	PutStockItem(ctx echo.Context, stockitemId openapi_types.UUID) error
+	// (PUT /stock/items/{stockItemId})
+	PutStockItem(ctx echo.Context, stockItemId openapi_types.UUID) error
+	// Create Stock Location
+	// (POST /stock/locations)
+	PostStockLocation(ctx echo.Context) error
+	// Delete Stock Location
+	// (DELETE /stock/locations/{StockLocationId})
+	DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error
+	// Update Stock Location
+	// (PUT /stock/locations/{StockLocationId})
+	PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -73,32 +93,73 @@ func (w *ServerInterfaceWrapper) PostStockItem(ctx echo.Context) error {
 // DeleteStockItem converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteStockItem(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "stockitemId" -------------
-	var stockitemId openapi_types.UUID
+	// ------------- Path parameter "stockItemId" -------------
+	var stockItemId openapi_types.UUID
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "stockitemId", runtime.ParamLocationPath, ctx.Param("stockitemId"), &stockitemId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "stockItemId", runtime.ParamLocationPath, ctx.Param("stockItemId"), &stockItemId)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter stockitemId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter stockItemId: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.DeleteStockItem(ctx, stockitemId)
+	err = w.Handler.DeleteStockItem(ctx, stockItemId)
 	return err
 }
 
 // PutStockItem converts echo context to params.
 func (w *ServerInterfaceWrapper) PutStockItem(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "stockitemId" -------------
-	var stockitemId openapi_types.UUID
+	// ------------- Path parameter "stockItemId" -------------
+	var stockItemId openapi_types.UUID
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "stockitemId", runtime.ParamLocationPath, ctx.Param("stockitemId"), &stockitemId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "stockItemId", runtime.ParamLocationPath, ctx.Param("stockItemId"), &stockItemId)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter stockitemId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter stockItemId: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.PutStockItem(ctx, stockitemId)
+	err = w.Handler.PutStockItem(ctx, stockItemId)
+	return err
+}
+
+// PostStockLocation converts echo context to params.
+func (w *ServerInterfaceWrapper) PostStockLocation(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PostStockLocation(ctx)
+	return err
+}
+
+// DeleteStockLocation converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteStockLocation(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "StockLocationId" -------------
+	var stockLocationId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "StockLocationId", runtime.ParamLocationPath, ctx.Param("StockLocationId"), &stockLocationId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter StockLocationId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteStockLocation(ctx, stockLocationId)
+	return err
+}
+
+// PutStockLocation converts echo context to params.
+func (w *ServerInterfaceWrapper) PutStockLocation(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "StockLocationId" -------------
+	var stockLocationId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "StockLocationId", runtime.ParamLocationPath, ctx.Param("StockLocationId"), &stockLocationId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter StockLocationId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PutStockLocation(ctx, stockLocationId)
 	return err
 }
 
@@ -131,26 +192,30 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.POST(baseURL+"/stock/items", wrapper.PostStockItem)
-	router.DELETE(baseURL+"/stock/items/:stockitemId", wrapper.DeleteStockItem)
-	router.PUT(baseURL+"/stock/items/:stockitemId", wrapper.PutStockItem)
+	router.DELETE(baseURL+"/stock/items/:stockItemId", wrapper.DeleteStockItem)
+	router.PUT(baseURL+"/stock/items/:stockItemId", wrapper.PutStockItem)
+	router.POST(baseURL+"/stock/locations", wrapper.PostStockLocation)
+	router.DELETE(baseURL+"/stock/locations/:StockLocationId", wrapper.DeleteStockLocation)
+	router.PUT(baseURL+"/stock/locations/:StockLocationId", wrapper.PutStockLocation)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/8yUSU8jOxDHv0qr3js63Z2Ed2npHYBhpIgRINCcUA5Wd5F4pr1gVxNQ5O8+sp2VzrBo",
-	"kJibl9r8/7lqCbWWRitU5KBagkVntHIYNye8ucb7Dh2FXa0VoYpLbkwrak5Cq+KH0yqcuXqOkofVvxbv",
-	"oIJ/im3oIt26YhvyepUJvPcMGnS1FSZEhCokztaZPYNTi5yweVcRxmqDlkR6iYjOd9pKTlBB14kGGNCT",
-	"QajAkRVqBgweB5obMah1gzNUA3wkywfEZzHEA29Fwyk4WLzvhMUmlb7ZVbchz/TAe9YP8AwmitAq3t6g",
-	"fUB7Zq22Ifq+/dooS1ZZMvMMLjR91Z1q+i4XmrJ05RlcnvcNLs8hFLYCsY93w6InnETn+Cxe7Kv1/OVr",
-	"w2moEhc3pOufE0LZD6m4jPEkfxSyk1ANy/LPWbCW/h+WZR9JTJegCHWn+8LEUrNQa3Z8NQEGrahxJUaq",
-	"FY4Nr+eYjfISGHS2hQrmRKYqisVikfN4m2s7K1aurvg2OT27uDkbjPIyn5NsAxUS1OKhhA9oXaplmJd5",
-	"GWy1QcWNgArGeZmPgYHhNI+PL1zwLwShjHujU38e+nLZNhfEoDb2y6SBCq60oy2mJBo6OtHN04e1+95P",
-	"eIaGbIfxYGfijMrh70Ju7Iqdbjoqy9ftd8aYZ/DfW1wOdWnsnk5Kbp8O6hvud9kUy7gJ60njE6EWCfus",
-	"vsTzl1gli11ahlsukdA6qG6XIEKc8EWArT/tTnZ4rjvb4ffyVPR+2mP0BgHDtAl4jl433cy0j4PTF9Qz",
-	"MN2BNvlumtfapKNP1P1vaMl34H53N37WD+lzj1K46JDQ7s35Vte8nWtH1XA8GoOf+l8BAAD//6QMgeE6",
-	"CQAA",
+	"H4sIAAAAAAAC/+RWTU/jPBD+K9G879FN0pa9RNoDsKxUgQCB9oR6sJKh9W5iG3tCQVX++8pOP9Kmpa2W",
+	"FRV7q+1nPp+ZJ51CqgqtJEqykEzBoNVKWvSHM57d4VOJltwpVZJQ+p9c61yknISS0U+rpLuz6RgL7n79",
+	"b/AREvgvWrqO6lcbLV3ezSJBVVUMMrSpEdp5hMQFDuaRKwbnBjlhdlAS2iiNhkRdifDGj8oUnCCBshQZ",
+	"MKBXjZCAJSPkCBi8dBTXopOqDEcoO/hChneIj7yLZ56LjJMzMPhUCoNZnfrilDy4OMMN9cwLqBgMJKGR",
+	"PL9H84zmwhhlnPdV/BwU1KighlUMrhV9V6XM2ibXioL6qWJwc9kG3FyCS2xGxCq9Cy5ajSvQWj7yD6vd",
+	"Wq98Dhy6LHFyTyr9NSAs2i4lL7y/gr+Ioiwg6cbxn3PBcvrajeM2JT5cM6srVQ/NsWTmroV8VG3KfLqB",
+	"62JwejsABrlIcUZTnSucap6OMeiFMTAoTQ4JjIl0EkWTySTk/jVUZhTNTG10NTi/uL6/6PTCOBxTkbt5",
+	"IUE5bgr4jMbWuXTDOIwdVmmUXAtIoB/GYR8YaE5jX3xknX0kCAt/1qpWjk3LECxjgXdqPCmDDBK4VZaW",
+	"A1Q3DS2dqez13YRoZUbXqCFTor9oaGEv7m5zucBFjT0/iePd+IbAVgy+7GOyST/8XpdFwc3rxv669yY3",
+	"0dTOSx9kVc1QjoRtrr75+7e4qhFNtjQ3vEBCYyF5mIJwftyIAJsPbSM6rPedNfh7W6+ratjiaI8GOh10",
+	"9Jzshi7U9v3IaTe0YqDLDWvyQ2e71qSkD+z7MazkAXQfvI0fNSFt3hvrm8++XfvK6+Jbt1ViG4i/yeki",
+	"zOeV2kaJbb6i6UobDpHdrRw2pLeB2S0Da5n80xK8JG0fGd6+TiUdAQ/Hsr6fXpZX22G9UU3zyl9wt/35",
+	"WFlKuv1eH6ph9TsAAP//2U0mPm8PAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
