@@ -24,7 +24,7 @@ type Hello struct {
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Hello, World!
-	// (GET /)
+	// (GET /hello)
 	GetHello(ctx echo.Context) error
 }
 
@@ -70,18 +70,18 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/", wrapper.GetHello)
+	router.GET(baseURL+"/hello", wrapper.GetHello)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/2xQu04DMRD8FRgoT7kDOndUkAo6CkRhfJvE0Z292BukKPK/o90jUEDjHe1jPDMnhDxz",
-	"TpSkwp1Qw45mb/CRpikr4JKZikSy9ky1+i0plCMTHKqUmLZorUOhj0MsNMK9/iy+defF/L6nIGi6GdPG",
-	"yCXKpLMnpnT/vEaHTyo15gSHm9WwGtA6ZKbkOcLhzlod2MvO5PT6bEm0jFRDiSzLtenvLl5ymcZLGEnx",
-	"OluPcHggWQyq6Mo51cXe7TBoCTkJJWP1zFMMdtnvq1KfY1J0XWgDh6v+N8f+O8R++cDs/iPNAquHefbl",
-	"+Edua619BQAA//9ZQiaxnAEAAA==",
+	"H4sIAAAAAAAC/2xQMU4DMRD8CgyUVu6Azh0VpIKOAlEY3ybn6M5e7A1SFPnvyHscFFDtaHc8npkzfJo5",
+	"RYpSYM8ofqTZKXykaUoNcE5MWQLpeqZS3J4alBMTLIrkEPeo1SDTxzFkGmBff4hvZiWm9wN5QW3MEHcq",
+	"LkGmdntiivfPWxh8Ui4hRVjcbPpNj2qQmKLjAIs7XRmwk1HtdONqc0/SxkDF58CySGgIc/GS8jRcQpWy",
+	"a7ftAIsHkiVlc144xbJkvO37NnyKQlFVHfMUvL7sDqVJr101dJ1pB4ur7rfM7rvJbvlAM/9jTVsrx3l2",
+	"+fTHbq21fgUAAP//TPrE3qEBAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
