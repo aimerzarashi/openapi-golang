@@ -8,8 +8,13 @@ services:
     tty: true
     ports:
       - 1323:1323
-    working_dir: /usr/src/app/pkg/main
-    command: /bin/sh -c "go install github.com/cosmtrek/air@latest && air"
+    working_dir: /usr/src/app/cmd/main
+    command:
+      - /bin/sh
+      - -c 
+      - |
+        go install github.com/cosmtrek/air@latest
+        air
     volumes:
       - ./../:/usr/src/app
     environment:
