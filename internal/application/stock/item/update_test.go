@@ -1,7 +1,6 @@
 package item_test
 
 import (
-	"fmt"
 	"openapi/internal/application/stock/item"
 	domain "openapi/internal/domain/stock/item"
 	"openapi/internal/infrastructure/database"
@@ -65,7 +64,7 @@ func TestUpdateError(t *testing.T) {
 
 	// When
 	err := item.Update(reqDto, repository)
-	if err == fmt.Errorf("not implemented") {
+	if err != ErrMockRepository {
 		t.Errorf("expected error, got nil")
 	}
 }

@@ -10,14 +10,16 @@ type MockRepository struct {
 	domain.IRepository
 }
 
+var ErrMockRepository = fmt.Errorf("mock repository error")
+
 func (m *MockRepository) Save(a *domain.Aggregate) error {
-	return fmt.Errorf("not implemented")
+	return ErrMockRepository
 }
 
 func (m *MockRepository) Get(id domain.Id) (*domain.Aggregate, error) {
-	return nil, fmt.Errorf("not implemented")
+	return nil, ErrMockRepository
 }
 
 func (m *MockRepository) Delete(id domain.Id) error {
-	return fmt.Errorf("not implemented")
+	return ErrMockRepository
 }
