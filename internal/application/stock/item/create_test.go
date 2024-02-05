@@ -1,6 +1,7 @@
 package item_test
 
 import (
+	"fmt"
 	"openapi/internal/application/stock/item"
 	domain "openapi/internal/domain/stock/item"
 	"openapi/internal/infrastructure/database"
@@ -42,5 +43,20 @@ func TestCreateSuccess(t *testing.T) {
 
 	if a.GetName() != reqDto.Name {
 		t.Errorf("expected %s, got %s", reqDto.Name, a.GetName())
+	}
+}
+
+func TestCreateError(t *testing.T) {	
+	repository := &MockRepository{}
+	
+	// Given
+	reqDto := &item.CreateRequestDto{
+		Name: "",
+	}
+
+	// When
+	_, err := item.Create(reqDto, repository)
+	if err == fmt.Errorf("not implemented") {
+		t.Errorf("expected error, got nil")
 	}
 }

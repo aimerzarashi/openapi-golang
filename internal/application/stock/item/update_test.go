@@ -1,6 +1,7 @@
 package item_test
 
 import (
+	"fmt"
 	"openapi/internal/application/stock/item"
 	domain "openapi/internal/domain/stock/item"
 	"openapi/internal/infrastructure/database"
@@ -50,5 +51,21 @@ func TestUpdateSuccess(t *testing.T) {
 
 	if a.GetName() != afterName {
 		t.Errorf("expected %s, got %s", afterName, a.GetName())
+	}
+}
+
+func TestUpdateError(t *testing.T) {	
+	repository := &MockRepository{}
+	
+	// Given
+	reqDto := &item.UpdateRequestDto{
+		Id: uuid.New(),
+		Name: uuid.NewString(),
+	}
+
+	// When
+	err := item.Update(reqDto, repository)
+	if err == fmt.Errorf("not implemented") {
+		t.Errorf("expected error, got nil")
 	}
 }

@@ -1,6 +1,7 @@
 package item_test
 
 import (
+	"fmt"
 	"openapi/internal/application/stock/item"
 	domain "openapi/internal/domain/stock/item"
 	"openapi/internal/infrastructure/database"
@@ -46,5 +47,20 @@ func TestDeleteSuccess(t *testing.T) {
 
 	if !a.IsDeleted() {
 		t.Errorf("expected %t, got %t", true, a.IsDeleted())
+	}
+}
+
+func TestDeleteError(t *testing.T) {	
+	repository := &MockRepository{}
+	
+	// Given
+	reqDto := &item.DeleteRequestDto{
+		Id: uuid.New(),
+	}
+
+	// When
+	err := item.Delete(reqDto, repository)
+	if err == fmt.Errorf("not implemented") {
+		t.Errorf("expected error, got nil")
 	}
 }
