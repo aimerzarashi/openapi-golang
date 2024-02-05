@@ -16,15 +16,15 @@ func New(name string) *Aggregate {
 	}
 }
 
-func (a *Aggregate) GetId() Id {
+func (a Aggregate) GetId() Id {
 	return a.id
 }
 
-func (a *Aggregate) GetName() string {
+func (a Aggregate) GetName() string {
 	return a.name
 }
 
-func (a *Aggregate) IsDeleted() bool {
+func (a Aggregate) IsDeleted() bool {
 	return a.deleted
 }
 

@@ -40,8 +40,7 @@ func (h *RequestHelper) Put( stockLocationsId uuid.UUID, reqBody *oapicodegen.Pu
 	reqBodyJson, _ := json.Marshal(reqBody)
 	req, err := http.NewRequest(
 		http.MethodPut,
-//		env.GetServiceUrl()+"/stock/locations/"+stockLocationsId.String(),
-		env.GetServiceUrl()+"/stock/locations/",
+		env.GetServiceUrl()+"/stock/locations/"+stockLocationsId.String(),
 		bytes.NewBuffer(reqBodyJson),
 	)
 	if err != nil {

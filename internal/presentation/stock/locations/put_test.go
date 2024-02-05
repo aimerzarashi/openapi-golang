@@ -60,7 +60,6 @@ func TestPutOk(t *testing.T) {
 	}
 }
 
-
 func TestPutNotFound(t *testing.T) {
 	// Setup
 	rh := RequestHelper{

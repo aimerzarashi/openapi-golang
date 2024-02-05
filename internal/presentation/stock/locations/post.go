@@ -3,9 +3,10 @@ package locations
 import (
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 
+	"openapi/internal/application/stock/location"
+	domain "openapi/internal/domain/stock/location"
 	"openapi/internal/infrastructure/database"
 	oapicodegen "openapi/internal/infrastructure/oapicodegen/stock"
 )
@@ -18,6 +19,7 @@ func PostStockLocation(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	defer db.Close()
+	repository := &domain.Repository{Db: db}
 
 	// Binding
 	req := &oapicodegen.PostStockLocationJSONRequestBody{}
@@ -30,8 +32,17 @@ func PostStockLocation(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	// Main Process
+	reqDto := &location.CreateRequestDto{
+		Name: req.Name,
+	}
+	resDto, err := location.Create(reqDto, repository)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
 	// Postprocess
-	res := &oapicodegen.Created{Id: uuid.New()}
+	res := &oapicodegen.Created{Id: resDto.Id}
 
 	// Postcondition Validation
 	if err := ctx.Validate(res); err != nil {

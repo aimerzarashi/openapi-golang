@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 
+	"openapi/internal/application/stock/location"
+	domain "openapi/internal/domain/stock/location"
 	"openapi/internal/infrastructure/database"
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -21,7 +23,7 @@ func PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) erro
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	defer db.Close()
-
+	repository := &domain.Repository{Db: db}
 
 	// Binding
 	req := &oapicodegen.PutStockLocationJSONRequestBody{}
@@ -34,8 +36,26 @@ func PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) erro
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid stock location id")
 	}
 
+	found, err := repository.Find(domain.Id(stockLocationId))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	if !found {
+		return echo.NewHTTPError(http.StatusNotFound, "stock location not found")
+	}
+
 	if err := ctx.Validate(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Main Process
+	reqDto := &location.UpdateRequestDto{
+		Id:   stockLocationId,
+		Name: req.Name,
+	}
+	err = location.Update(reqDto, repository)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	// Postprocess
