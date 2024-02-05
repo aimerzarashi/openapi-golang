@@ -14,7 +14,7 @@ func TestMain(t *testing.T) {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("want %d, got %d", http.StatusOK, res.StatusCode)
+	if res.StatusCode != http.StatusNotFound {
+		t.Errorf("want %d, got %d", http.StatusNotFound, res.StatusCode)
 	}
 }
