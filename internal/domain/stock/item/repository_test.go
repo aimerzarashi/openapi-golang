@@ -23,7 +23,7 @@ func TestCreate(t *testing.T) {
 	r := &item.Repository{Db: db}
 
 	// Given
-	name := uuid.NewString()
+	name, err := item.NewItemName(uuid.NewString())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,7 +49,7 @@ func TestCreate(t *testing.T) {
 		t.Errorf("expected %s, got %s", a.GetId().UUID().String(), data.ID)
 	}
 	
-	if data.Name != name {
+	if data.Name != name.String() {
 		t.Errorf("expected %s, got %s", name, data.Name)
 	}
 
@@ -76,8 +76,14 @@ func TestUpdate(t *testing.T) {
 	r := &item.Repository{Db: db}
 
 	// Given
-	beforeName := uuid.NewString()
-	afterName := uuid.NewString()
+	beforeName, err := item.NewItemName(uuid.NewString())
+	if err != nil {
+		t.Fatal(err)
+	}
+	afterName, err := item.NewItemName(uuid.NewString())
+	if err != nil {
+		t.Fatal(err)
+	}
 	a, err := item.New(beforeName)
 	if err != nil {
 		t.Fatal(err)
@@ -140,7 +146,10 @@ func TestFind(t *testing.T) {
 	r := &item.Repository{Db: db}
 
 	// Given
-	name := uuid.NewString()
+	name, err := item.NewItemName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
 	a, err := item.New(name)
 	if err != nil {
 		t.Fatal(err)

@@ -22,7 +22,7 @@ type Repository struct {
 func (r *Repository) Save(a *aggregate) error {
 	data := &sqlboiler.StockItem{
 		ID:   a.id.UUID().String(),
-		Name: a.name,
+		Name: a.name.String(),
 		Deleted: a.deleted,
 	}
 
@@ -47,9 +47,14 @@ func (r *Repository) Get(id Id) (*aggregate, error) {
 		return &aggregate{}, err
 	}
 
+	itemName, err := NewItemName(data.Name)
+	if err != nil {
+		return &aggregate{}, err
+	}
+
 	a := &aggregate{
 		id:   id,
-		name: data.Name,
+		name: *itemName,
 		deleted: data.Deleted,
 	}
 	

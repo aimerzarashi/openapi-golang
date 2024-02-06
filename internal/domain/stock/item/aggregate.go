@@ -6,14 +6,14 @@ import (
 
 type aggregate struct {
 	id   		Id
-	name 		string
+	name 		name
 	deleted bool
 }
 
-func New(name string) (*aggregate, error) {
+func New(name *name) (*aggregate, error) {
 	return &aggregate{
 		id:   Id(uuid.New()),
-		name: name,
+		name: *name,
 		deleted: false,
 	}, nil
 }
@@ -23,15 +23,15 @@ func (a aggregate) GetId() Id {
 }
 
 func (a aggregate) GetName() string {
-	return string(a.name)
+	return a.name.value
 }
 
 func (a aggregate) IsDeleted() bool {
 	return a.deleted
 }
 
-func (a *aggregate) ChangeName(name string) {
-	a.name = name
+func (a *aggregate) ChangeName(name *name) {
+	a.name = *name
 }
 
 func (a *aggregate) Delete() {

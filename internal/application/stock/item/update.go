@@ -18,7 +18,11 @@ func Update(req *UpdateRequestDto, r item.IRepository) error {
 		return err
 	}
 
-	a.ChangeName(req.Name)
+	itemName, err := item.NewItemName(req.Name)
+	if err != nil {
+		return err
+	}
+	a.ChangeName(itemName)
 
 	err = r.Save(a)
 	if err != nil {

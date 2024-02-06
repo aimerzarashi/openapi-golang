@@ -9,7 +9,7 @@ import (
 
 func TestNewAggregate(t *testing.T) {
 	// When
-	name := "test"
+	name, err := item.NewItemName("test")
 	a, err := item.New(name)
 	if err != nil {
 		t.Fatal(err)
@@ -19,7 +19,7 @@ func TestNewAggregate(t *testing.T) {
 	if a.GetId().UUID() == uuid.Nil {
 		t.Errorf("expected %s, got %s", uuid.Nil, a.GetId().UUID())
 	}
-	if a.GetName() != name {
+	if a.GetName() != name.String() {
 		t.Errorf("expected %s, got %s", name, a.GetName())
 	}
 	if a.IsDeleted() != false {
@@ -29,15 +29,21 @@ func TestNewAggregate(t *testing.T) {
 
 func TestChangeName(t *testing.T) {
 	// Given
-	name := "test"
-	a, err := item.New(name)
+	beforeName, err := item.NewItemName("test1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	afterName, err := item.NewItemName("test2")
+	if err != nil {
+		t.Fatal(err)
+	}
+	a, err := item.New(beforeName)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// When
-	a.ChangeName("test2")
-	a.ChangeName("test2")
+	a.ChangeName(afterName)
 
 	// Then
 	if a.GetName() != "test2" {
@@ -47,7 +53,10 @@ func TestChangeName(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	// When
-	name := "test"
+	name, err := item.NewItemName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
 	a, err := item.New(name)
 	if err != nil {
 		t.Fatal(err)
