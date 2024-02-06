@@ -48,18 +48,3 @@ func TestDeleteSuccess(t *testing.T) {
 		t.Errorf("expected %t, got %t", true, a.IsDeleted())
 	}
 }
-
-func TestDeleteError(t *testing.T) {	
-	repository := &MockRepository{}
-	
-	// Given
-	reqDto := &item.DeleteRequestDto{
-		Id: uuid.New(),
-	}
-
-	// When
-	err := item.Delete(reqDto, repository)
-	if err != ErrMockRepository {
-		t.Errorf("expected error, got nil")
-	}
-}

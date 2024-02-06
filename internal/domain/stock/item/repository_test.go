@@ -24,6 +24,9 @@ func TestCreate(t *testing.T) {
 
 	// Given
 	name := uuid.NewString()
+	if err != nil {
+		t.Fatal(err)
+	}
 	a, err := item.New(name)
 	if err != nil {
 		t.Fatal(err)

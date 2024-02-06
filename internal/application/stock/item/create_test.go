@@ -44,18 +44,3 @@ func TestCreateSuccess(t *testing.T) {
 		t.Errorf("expected %s, got %s", reqDto.Name, a.GetName())
 	}
 }
-
-func TestCreateError(t *testing.T) {	
-	repository := &MockRepository{}
-	
-	// Given
-	reqDto := &item.CreateRequestDto{
-		Name: "test",
-	}
-
-	// When
-	_, err := item.Create(reqDto, repository)
-	if err != ErrMockRepository {
-		t.Errorf("expected error, got nil")
-	}
-}

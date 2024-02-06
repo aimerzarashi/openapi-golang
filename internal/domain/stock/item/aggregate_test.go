@@ -37,6 +37,7 @@ func TestChangeName(t *testing.T) {
 
 	// When
 	a.ChangeName("test2")
+	a.ChangeName("test2")
 
 	// Then
 	if a.GetName() != "test2" {

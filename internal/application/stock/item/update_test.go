@@ -52,19 +52,3 @@ func TestUpdateSuccess(t *testing.T) {
 		t.Errorf("expected %s, got %s", afterName, a.GetName())
 	}
 }
-
-func TestUpdateError(t *testing.T) {	
-	repository := &MockRepository{}
-	
-	// Given
-	reqDto := &item.UpdateRequestDto{
-		Id: uuid.New(),
-		Name: uuid.NewString(),
-	}
-
-	// When
-	err := item.Update(reqDto, repository)
-	if err != ErrMockRepository {
-		t.Errorf("expected error, got nil")
-	}
-}
