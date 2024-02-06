@@ -6,11 +6,11 @@ import (
 
 type aggregate struct {
 	id   		Id
-	name 		name
+	name 		ItemName
 	deleted bool
 }
 
-func New(name *name) (*aggregate, error) {
+func New(name *ItemName) (*aggregate, error) {
 	return &aggregate{
 		id:   Id(uuid.New()),
 		name: *name,
@@ -30,7 +30,7 @@ func (a aggregate) IsDeleted() bool {
 	return a.deleted
 }
 
-func (a *aggregate) ChangeName(name *name) {
+func (a *aggregate) ChangeName(name *ItemName) {
 	a.name = *name
 }
 
