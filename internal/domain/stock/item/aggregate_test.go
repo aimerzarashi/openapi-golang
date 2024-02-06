@@ -10,6 +10,9 @@ import (
 func TestNewAggregate(t *testing.T) {
 	// When
 	name, err := item.NewItemName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
 	a, err := item.New(name)
 	if err != nil {
 		t.Fatal(err)
