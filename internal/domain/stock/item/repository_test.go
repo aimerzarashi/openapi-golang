@@ -24,7 +24,10 @@ func TestCreate(t *testing.T) {
 
 	// Given
 	name := uuid.NewString()
-	a := item.New(name)
+	a, err := item.New(name)
+	if err != nil {
+		t.Fatal(err)
+	}
 	currentDateTime := time.Now().UTC()
 
 	// When
@@ -72,7 +75,10 @@ func TestUpdate(t *testing.T) {
 	// Given
 	beforeName := uuid.NewString()
 	afterName := uuid.NewString()
-	a := item.New(beforeName)
+	a, err := item.New(beforeName)
+	if err != nil {
+		t.Fatal(err)
+	}
 	currentDateTime := time.Now().UTC()
 	dataFormat := "2006-01-02 15:04:05.000000 +09:00"
 
@@ -132,7 +138,10 @@ func TestFind(t *testing.T) {
 
 	// Given
 	name := uuid.NewString()
-	a := item.New(name)
+	a, err := item.New(name)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// When
 	beforeFound, err := r.Find(a.GetId())

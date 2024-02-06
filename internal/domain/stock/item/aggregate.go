@@ -1,6 +1,10 @@
 package item
 
-import "github.com/google/uuid"
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
 
 type Aggregate struct {
 	id   		Id
@@ -8,12 +12,16 @@ type Aggregate struct {
 	deleted bool
 }
 
-func New(name string) *Aggregate {
+func New(name string) (*Aggregate, error) {
+	if name == "" {
+		return nil, fmt.Errorf("invalid name %s", name)
+	}
+
 	return &Aggregate{
 		id:   Id(uuid.New()),
 		name: name,
 		deleted: false,
-	}
+	}, nil
 }
 
 func (a Aggregate) GetId() Id {

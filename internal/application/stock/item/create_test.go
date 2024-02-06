@@ -50,7 +50,7 @@ func TestCreateError(t *testing.T) {
 	
 	// Given
 	reqDto := &item.CreateRequestDto{
-		Name: "",
+		Name: "test",
 	}
 
 	// When

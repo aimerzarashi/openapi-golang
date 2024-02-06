@@ -17,10 +17,12 @@ type CreateResponseDto struct {
 
 func Create(req *CreateRequestDto, r item.IRepository) (*CreateResponseDto, error) {
 
-	a := item.New(req.Name)
-
-	err := r.Save(a)
+	a, err := item.New(req.Name)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := r.Save(a); err != nil {
 		return nil, err
 	}
 
