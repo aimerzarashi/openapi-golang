@@ -19,11 +19,11 @@ func TestUpdateSuccess(t *testing.T) {
 	repository := &domain.Repository{Db: db}
 
 	// Given
-	beforeName := uuid.NewString()
-	afterName := uuid.NewString()
+	beforeItemName := uuid.NewString()
+	afterItemName := uuid.NewString()
 
 	reqCreateDto := &item.CreateRequestDto{
-		Name: beforeName,
+		Name: beforeItemName,
 	}
 
 	resCreateDto, err := item.Create(reqCreateDto, repository)
@@ -34,7 +34,7 @@ func TestUpdateSuccess(t *testing.T) {
 	// When
 	reqUpdateDto := &item.UpdateRequestDto{
 		Id:   resCreateDto.Id,
-		Name: afterName,
+		Name: afterItemName,
 	}
 
 	err = item.Update(reqUpdateDto, repository)
@@ -43,12 +43,17 @@ func TestUpdateSuccess(t *testing.T) {
 	}
 
 	// Then
-	a, err := repository.Get(domain.Id(resCreateDto.Id))
+	itemId, err := domain.NewItemId(resCreateDto.Id)
+	if err != nil {
+		t.Fatal(err)
+	} 
+	
+	a, err := repository.Get(itemId)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if a.GetName() != afterName {
-		t.Errorf("expected %s, got %s", afterName, a.GetName())
+	if a.Name.String() != afterItemName {
+		t.Errorf("a.Name.String() = %s, want %s", a.Name.String(), afterItemName)
 	}
 }

@@ -1,37 +1,21 @@
 package item
 
-import (
-	"github.com/google/uuid"
-)
-
 type aggregate struct {
-	id   		Id
-	name 		ItemName
+	id   		itemId
+	Name 		itemName
 	deleted bool
 }
 
-func New(name *ItemName) (*aggregate, error) {
+func NewAggregate(id itemId, name itemName) (*aggregate, error) {
 	return &aggregate{
-		id:   Id(uuid.New()),
-		name: *name,
+		id:   id,
+		Name: name,
 		deleted: false,
 	}, nil
 }
 
-func (a aggregate) GetId() Id {
-	return a.id
-}
-
-func (a aggregate) GetName() string {
-	return a.name.value
-}
-
 func (a aggregate) IsDeleted() bool {
 	return a.deleted
-}
-
-func (a *aggregate) ChangeName(name *ItemName) {
-	a.name = *name
 }
 
 func (a *aggregate) Delete() {

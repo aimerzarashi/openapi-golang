@@ -39,12 +39,17 @@ func TestDeleteSuccess(t *testing.T) {
 	}
 
 	// Then
-	a, err := repository.Get(domain.Id(resCreateDto.Id))
+	itemId, err := domain.NewItemId(resCreateDto.Id)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a, err := repository.Get(itemId)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	if !a.IsDeleted() {
-		t.Errorf("expected %t, got %t", true, a.IsDeleted())
+		t.Errorf("a.IsDeleted() = %t, want %t", a.IsDeleted(), true)
 	}
 }

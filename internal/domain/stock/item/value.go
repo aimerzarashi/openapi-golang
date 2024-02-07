@@ -2,20 +2,19 @@ package item
 
 import "fmt"
 
-type ItemName struct {
+type itemName struct {
 	value string
 }
 
-var ErrEmptyItemName = fmt.Errorf("empty item name")
+var ErrItemNameEmpty = fmt.Errorf("invalid itemName because empty")
 
-func NewItemName(value string) (*ItemName, error) {
-	if value == "" {
-		return nil, ErrEmptyItemName
+func NewItemName(v string) (itemName, error) {
+	if v == "" {
+		return itemName{}, ErrItemNameEmpty
 	}
-	return &ItemName{value}, nil
+	return itemName{v}, nil
 }
 
-func (v *ItemName) String() string {
+func (v itemName) String() string {
 	return v.value
 }
-

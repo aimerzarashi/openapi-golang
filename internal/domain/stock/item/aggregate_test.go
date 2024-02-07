@@ -8,59 +8,73 @@ import (
 )
 
 func TestNewAggregate(t *testing.T) {
-	// When
-	name, err := item.NewItemName("test")
+	// Given
+	itemId, err := item.NewItemId(uuid.New())
 	if err != nil {
 		t.Fatal(err)
 	}
-	a, err := item.New(name)
+
+	itemName, err := item.NewItemName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	a, err := item.NewAggregate(itemId, itemName)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// Then
-	if a.GetId().UUID() == uuid.Nil {
-		t.Errorf("expected %s, got %s", uuid.Nil, a.GetId().UUID())
-	}
-	if a.GetName() != name.String() {
-		t.Errorf("expected %s, got %s", name, a.GetName())
-	}
 	if a.IsDeleted() != false {
 		t.Errorf("expected %t, got %t", false, a.IsDeleted())
 	}
 }
 
-func TestChangeName(t *testing.T) {
+func TestAggregateChangeName(t *testing.T) {
 	// Given
-	beforeName, err := item.NewItemName("test1")
+	itemId, err := item.NewItemId(uuid.New())
 	if err != nil {
 		t.Fatal(err)
 	}
-	afterName, err := item.NewItemName("test2")
+
+	beforeItemName, err := item.NewItemName("test1")
 	if err != nil {
 		t.Fatal(err)
 	}
-	a, err := item.New(beforeName)
+
+	a, err := item.NewAggregate(itemId, beforeItemName)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// When
-	a.ChangeName(afterName)
+	afterItemName, err := item.NewItemName("test2")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a.Name = afterItemName
 
 	// Then
-	if a.GetName() != "test2" {
-		t.Errorf("expected %s, got %s", "test2", a.GetName())
+	if a.Name.String() != "test2" {
+		t.Errorf("a.Name.String(%q) = %s, want %s", a.Name.String(), a.Name.String(), "test2")
 	}
 }
 
-func TestDelete(t *testing.T) {
-	// When
-	name, err := item.NewItemName("test")
+func TestAggregateDelete(t *testing.T) {
+	// Given
+	itemId, err := item.NewItemId(uuid.New())
 	if err != nil {
 		t.Fatal(err)
 	}
-	a, err := item.New(name)
+
+	itemName, err := item.NewItemName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a, err := item.NewAggregate(itemId, itemName)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,6 +84,6 @@ func TestDelete(t *testing.T) {
 
 	// Then
 	if a.IsDeleted() != true {
-		t.Errorf("expected %t, got %t", true, a.IsDeleted())
+		t.Errorf("a.IsDeleted() = %t, want %t", a.IsDeleted(), true)
 	}
 }

@@ -23,11 +23,15 @@ func TestCreate(t *testing.T) {
 	r := &item.Repository{Db: db}
 
 	// Given
-	name, err := item.NewItemName(uuid.NewString())
+	itemId, err := item.NewItemId(uuid.New())
+	if err != nil {
+		t.Fatal(err)
+	} 
+	itemName, err := item.NewItemName(uuid.NewString())
 	if err != nil {
 		t.Fatal(err)
 	}
-	a, err := item.New(name)
+	a, err := item.NewAggregate(itemId, itemName)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,21 +44,21 @@ func TestCreate(t *testing.T) {
 	}
 
 	// Then
-	data, err := sqlboiler.FindStockItem(context.Background(), db, a.GetId().UUID().String())
+	data, err := sqlboiler.FindStockItem(context.Background(), db, itemId.UUID().String())
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if data.ID != a.GetId().UUID().String() {
-		t.Errorf("expected %s, got %s", a.GetId().UUID().String(), data.ID)
+	if data.ID != itemId.String() {
+		t.Errorf("data.ID(%q) = %s; want %s", data.ID, data.ID, itemId.String())
 	}
 	
-	if data.Name != name.String() {
-		t.Errorf("expected %s, got %s", name, data.Name)
+	if data.Name != itemName.String() {
+		t.Errorf("data.Name(%q) = %s; want %s", data.Name, data.Name, itemName.String())
 	}
 
 	if data.Deleted != false {
-		t.Errorf("expected %t, got %t", false, data.Deleted)
+		t.Errorf("data.Deleted(%t) = %t; want %t", data.Deleted, data.Deleted, false)
 	}
 
 	if data.CreatedAt.Before(currentDateTime) == true {
@@ -76,18 +80,21 @@ func TestUpdate(t *testing.T) {
 	r := &item.Repository{Db: db}
 
 	// Given
-	beforeName, err := item.NewItemName(uuid.NewString())
+	itemId, err := item.NewItemId(uuid.New())
 	if err != nil {
 		t.Fatal(err)
 	}
-	afterName, err := item.NewItemName(uuid.NewString())
+
+	beforeItemName, err := item.NewItemName(uuid.NewString())
 	if err != nil {
 		t.Fatal(err)
 	}
-	a, err := item.New(beforeName)
+
+	a, err := item.NewAggregate(itemId, beforeItemName)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	currentDateTime := time.Now().UTC()
 	dataFormat := "2006-01-02 15:04:05.000000 +09:00"
 
@@ -96,43 +103,49 @@ func TestUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	beforeData, err := sqlboiler.FindStockItem(context.Background(), db, a.GetId().UUID().String())
+	beforeData, err := sqlboiler.FindStockItem(context.Background(), db, itemId.String())
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// When
-	a.ChangeName(afterName)
+	afterItemName, err := item.NewItemName(uuid.NewString())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a.Name = afterItemName
 	a.Delete()
+
 	err = r.Save(a)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// Then
-	afterData, err := sqlboiler.FindStockItem(context.Background(), db, a.GetId().UUID().String())
+	afterData, err := sqlboiler.FindStockItem(context.Background(), db, itemId.String())
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	if afterData.ID != beforeData.ID{
-		t.Errorf("expected %s, got %s", beforeData.ID, afterData.ID)
+		t.Errorf("afterData.ID(%q) = %s; want %s", afterData.ID, afterData.ID, beforeData.ID)
 	}
 
-	if afterData.Name != a.GetName() {
-		t.Errorf("expected %s, got %s", a.GetName(), afterData.Name)
+	if afterData.Name != afterItemName.String() {
+		t.Errorf("afterData.Name(%q) = %s; want %s", afterData.Name, afterData.Name, afterItemName.String())
 	}
 
 	if afterData.Deleted != a.IsDeleted() {
-		t.Errorf("expected %t, got %t", a.IsDeleted(), afterData.Deleted)
+		t.Errorf("afterData.Deleted(%t) = %t; want %t", afterData.Deleted, afterData.Deleted, a.IsDeleted())
 	}
 
 	if afterData.CreatedAt.Format(dataFormat) != beforeData.CreatedAt.Format(dataFormat) {
-		t.Errorf("expected %s, got %s", beforeData.CreatedAt.Format(dataFormat), afterData.CreatedAt.Format(dataFormat))
+		t.Errorf("afterData.CreatedAt(%s) = %s; want %s", afterData.CreatedAt, afterData.CreatedAt, beforeData.CreatedAt)
 	}
 
 	if afterData.UpdatedAt.Before(currentDateTime) == true {
-		t.Errorf("expected %s, got %s", currentDateTime, afterData.UpdatedAt)
+		t.Errorf("afterData.UpdatedAt(%s) = %s; want %s", afterData.UpdatedAt, afterData.UpdatedAt, currentDateTime)
 	}
 }
 
@@ -146,25 +159,33 @@ func TestFind(t *testing.T) {
 	r := &item.Repository{Db: db}
 
 	// Given
-	name, err := item.NewItemName("test")
+	itemId, err := item.NewItemId(uuid.New())
 	if err != nil {
 		t.Fatal(err)
 	}
-	a, err := item.New(name)
+
+	itemName, err := item.NewItemName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a, err := item.NewAggregate(itemId, itemName)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// When
-	beforeFound, err := r.Find(a.GetId())
+	beforeFound, err := r.Find(itemId)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	err = r.Save(a)
 	if err != nil {
 		t.Fatal(err)
 	}
-	afterFound, err := r.Find(a.GetId())
+
+	afterFound, err := r.Find(itemId)
 	if err != nil {
 		t.Fatal(err)
 	}

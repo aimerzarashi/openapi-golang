@@ -28,7 +28,12 @@ func DeleteStockItem(ctx echo.Context, stockItemId openapi_types.UUID) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid stock item id")
 	}
 
-	found, err := repository.Find(domain.Id(stockItemId))
+	itemId, err := domain.NewItemId(stockItemId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	
+	found, err := repository.Find(itemId)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

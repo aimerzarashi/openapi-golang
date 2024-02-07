@@ -10,8 +10,8 @@ import (
 
 type IRepository interface {
 	Save(a *aggregate) error
-	Get(id Id) (*aggregate, error)
-	Find(id Id) (bool, error)
+	Get(id itemId) (*aggregate, error)
+	Find(id itemId) (bool, error)
 }
 
 type Repository struct {
@@ -22,7 +22,7 @@ type Repository struct {
 func (r *Repository) Save(a *aggregate) error {
 	data := &sqlboiler.StockItem{
 		ID:   a.id.UUID().String(),
-		Name: a.name.String(),
+		Name: a.Name.value,
 		Deleted: a.deleted,
 	}
 
@@ -41,8 +41,8 @@ func (r *Repository) Save(a *aggregate) error {
 	return nil
 }
 
-func (r *Repository) Get(id Id) (*aggregate, error) {
-	data, err := sqlboiler.FindStockItem(context.Background(), r.Db, id.UUID().String())
+func (r *Repository) Get(id itemId) (*aggregate, error) {
+	data, err := sqlboiler.FindStockItem(context.Background(), r.Db, id.String())
 	if err != nil {
 		return &aggregate{}, err
 	}
@@ -54,7 +54,7 @@ func (r *Repository) Get(id Id) (*aggregate, error) {
 
 	a := &aggregate{
 		id:   id,
-		name: *itemName,
+		Name: itemName,
 		deleted: data.Deleted,
 	}
 	
@@ -62,8 +62,8 @@ func (r *Repository) Get(id Id) (*aggregate, error) {
 }
 
 
-func (r *Repository) Find(id Id) (bool, error) {
-	found, err := sqlboiler.StockItemExists(context.Background(), r.Db, id.UUID().String())
+func (r *Repository) Find(id itemId) (bool, error) {
+	found, err := sqlboiler.StockItemExists(context.Background(), r.Db, id.String())
 	if err != nil {
 		return false, err
 	}

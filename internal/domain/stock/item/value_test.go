@@ -22,22 +22,15 @@ func TestNewItemName(t *testing.T) {
 	}
 }
 
-func TestNewItemNameEmpty(t *testing.T) {
+func TestNewItemNameFailDueToEmpty(t *testing.T) {
 	// Given
 	name := ""
 
 	// When
-	a, err := item.NewItemName(name)
-	if err == nil {
-		t.Fatal("expected error, got nil")
-	}
+	_, err := item.NewItemName(name)
 
 	// Then
-	if a != nil {
-		t.Errorf("expected nil, got %v", a)
-	}
-
-	if err != item.ErrEmptyItemName {
-		t.Errorf("expected %v, got %v", item.ErrEmptyItemName, err)
+	if err != item.ErrItemNameEmpty {
+		t.Fatalf("expected %q, got %q", item.ErrItemNameEmpty, err)
 	}
 }
