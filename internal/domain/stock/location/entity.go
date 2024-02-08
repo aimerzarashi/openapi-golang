@@ -1,9 +1,26 @@
 package location
 
-import "github.com/google/uuid"
+import (
+	"fmt"
 
-type Id uuid.UUID
+	"github.com/google/uuid"
+)
 
-func (e Id) UUID() uuid.UUID {
-	return uuid.UUID(e)
+type Id struct {
+	value uuid.UUID
+}
+
+func NewId(v uuid.UUID) (Id, error) {
+	if v == uuid.Nil {
+		return Id{}, fmt.Errorf("invalid id because empty")
+	}
+	return Id{v}, nil
+}
+
+func (v Id) UUID() uuid.UUID {
+	return v.value
+}
+
+func (v Id) String() string {
+	return v.value.String()
 }
