@@ -19,8 +19,8 @@ func TestPutOk(t *testing.T) {
 	}
 	rch := ResponseConvertHelper{}
 	
-	bforeName := uuid.NewString()
-	afterName := uuid.NewString()
+	bforeName := "test"
+	afterName := "newTest"
 
 	// Given
 	postRes, err := rh.Post(

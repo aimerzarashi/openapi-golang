@@ -21,7 +21,7 @@ func TestDeleteOk(t *testing.T) {
 	// Given
 	postRes, err := rh.Post(
 		&oapicodegen.PostStockLocationJSONRequestBody{
-			Name: uuid.NewString(),
+			Name: "test",
 		},
 	)
 	if err != nil {
@@ -65,6 +65,6 @@ func TestDeleteNotFound(t *testing.T) {
 
 	// Then
 	if deleteRes.StatusCode != http.StatusNotFound {
-		t.Errorf("%T = %d, want %d", deleteRes.StatusCode, deleteRes.StatusCode, http.StatusNotFound)
+		t.Errorf("%T %d, want %d", deleteRes.StatusCode, deleteRes.StatusCode, http.StatusNotFound)
 	}
 }

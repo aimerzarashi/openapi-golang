@@ -19,7 +19,7 @@ func TestPostCreated(t *testing.T) {
 	}
 	rch := ResponseConvertHelper{}
 
-	name := uuid.NewString()
+	name := "test"
 
 	// When
 	postRes, err := rh.Post(

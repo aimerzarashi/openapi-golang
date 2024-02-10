@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 )
 
-
 func TestCreateSuccess(t *testing.T) {
 	t.Parallel()
 
@@ -46,7 +45,7 @@ func TestCreateSuccess(t *testing.T) {
 	}
 
 	if res.Id != newId {
-		t.Errorf("%T = %v, want %v", res.Id, res.Id, newId)
+		t.Errorf("%T %v, want %v", res.Id, res.Id, newId)
 	}
 
 	id, err := domain.NewId(res.Id) 
@@ -60,6 +59,82 @@ func TestCreateSuccess(t *testing.T) {
 	}
 	
 	if a.Name.String() != name {
-		t.Errorf("%T = %v, want %v", a.Name.String(), a.Name.String(), name)
+		t.Errorf("%T %v, want %v", a.Name.String(), a.Name.String(), name)
+	}
+}
+
+func TestCreateFailIdNil(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	db, err := database.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	repo, err := infra.NewRepository(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Given
+	name := "test"
+	req, err := app.NewCreateRequest(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	newId := uuid.Nil
+	_, err = app.Create(req, repo, newId)
+
+	// Then
+	if err != domain.ErrInvalidId {
+		t.Errorf("%T %v, want %v", err, err, domain.ErrInvalidId)
+	}
+}
+
+
+func TestCreateFailDbClose(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	db, err := database.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	db.Close()
+
+	repo, err := infra.NewRepository(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Given
+	name := "test"
+	req, err := app.NewCreateRequest(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	newId := uuid.New()
+	_, err = app.Create(req, repo, newId)
+
+	// Then
+	if err == nil {
+		t.Errorf("expected not nil, got nil")
+	}
+}
+
+func TestCreateFailNameInvalid(t *testing.T) {
+	t.Parallel()
+
+	// When
+	name := ""
+	_, err := app.NewCreateRequest(name)
+	if err != domain.ErrInvalidName {
+		t.Errorf("%T %v, want %v", err, err, domain.ErrInvalidName)
 	}
 }

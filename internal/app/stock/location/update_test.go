@@ -56,6 +56,6 @@ func TestUpdateSuccess(t *testing.T) {
 	}
 
 	if a.Name.String() != newName {
-		t.Errorf("%T = %v, want %v", a.Name.String(), a.Name.String(), newName)
+		t.Errorf("%T %v, want %v", a.Name.String(), a.Name.String(), newName)
 	}
 }

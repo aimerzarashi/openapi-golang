@@ -57,9 +57,9 @@
 				
 				<option value="file0">openapi/cmd/main/main.go (0.0%)</option>
 				
-				<option value="file1">openapi/internal/app/stock/location/create.go (76.9%)</option>
+				<option value="file1">openapi/internal/app/stock/location/create.go (100.0%)</option>
 				
-				<option value="file2">openapi/internal/app/stock/location/delete.go (75.0%)</option>
+				<option value="file2">openapi/internal/app/stock/location/delete.go (83.3%)</option>
 				
 				<option value="file3">openapi/internal/app/stock/location/update.go (75.0%)</option>
 				
@@ -69,7 +69,7 @@
 				
 				<option value="file6">openapi/internal/domain/stock/location/value.go (100.0%)</option>
 				
-				<option value="file7">openapi/internal/infra/repository/sqlboiler/stock/location/repository.go (100.0%)</option>
+				<option value="file7">openapi/internal/infra/repository/sqlboiler/stock/location/repository.go (96.2%)</option>
 				
 				<option value="file8">openapi/internal/ui/hello/get.go (0.0%)</option>
 				
@@ -77,9 +77,11 @@
 				
 				<option value="file10">openapi/internal/ui/stock/locations/delete.go (0.0%)</option>
 				
-				<option value="file11">openapi/internal/ui/stock/locations/post.go (0.0%)</option>
+				<option value="file11">openapi/internal/ui/stock/locations/locations.go (0.0%)</option>
 				
-				<option value="file12">openapi/internal/ui/stock/locations/put.go (0.0%)</option>
+				<option value="file12">openapi/internal/ui/stock/locations/post.go (0.0%)</option>
+				
+				<option value="file13">openapi/internal/ui/stock/locations/put.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -105,7 +107,7 @@ import (
         "github.com/labstack/echo/v4/middleware"
 
         hello "openapi/internal/ui/hello"
-        stock "openapi/internal/ui/stock"
+        locations "openapi/internal/ui/stock/locations"
 )
 
 
@@ -129,8 +131,8 @@ func main() <span class="cov0" title="0">{
         
         e.Validator = &amp;CustomValidator{validator: validator.New()}
 
-        hello.RegisterHandlers(e, hello.New())
-        stock.RegisterHandlers(e, stock.New())
+        hello.RegisterHandlers(e)
+        locations.RegisterHandlers(e)
 
         e.Logger.Fatal(e.Start(":1323"))
 }</pre>
@@ -143,23 +145,24 @@ import (
         "openapi/internal/domain/stock/location"
 )
 
-type createRequest struct {
-        Name location.Name        
-}
-
-type createResponse struct {
-        Id uuid.UUID
-}
+type(
+        createRequest struct {
+                Name location.Name        
+        }
+  createResponse struct {
+                Id uuid.UUID
+        }
+)
 
 func Create(req createRequest, r location.IRepository, newId uuid.UUID) (createResponse, error) <span class="cov8" title="1">{
         id, err := location.NewId(newId)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return createResponse{}, err
         }</span>
 
         <span class="cov8" title="1">a := location.NewAggregate(id, req.Name)
 
-        if err := r.Save(a); err != nil </span><span class="cov0" title="0">{
+        if err := r.Save(a); err != nil </span><span class="cov8" title="1">{
                 return createResponse{}, err
         }</span>
 
@@ -169,7 +172,7 @@ func Create(req createRequest, r location.IRepository, newId uuid.UUID) (createR
 
 func NewCreateRequest(name string) (createRequest, error) <span class="cov8" title="1">{
         validName, err := location.NewName(name)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return createRequest{}, err
         }</span>
 
@@ -210,7 +213,7 @@ func NewDeleteRequest(id uuid.UUID) (deleteRequest, error) <span class="cov8" ti
 
 func Delete(req deleteRequest, r location.IRepository) error <span class="cov8" title="1">{
         a, err := r.Get(req.Id)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return err
         }</span>
 
@@ -275,11 +278,13 @@ func NewUpdateRequest(id uuid.UUID, name string) (updateRequest, error) <span cl
 		
 		<pre class="file" id="file4" style="display: none">package location
 
-type Aggregate struct {
-        Id                   Id
-        Name                 Name
-        deleted bool
-}
+type(
+        Aggregate struct {
+                Id                   Id
+                Name                 Name
+                deleted bool
+        }
+)
 
 func NewAggregate(id Id, name Name) *Aggregate <span class="cov8" title="1">{
         return &amp;Aggregate{
@@ -308,18 +313,23 @@ func (a *Aggregate) Delete() <span class="cov8" title="1">{
 		<pre class="file" id="file5" style="display: none">package location
 
 import (
-        "fmt"
-
+        "github.com/friendsofgo/errors"
         "github.com/google/uuid"
 )
 
-type Id struct {
-        value uuid.UUID
-}
+type(
+        Id struct {
+                value uuid.UUID                                
+        }
+)
+
+var (
+        ErrInvalidId = errors.New("invalid id")
+)
 
 func NewId(v uuid.UUID) (Id, error) <span class="cov8" title="1">{
         if v == uuid.Nil </span><span class="cov8" title="1">{
-                return Id{}, fmt.Errorf("invalid id because empty")
+                return Id{}, ErrInvalidId
         }</span>
         <span class="cov8" title="1">return Id{v}, nil</span>
 }
@@ -334,15 +344,23 @@ func (v Id) String() string <span class="cov8" title="1">{
 		
 		<pre class="file" id="file6" style="display: none">package location
 
-import "fmt"
+import (
+        "errors"
+)
 
-type Name struct {
-        string
-}
+type(
+        Name struct {
+                string
+        }
+)
+
+var(
+        ErrInvalidName = errors.New("invalid name")
+)
 
 func NewName(v string) (Name, error) <span class="cov8" title="1">{
         if v == "" </span><span class="cov8" title="1">{
-                return Name{}, fmt.Errorf("NewName: invalid name %+v", v)
+                return Name{}, ErrInvalidName
         }</span>
         <span class="cov8" title="1">return Name{v}, nil</span>
 }
@@ -356,7 +374,7 @@ func (v Name) String() string <span class="cov8" title="1">{
 import (
         "context"
         "database/sql"
-        "fmt"
+        "errors"
         "openapi/internal/infra/sqlboiler"
 
         "github.com/volatiletech/sqlboiler/v4/boil"
@@ -364,14 +382,21 @@ import (
         "openapi/internal/domain/stock/location"
 )
 
-type Repository struct {
-        location.IRepository
-        db *sql.DB
-}
+type(
+                Repository struct {
+                location.IRepository
+                db *sql.DB
+        }
+)
+
+var(
+        ErrDbEmpty = errors.New("db is empty")
+        ErrRowDeleted = errors.New("row deleted")
+)
 
 func NewRepository(db *sql.DB) (*Repository, error) <span class="cov8" title="1">{
         if db == nil </span><span class="cov8" title="1">{
-                return nil, fmt.Errorf("NewRepository: db is nil")
+                return nil, ErrDbEmpty
         }</span>
         <span class="cov8" title="1">return &amp;Repository{
                 db: db,
@@ -403,27 +428,39 @@ func (r *Repository) Save(a *location.Aggregate) error <span class="cov8" title=
 func (r *Repository) Get(id location.Id) (*location.Aggregate, error) <span class="cov8" title="1">{
         data, err := sqlboiler.FindStockLocation(context.Background(), r.db, id.UUID().String())
         if err != nil </span><span class="cov8" title="1">{
-                return &amp;location.Aggregate{}, err
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">if data.Deleted </span><span class="cov8" title="1">{
+                return nil, ErrRowDeleted
         }</span>
 
         <span class="cov8" title="1">name, err := location.NewName(data.Name)
-        if err != nil </span><span class="cov8" title="1">{
-                return &amp;location.Aggregate{}, err
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
         }</span>
 
-        <span class="cov8" title="1">a := location.RestoreAggregate(id, name, data.Deleted)        
+        <span class="cov8" title="1">a := location.RestoreAggregate(id, name, data.Deleted)
 
         return a, nil</span>
 }
 
 
 func (r *Repository) Find(id location.Id) (bool, error) <span class="cov8" title="1">{
-        found, err := sqlboiler.StockLocationExists(context.Background(), r.db, id.String())
-        if err != nil </span><span class="cov8" title="1">{
+        data, err := sqlboiler.FindStockLocation(context.Background(), r.db, id.UUID().String())
+        if err != nil &amp;&amp; err != sql.ErrNoRows </span><span class="cov8" title="1">{
                 return false, err
         }</span>
-        
-        <span class="cov8" title="1">return found, nil</span>
+
+        <span class="cov8" title="1">if err == sql.ErrNoRows </span><span class="cov8" title="1">{
+                return false, nil
+        }</span>
+
+        <span class="cov8" title="1">if data.Deleted </span><span class="cov8" title="1">{
+                return false, nil                
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
 }</pre>
 		
 		<pre class="file" id="file8" style="display: none">package hello
@@ -455,12 +492,8 @@ import (
 
 type Api struct {}
 
-func New() oapicodegen.ServerInterface <span class="cov0" title="0">{
-        return &amp;Api{}
-}</span>
-
-func RegisterHandlers(e *echo.Echo, si oapicodegen.ServerInterface) <span class="cov0" title="0">{
-        oapicodegen.RegisterHandlers(e, si)
+func RegisterHandlers(e *echo.Echo) <span class="cov0" title="0">{
+        oapicodegen.RegisterHandlers(e, &amp;Api{})
 }</span>
 
 func (a *Api) GetHello(ctx echo.Context) error <span class="cov0" title="0">{
@@ -482,7 +515,7 @@ import (
 )
 
 // Delete is a function that handles the HTTP DELETE request for deleting an existing stock item.
-func DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov0" title="0">{
+func (Api) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov0" title="0">{
         // Precondition
         db, err := database.Open()
         if err != nil </span><span class="cov0" title="0">{
@@ -521,6 +554,23 @@ func DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) e
 		<pre class="file" id="file11" style="display: none">package locations
 
 import (
+        oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
+
+        "github.com/labstack/echo/v4"
+)
+
+type Api struct {
+        oapicodegen.ServerInterface
+}
+
+func RegisterHandlers(e *echo.Echo) <span class="cov0" title="0">{
+        oapicodegen.RegisterHandlers(e, &amp;Api{})
+}</span>
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package locations
+
+import (
         "net/http"
 
         "github.com/google/uuid"
@@ -528,12 +578,12 @@ import (
 
         app "openapi/internal/app/stock/location"
         "openapi/internal/infra/database"
-        oapicodegen "openapi/internal/infra/oapicodegen/stock"
+        oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
         infra "openapi/internal/infra/repository/sqlboiler/stock/location"
 )
 
 // PostStockLocation is a function that handles the HTTP POST request for creating a new stock item.
-func PostStockLocation(ctx echo.Context) error <span class="cov0" title="0">{
+func (Api) PostStockLocation(ctx echo.Context) error <span class="cov0" title="0">{
         // Precondition
         db, err := database.Open()
         if err != nil </span><span class="cov0" title="0">{
@@ -579,7 +629,7 @@ func PostStockLocation(ctx echo.Context) error <span class="cov0" title="0">{
         <span class="cov0" title="0">return ctx.JSON(http.StatusCreated, res)</span>
 }</pre>
 		
-		<pre class="file" id="file12" style="display: none">package locations
+		<pre class="file" id="file13" style="display: none">package locations
 
 import (
         "net/http"
@@ -588,14 +638,14 @@ import (
 
         app "openapi/internal/app/stock/location"
         "openapi/internal/infra/database"
-        oapicodegen "openapi/internal/infra/oapicodegen/stock"
+        oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
         infra "openapi/internal/infra/repository/sqlboiler/stock/location"
 
         openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Put is a function that handles the HTTP PUT request for updating an existing stock location.
-func PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov0" title="0">{
+func (Api) PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov0" title="0">{
         // Precondition
         db, err := database.Open()
         if err != nil </span><span class="cov0" title="0">{
