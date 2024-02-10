@@ -1,14 +1,22 @@
 package location
 
-import "fmt"
+import (
+	"errors"
+)
 
-type Name struct {
-	string
-}
+type(
+	Name struct {
+		string
+	}
+)
+
+var(
+	ErrInvalidName = errors.New("invalid name")
+)
 
 func NewName(v string) (Name, error) {
 	if v == "" {
-		return Name{}, fmt.Errorf("NewName: invalid name %+v", v)
+		return Name{}, ErrInvalidName
 	}
 	return Name{v}, nil
 }

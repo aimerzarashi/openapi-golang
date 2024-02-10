@@ -35,11 +35,12 @@ func TestNewIdFail(t *testing.T) {
 	// When
 	value := uuid.Nil
 	id, err := location.NewId(value)
-	if err == nil {
-		t.Errorf("expected error but returned nil")
-	}
 
 	// Then
+	if err != location.ErrInvalidId {
+		t.Errorf("%T %+v want %+v", err, err, location.ErrInvalidId)
+	}
+
 	if id.UUID() != uuid.Nil {
 		t.Errorf("%T %+v want %+v", id.UUID(), id.UUID(), uuid.Nil)
 	}

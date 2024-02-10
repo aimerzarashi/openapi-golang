@@ -6,13 +6,14 @@ import (
 	"openapi/internal/domain/stock/location"
 )
 
-type createRequest struct {
-	Name location.Name	
-}
-
-type createResponse struct {
-	Id uuid.UUID
-}
+type(
+	createRequest struct {
+		Name location.Name	
+	}
+  createResponse struct {
+		Id uuid.UUID
+	}
+)
 
 func Create(req createRequest, r location.IRepository, newId uuid.UUID) (createResponse, error) {
 	id, err := location.NewId(newId)

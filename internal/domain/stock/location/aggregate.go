@@ -1,10 +1,12 @@
 package location
 
-type Aggregate struct {
-	Id   		Id
-	Name 		Name
-	deleted bool
-}
+type(
+	Aggregate struct {
+		Id   		Id
+		Name 		Name
+		deleted bool
+	}
+)
 
 func NewAggregate(id Id, name Name) *Aggregate {
 	return &Aggregate{

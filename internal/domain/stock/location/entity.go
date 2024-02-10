@@ -1,18 +1,23 @@
 package location
 
 import (
-	"fmt"
-
+	"github.com/friendsofgo/errors"
 	"github.com/google/uuid"
 )
 
-type Id struct {
-	value uuid.UUID
-}
+type(
+	Id struct {
+		value uuid.UUID				
+	}
+)
+
+var (
+	ErrInvalidId = errors.New("invalid id")
+)
 
 func NewId(v uuid.UUID) (Id, error) {
 	if v == uuid.Nil {
-		return Id{}, fmt.Errorf("invalid id because empty")
+		return Id{}, ErrInvalidId
 	}
 	return Id{v}, nil
 }

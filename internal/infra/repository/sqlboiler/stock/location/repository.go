@@ -3,7 +3,7 @@ package location
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"errors"
 	"openapi/internal/infra/sqlboiler"
 
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -11,14 +11,21 @@ import (
 	"openapi/internal/domain/stock/location"
 )
 
-type Repository struct {
-	location.IRepository
-	db *sql.DB
-}
+type(
+		Repository struct {
+		location.IRepository
+		db *sql.DB
+	}
+)
+
+var(
+	ErrDbEmpty = errors.New("db is empty")
+	ErrRowDeleted = errors.New("row deleted")
+)
 
 func NewRepository(db *sql.DB) (*Repository, error) {
 	if db == nil {
-		return nil, fmt.Errorf("NewRepository: db is nil")
+		return nil, ErrDbEmpty
 	}
 	return &Repository{
 		db: db,
@@ -54,7 +61,7 @@ func (r *Repository) Get(id location.Id) (*location.Aggregate, error) {
 	}
 
 	if data.Deleted {
-		return nil, fmt.Errorf("deleted")
+		return nil, ErrRowDeleted
 	}
 
 	name, err := location.NewName(data.Name)
