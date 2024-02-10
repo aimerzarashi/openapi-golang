@@ -61,7 +61,7 @@
 				
 				<option value="file2">openapi/internal/app/stock/location/delete.go (83.3%)</option>
 				
-				<option value="file3">openapi/internal/app/stock/location/update.go (75.0%)</option>
+				<option value="file3">openapi/internal/app/stock/location/update.go (87.5%)</option>
 				
 				<option value="file4">openapi/internal/domain/stock/location/aggregate.go (100.0%)</option>
 				
@@ -260,12 +260,12 @@ func Update(req updateRequest, r location.IRepository) error <span class="cov8" 
 func NewUpdateRequest(id uuid.UUID, name string) (updateRequest, error) <span class="cov8" title="1">{
         // validation
         validId, err := location.NewId(id)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return updateRequest{}, err
         }</span>
 
         <span class="cov8" title="1">validName, err := location.NewName(name)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return updateRequest{}, err
         }</span>
 

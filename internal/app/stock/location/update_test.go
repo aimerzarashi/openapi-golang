@@ -2,6 +2,7 @@ package location_test
 
 import (
 	app "openapi/internal/app/stock/location"
+	domain "openapi/internal/domain/stock/location"
 	"openapi/internal/infra/database"
 	infra "openapi/internal/infra/repository/sqlboiler/stock/location"
 	"testing"
@@ -57,5 +58,27 @@ func TestUpdateSuccess(t *testing.T) {
 
 	if a.Name.String() != newName {
 		t.Errorf("%T %v, want %v", a.Name.String(), a.Name.String(), newName)
+	}
+}
+
+func TestUpdateFailNameInvalid(t *testing.T) {
+	t.Parallel()
+
+	// When
+	name := ""
+	_, err := app.NewUpdateRequest(uuid.New(), name)
+	if err != domain.ErrInvalidName {
+		t.Errorf("%T %v, want %v", err, err, domain.ErrInvalidName)
+	}
+}
+
+func TestUpdateFailIdNil(t *testing.T) {
+	t.Parallel()
+
+	// When
+	name := "test"
+	_, err := app.NewUpdateRequest(uuid.Nil, name)
+	if err != domain.ErrInvalidId {
+		t.Errorf("%T %v, want %v", err, err, domain.ErrInvalidId)
 	}
 }

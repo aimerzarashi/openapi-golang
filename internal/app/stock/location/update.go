@@ -11,23 +11,6 @@ type updateRequest struct {
 	Name location.Name	
 }
 
-func Update(req updateRequest, r location.IRepository) error {
-	id := location.Id(req.Id)
-	a, err := r.Get(id)
-	if err != nil {
-		return err
-	}
-
-	a.Name = req.Name
-
-	err = r.Save(a)
-	if err != nil {
-		return err
-	}
-	
-	return nil
-}
-
 func NewUpdateRequest(id uuid.UUID, name string) (updateRequest, error) {
 	// validation
 	validId, err := location.NewId(id)
@@ -45,4 +28,21 @@ func NewUpdateRequest(id uuid.UUID, name string) (updateRequest, error) {
 		Id: validId,
 		Name: validName,
 	}, nil
+}
+
+func Update(req updateRequest, r location.IRepository) error {
+	id := location.Id(req.Id)
+	a, err := r.Get(id)
+	if err != nil {
+		return err
+	}
+
+	a.Name = req.Name
+
+	err = r.Save(a)
+	if err != nil {
+		return err
+	}
+	
+	return nil
 }
