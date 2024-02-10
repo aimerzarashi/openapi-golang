@@ -65,6 +65,6 @@ func TestDeleteNotFound(t *testing.T) {
 
 	// Then
 	if deleteRes.StatusCode != http.StatusNotFound {
-		t.Errorf("want %d, got %d", http.StatusNotFound, deleteRes.StatusCode)
+		t.Errorf("%T = %d, want %d", deleteRes.StatusCode, deleteRes.StatusCode, http.StatusNotFound)
 	}
 }

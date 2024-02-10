@@ -50,25 +50,37 @@ func (r *Repository) Save(a *location.Aggregate) error {
 func (r *Repository) Get(id location.Id) (*location.Aggregate, error) {
 	data, err := sqlboiler.FindStockLocation(context.Background(), r.db, id.UUID().String())
 	if err != nil {
-		return &location.Aggregate{}, err
+		return nil, err
+	}
+
+	if data.Deleted {
+		return nil, fmt.Errorf("deleted")
 	}
 
 	name, err := location.NewName(data.Name)
 	if err != nil {
-		return &location.Aggregate{}, err
+		return nil, err
 	}
 
-	a := location.RestoreAggregate(id, name, data.Deleted)	
+	a := location.RestoreAggregate(id, name, data.Deleted)
 
 	return a, nil
 }
 
 
 func (r *Repository) Find(id location.Id) (bool, error) {
-	found, err := sqlboiler.StockLocationExists(context.Background(), r.db, id.String())
-	if err != nil {
+	data, err := sqlboiler.FindStockLocation(context.Background(), r.db, id.UUID().String())
+	if err != nil && err != sql.ErrNoRows {
 		return false, err
 	}
-	
-	return found, nil
+
+	if err == sql.ErrNoRows {
+		return false, nil
+	}
+
+	if data.Deleted {
+		return false, nil		
+	}
+
+	return true, nil
 }

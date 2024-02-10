@@ -68,8 +68,6 @@ func TestSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	currentDateTime := time.Now().UTC()
-
 	// Given
 	id, err := domain.NewId(uuid.New())
 	if err != nil {
@@ -84,52 +82,84 @@ func TestSave(t *testing.T) {
 	a := domain.NewAggregate(id, name)
 
 	// When
-	before, err := repo.Get(a.Id)
-	if err == nil {
-		t.Fatalf("expected error but returned nil, %+v", before)
+	beforeCreatedAt := time.Now().UTC()
+	if err = repo.Save(a); err != nil {
+		t.Fatal(err)
+	}
+
+	beforeData, err := sqlboiler.FindStockLocation(context.Background(), db, a.Id.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	beforeModel, err := repo.Get(a.Id)
+	if err != nil {
+		t.Fatalf("expected error but returned nil, %+v", err)
 	}
 
 	if err = repo.Save(a); err != nil {
 		t.Fatal(err)
 	}
 
-	after, err := repo.Get(a.Id)
+	afterData, err := sqlboiler.FindStockLocation(context.Background(), db, a.Id.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	afterModel, err := repo.Get(a.Id)
 	if err != nil {
 		t.Fatalf("expected error but returned nil, %+v", err)
 	}
 
 	// Then
-	if reflect.DeepEqual(after,before) {
-		t.Errorf("%T %+v want %+v", after, after, before)
+	if !reflect.DeepEqual(beforeModel, afterModel) {
+		t.Errorf("%T %+v want %+v", afterModel, afterModel, beforeModel)
 	}
 
-	data, err := sqlboiler.FindStockLocation(context.Background(), db, a.Id.String())
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if data.ID != id.String() {
-		t.Errorf("%T %+v want %+v", data.ID, data.ID, id)
+	if beforeData.ID != id.String() {
+		t.Errorf("%T %+v want %+v", beforeData.ID, beforeData.ID, id)
 	}
 	
-	if data.Name != name.String() {
-		t.Errorf("%T %+v want %+v", data.Name, data.Name, name)
+	if beforeData.Name != name.String() {
+		t.Errorf("%T %+v want %+v", beforeData.Name, beforeData.Name, name)
 	}
 
-	if data.Deleted != false {
-		t.Errorf("%T %+v want %+v", data.Deleted, data.Deleted, false)
+	if beforeData.Deleted != false {
+		t.Errorf("%T %+v want %+v", beforeData.Deleted, beforeData.Deleted, false)
 	}
 
-	if data.CreatedAt.Before(currentDateTime) == true {
-		t.Errorf("expected %s, got %s", currentDateTime, data.CreatedAt)		
+	beforeCreatedAtNC := beforeCreatedAt.UnixMilli()
+	createdAtAtNC := beforeData.CreatedAt.UnixMilli()
+	if !(createdAtAtNC >= beforeCreatedAtNC) {
+		t.Errorf("%T %d want greater than %d", createdAtAtNC, createdAtAtNC, beforeCreatedAtNC)
 	}
 
-	if data.UpdatedAt.Equal(data.CreatedAt) != true {
-		t.Errorf("expected %s, got %s", data.CreatedAt, data.UpdatedAt)
+	if beforeData.UpdatedAt.Equal(beforeData.CreatedAt) != true {
+		t.Errorf("%T %+v want %+v", beforeData.UpdatedAt, beforeData.UpdatedAt, beforeData.CreatedAt)
+	}
+
+	if afterData.ID != beforeData.ID {
+		t.Errorf("%T %+v want %+v", afterData.ID, afterData.ID, beforeData.ID)
+	}
+
+	if afterData.Name != beforeData.Name {
+		t.Errorf("%T %+v want %+v", afterData.Name, afterData.Name, beforeData.ID)
+	}
+
+	if afterData.Deleted != beforeData.Deleted {
+		t.Errorf("%T %+v want %+v", afterData.Deleted, afterData.Deleted, beforeData.Deleted)		
+	}
+
+	if afterData.CreatedAt != beforeData.CreatedAt {
+		t.Errorf("%T %+v want %+v", afterData.CreatedAt, afterData.CreatedAt, beforeData.CreatedAt)
+	}
+
+	if afterData.UpdatedAt.Before(afterData.CreatedAt) == true {
+		t.Errorf("%T %+v want greater than %+v ", afterData.UpdatedAt, afterData.UpdatedAt, afterData.CreatedAt)
 	}
 }
 
-func TestUpdate(t *testing.T) {
+func TestGet(t *testing.T) {
 	t.Parallel()
 
 	// Setup
@@ -148,69 +178,52 @@ func TestUpdate(t *testing.T) {
 	id, err := domain.NewId(uuid.New())
 	if err != nil {
 		t.Fatal(err)
-	}
+	}	
 
-	name, err := domain.NewName("before")
+	name, err := domain.NewName("TestName")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	before := domain.NewAggregate(id, name)
-
-	currentDateTime := time.Now().UTC()
-	dataFormat := "2006-01-02 15:04:05.000000 +09:00"
-
-	if err = repo.Save(before); err != nil {
-		t.Fatal(err)
-	}
-
-	beforeData, err := sqlboiler.FindStockLocation(context.Background(), db, before.Id.String())
-	if err != nil {
-		t.Fatal(err)
-	}
+	a := domain.NewAggregate(id, name)
 
 	// When
-	after, err := repo.Get(before.Id)
+	notFound, err := repo.Get(a.Id)
+	if err == nil {
+		t.Fatal("expected not nil, got nil")
+	}
+
+	if err = repo.Save(a); err != nil {
+		t.Fatal(err)
+	}
+
+	found, err := repo.Get(a.Id)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	changedName, err := domain.NewName("after")
-	if err != nil {
+	a.Delete()
+
+	if err = repo.Save(a); err != nil {
 		t.Fatal(err)
 	}
 
-	after.Name = changedName
-	after.Delete()
-
-	if err = repo.Save(after); err != nil {
-		t.Fatal(err)
+	deleted, err := repo.Get(a.Id)
+	if err == nil {
+		t.Fatal("expected not nil, got nil")
 	}
 
 	// Then
-	afterData, err := sqlboiler.FindStockLocation(context.Background(), db, after.Id.String())
-	if err != nil {
-		t.Fatal(err)
+	if notFound != nil {
+		t.Errorf("%T %+v want %+v", notFound, notFound, nil)
 	}
 
-	if afterData.ID != after.Id.String(){
-		t.Errorf("%T %+v want %+v", afterData.ID, afterData.ID, after.Id.String())
+	if found == nil {
+		t.Errorf("expected not nil, got nil")
 	}
 
-	if afterData.Name != after.Name.String() {
-		t.Errorf("%T %+v want %+v", afterData.Name, afterData.Name, after.Name.String())
-	}
-
-	if afterData.Deleted != after.IsDeleted() {
-		t.Errorf("%T %+v want %+v", afterData.Deleted, afterData.Deleted, after.IsDeleted())
-	}
-
-	if afterData.CreatedAt.Format(dataFormat) != beforeData.CreatedAt.Format(dataFormat) {
-		t.Errorf("%T %+v want %+v", afterData.CreatedAt, afterData.CreatedAt, beforeData.CreatedAt.Format(dataFormat))
-	}
-
-	if afterData.UpdatedAt.Before(currentDateTime) == true {
-		t.Errorf("%T %+v want greater than %+v ", afterData.UpdatedAt, afterData.UpdatedAt, currentDateTime)
+	if deleted != nil {
+		t.Errorf("%T %+v want %+v", deleted, deleted, nil)
 	}
 }
 
@@ -235,7 +248,7 @@ func TestFind(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name, err := domain.NewName("test")
+	name, err := domain.NewName("TestName")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -257,13 +270,28 @@ func TestFind(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	a.Delete()
+
+	if err = repo.Save(a); err != nil {
+		t.Fatal(err)
+	}
+
+	notFoundDueToDeleted, err := repo.Find(a.Id)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	// Then
 	if notFound != false {
 		t.Errorf("%T %+v want %+v", notFound, notFound, false)
 	}
 
 	if found != true {
-		t.Errorf("%T %+v want %+v", found, found, true)
+		t.Errorf("%T %+v want %+v", found, found, false)
+	}
+
+	if notFoundDueToDeleted != false {
+		t.Errorf("%T %+v want %+v", notFoundDueToDeleted, notFoundDueToDeleted, false)
 	}
 }
 
@@ -347,7 +375,7 @@ func TestFailDbClose(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name, err := domain.NewName("test")
+	name, err := domain.NewName("TestName")
 	if err != nil {
 		t.Fatal(err)
 	}

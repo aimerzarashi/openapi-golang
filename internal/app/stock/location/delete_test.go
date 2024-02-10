@@ -49,12 +49,50 @@ func TestDeleteSuccess(t *testing.T) {
 
 	// Then
 	id, err := domain.NewId(resCreate.Id)
-	a, err := repo.Get(id)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if !a.IsDeleted() {
-		t.Errorf("expected %t, got %t", true, a.IsDeleted())
+	_, err = repo.Get(id)
+	if err == nil {
+		t.Errorf("expected not nil, got nil")
+	}
+}
+
+func TestDeleteFail(t *testing.T) {
+	// Setup
+	db, err := database.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	repo, err := infra.NewRepository(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	reqDelete, err := app.NewDeleteRequest(uuid.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := app.Delete(reqDelete, repo); err == nil {
+		t.Errorf("expected not nil, got nil")
+	}
+
+	// Then
+	found, err := repo.Find(reqDelete.Id)
+	if err != nil {
+		t.Errorf("expected nil, got %v", err)
+	}
+	if found {
+		t.Errorf("%T = %v, want %v", found, found, false)
+	}
+
+	_, err = repo.Get(reqDelete.Id)
+	if err == nil {
+		t.Errorf("expected not nil, got nil")
 	}
 }
