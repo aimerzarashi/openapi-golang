@@ -8,7 +8,7 @@ import (
 
 	app "openapi/internal/app/stock/location"
 	"openapi/internal/infra/database"
-	oapicodegen "openapi/internal/infra/oapicodegen/stock"
+	oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
 	infra "openapi/internal/infra/repository/sqlboiler/stock/location"
 )
 

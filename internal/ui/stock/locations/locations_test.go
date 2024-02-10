@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 	"openapi/internal/infra/env"
-	oapicodegen "openapi/internal/infra/oapicodegen/stock"
+	oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
 
 	"github.com/google/uuid"
 )

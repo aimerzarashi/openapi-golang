@@ -1,7 +1,7 @@
 package locations_test
 
 import (
-	oapicodegen "openapi/internal/infra/oapicodegen/stock"
+	oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
 	"testing"
 
 	_ "github.com/lib/pq"
