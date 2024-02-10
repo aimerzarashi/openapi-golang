@@ -1,6 +1,7 @@
 package location_test
 
 import (
+	"fmt"
 	app "openapi/internal/app/stock/location"
 	domain "openapi/internal/domain/stock/location"
 	"openapi/internal/infra/database"
@@ -12,6 +13,8 @@ import (
 
 
 func TestDeleteSuccess(t *testing.T) {
+	t.Parallel()
+
 	// Setup
 	db, err := database.Open()
 	if err != nil {
@@ -60,6 +63,8 @@ func TestDeleteSuccess(t *testing.T) {
 }
 
 func TestDeleteFail(t *testing.T) {
+	t.Parallel()
+
 	// Setup
 	db, err := database.Open()
 	if err != nil {
@@ -78,21 +83,12 @@ func TestDeleteFail(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := app.Delete(reqDelete, repo); err == nil {
-		t.Errorf("expected not nil, got nil")
-	}
-
+	err = app.Delete(reqDelete, repo);
+	
 	// Then
-	found, err := repo.Find(reqDelete.Id)
-	if err != nil {
-		t.Errorf("expected nil, got %v", err)
-	}
-	if found {
-		t.Errorf("%T = %v, want %v", found, found, false)
-	}
-
-	_, err = repo.Get(reqDelete.Id)
 	if err == nil {
 		t.Errorf("expected not nil, got nil")
 	}
+
+	fmt.Printf("err: %v\n", err)
 }

@@ -28,8 +28,7 @@ func (a *Api) PutStockLocation(ctx echo.Context, stockLocationId openapi_types.U
 }
 
 func (a *Api) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error {
-	// return locations.DeleteStockLocation(ctx, stockLocationId)
-	return nil
+	return locations.DeleteStockLocation(ctx, stockLocationId)
 }
 
 func (a *Api) PostStockItem(ctx echo.Context) error {

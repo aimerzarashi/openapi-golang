@@ -10,6 +10,8 @@ import (
 )
 
 func TestUpdateSuccess(t *testing.T) {
+	t.Parallel()
+	
 	// Setup
 	db, err := database.Open()
 	if err != nil {

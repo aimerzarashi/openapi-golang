@@ -12,6 +12,8 @@ import (
 
 
 func TestCreateSuccess(t *testing.T) {
+	t.Parallel()
+
 	// Setup
 	db, err := database.Open()
 	if err != nil {
@@ -48,10 +50,15 @@ func TestCreateSuccess(t *testing.T) {
 	}
 
 	id, err := domain.NewId(res.Id) 
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	a, err := repo.Get(id)
 	if err != nil {
 		t.Fatal(err)
 	}
+	
 	if a.Name.String() != name {
 		t.Errorf("%T = %v, want %v", a.Name.String(), a.Name.String(), name)
 	}
