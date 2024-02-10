@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	hello "openapi/internal/ui/hello"
-	stock "openapi/internal/ui/stock"
+	locations "openapi/internal/ui/stock/locations"
 )
 
 
@@ -34,8 +34,8 @@ func main() {
 	
 	e.Validator = &CustomValidator{validator: validator.New()}
 
-	hello.RegisterHandlers(e, hello.New())
-	stock.RegisterHandlers(e, stock.New())
+	hello.RegisterHandlers(e)
+	locations.RegisterHandlers(e)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

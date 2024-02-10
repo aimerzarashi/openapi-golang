@@ -13,7 +13,7 @@ import (
 )
 
 // PostStockLocation is a function that handles the HTTP POST request for creating a new stock item.
-func PostStockLocation(ctx echo.Context) error {
+func (Api) PostStockLocation(ctx echo.Context) error {
 	// Precondition
 	db, err := database.Open()
 	if err != nil {

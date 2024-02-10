@@ -8,12 +8,8 @@ import (
 
 type Api struct {}
 
-func New() oapicodegen.ServerInterface {
-	return &Api{}
-}
-
-func RegisterHandlers(e *echo.Echo, si oapicodegen.ServerInterface) {
-	oapicodegen.RegisterHandlers(e, si)
+func RegisterHandlers(e *echo.Echo) {
+	oapicodegen.RegisterHandlers(e, &Api{})
 }
 
 func (a *Api) GetHello(ctx echo.Context) error {

@@ -14,7 +14,7 @@ import (
 )
 
 // Put is a function that handles the HTTP PUT request for updating an existing stock location.
-func PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error {
+func (Api) PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error {
 	// Precondition
 	db, err := database.Open()
 	if err != nil {
