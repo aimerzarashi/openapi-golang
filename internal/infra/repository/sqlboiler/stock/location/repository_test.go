@@ -12,6 +12,7 @@ import (
 	"openapi/internal/infra/sqlboiler"
 
 	"github.com/google/uuid"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 func TestNewRepository(t *testing.T) {
@@ -73,7 +74,7 @@ func TestSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name, err := domain.NewName("TestName")
+	name, err := domain.NewName("test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -179,7 +180,7 @@ func TestGet(t *testing.T) {
 		t.Fatal(err)
 	}	
 
-	name, err := domain.NewName("TestName")
+	name, err := domain.NewName("test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -247,7 +248,7 @@ func TestFind(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name, err := domain.NewName("TestName")
+	name, err := domain.NewName("test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -315,7 +316,7 @@ func TestFailDbClose(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name, err := domain.NewName("TestName")
+	name, err := domain.NewName("test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -336,5 +337,53 @@ func TestFailDbClose(t *testing.T) {
 	err = repo.Save(a)
 	if err == nil {
 		t.Errorf("expected error but returned nil")
+	}
+}
+
+func TestGetFailDataInvalid(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	db, err := database.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	repo, err := infra.NewRepository(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Given
+	id, err := domain.NewId(uuid.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data := &sqlboiler.StockLocation{
+		ID:   id.String(),
+		Name: "",
+		Deleted: false,
+	}
+
+	err = data.Upsert(
+		context.Background(),
+		db,
+		true,
+		[]string{"id"},
+		boil.Whitelist("name","deleted"),
+		boil.Infer(),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	_, err = repo.Get(id)
+
+	// Then
+	if err == nil {
+		t.Errorf("expected not nil, got nil")
 	}
 }
