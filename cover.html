@@ -61,7 +61,7 @@
 				
 				<option value="file2">openapi/internal/app/stock/location/delete.go (83.3%)</option>
 				
-				<option value="file3">openapi/internal/app/stock/location/update.go (87.5%)</option>
+				<option value="file3">openapi/internal/app/stock/location/update.go (100.0%)</option>
 				
 				<option value="file4">openapi/internal/domain/stock/location/aggregate.go (100.0%)</option>
 				
@@ -154,22 +154,6 @@ type(
         }
 )
 
-func Create(req createRequest, r location.IRepository, newId uuid.UUID) (createResponse, error) <span class="cov8" title="1">{
-        id, err := location.NewId(newId)
-        if err != nil </span><span class="cov8" title="1">{
-                return createResponse{}, err
-        }</span>
-
-        <span class="cov8" title="1">a := location.NewAggregate(id, req.Name)
-
-        if err := r.Save(a); err != nil </span><span class="cov8" title="1">{
-                return createResponse{}, err
-        }</span>
-
-        <span class="cov8" title="1">res := newCreateResponse(a.Id, a.Name)
-        return res, nil</span>
-}
-
 func NewCreateRequest(name string) (createRequest, error) <span class="cov8" title="1">{
         validName, err := location.NewName(name)
         if err != nil </span><span class="cov8" title="1">{
@@ -186,7 +170,22 @@ func newCreateResponse(id location.Id, name location.Name) createResponse <span 
                 Id: id.UUID(),
         }
 }</span>
-</pre>
+
+func Create(req createRequest, r location.IRepository, newId uuid.UUID) (createResponse, error) <span class="cov8" title="1">{
+        id, err := location.NewId(newId)
+        if err != nil </span><span class="cov8" title="1">{
+                return createResponse{}, err
+        }</span>
+
+        <span class="cov8" title="1">a := location.NewAggregate(id, req.Name)
+
+        if err := r.Save(a); err != nil </span><span class="cov8" title="1">{
+                return createResponse{}, err
+        }</span>
+
+        <span class="cov8" title="1">res := newCreateResponse(a.Id, a.Name)
+        return res, nil</span>
+}</pre>
 		
 		<pre class="file" id="file2" style="display: none">package location
 
@@ -240,23 +239,6 @@ type updateRequest struct {
         Name location.Name        
 }
 
-func Update(req updateRequest, r location.IRepository) error <span class="cov8" title="1">{
-        id := location.Id(req.Id)
-        a, err := r.Get(id)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-
-        <span class="cov8" title="1">a.Name = req.Name
-
-        err = r.Save(a)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        
-        <span class="cov8" title="1">return nil</span>
-}
-
 func NewUpdateRequest(id uuid.UUID, name string) (updateRequest, error) <span class="cov8" title="1">{
         // validation
         validId, err := location.NewId(id)
@@ -274,6 +256,23 @@ func NewUpdateRequest(id uuid.UUID, name string) (updateRequest, error) <span cl
                 Id: validId,
                 Name: validName,
         }, nil</span>
+}
+
+func Update(req updateRequest, r location.IRepository) error <span class="cov8" title="1">{
+        id := location.Id(req.Id)
+        a, err := r.Get(id)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">a.Name = req.Name
+
+        err = r.Save(a)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        
+        <span class="cov8" title="1">return nil</span>
 }</pre>
 		
 		<pre class="file" id="file4" style="display: none">package location
