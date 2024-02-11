@@ -86,7 +86,7 @@ func TestUpdateFailIdNil(t *testing.T) {
 	}
 }
 
-func TestUpdateFail(t *testing.T) {
+func TestUpdateFailGetFail(t *testing.T) {
 	t.Parallel()
 	
 	// Setup

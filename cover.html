@@ -59,7 +59,7 @@
 				
 				<option value="file1">openapi/internal/app/stock/location/create.go (100.0%)</option>
 				
-				<option value="file2">openapi/internal/app/stock/location/delete.go (83.3%)</option>
+				<option value="file2">openapi/internal/app/stock/location/delete.go (100.0%)</option>
 				
 				<option value="file3">openapi/internal/app/stock/location/update.go (100.0%)</option>
 				
@@ -201,7 +201,7 @@ type deleteRequest struct {
 
 func NewDeleteRequest(id uuid.UUID) (deleteRequest, error) <span class="cov8" title="1">{
         validId, err := location.NewId(id)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return deleteRequest{}, err
         }</span>
 
@@ -219,7 +219,7 @@ func Delete(req deleteRequest, r location.IRepository) error <span class="cov8" 
         <span class="cov8" title="1">a.Delete()
 
         err = r.Save(a)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return err
         }</span>
         

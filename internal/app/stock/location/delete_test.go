@@ -1,16 +1,17 @@
 package location_test
 
 import (
-	"fmt"
+	"errors"
 	app "openapi/internal/app/stock/location"
+	mock "openapi/internal/app/stock/location/internal"
 	domain "openapi/internal/domain/stock/location"
 	"openapi/internal/infra/database"
 	infra "openapi/internal/infra/repository/sqlboiler/stock/location"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 )
-
 
 func TestDeleteSuccess(t *testing.T) {
 	t.Parallel()
@@ -62,9 +63,19 @@ func TestDeleteSuccess(t *testing.T) {
 	}
 }
 
-func TestDeleteFail(t *testing.T) {
+func TestDeleteFailIdNil(t *testing.T) {
 	t.Parallel()
 
+	// When
+	_, err := app.NewDeleteRequest(uuid.Nil)
+	if err != domain.ErrInvalidId {
+		t.Errorf("%T %v, want %v", err, err, domain.ErrInvalidId)
+	}
+}
+
+func TestDeleteFailGetFail(t *testing.T) {
+	t.Parallel()
+	
 	// Setup
 	db, err := database.Open()
 	if err != nil {
@@ -83,12 +94,47 @@ func TestDeleteFail(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = app.Delete(reqDelete, repo);
-	
+	err = app.Delete(reqDelete, repo)
+
 	// Then
 	if err == nil {
 		t.Errorf("expected not nil, got nil")
 	}
+}
 
-	fmt.Printf("err: %v\n", err)
+func TestDeleteFailSaveFail(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	id, err := domain.NewId(uuid.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	name, err := domain.NewName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a := domain.NewAggregate(id, name)
+
+	repo := mock.NewMockIRepository(ctrl)
+	repo.EXPECT().Get(gomock.Any()).Return(a, nil)
+	repo.EXPECT().Save(gomock.Any()).Return(errors.New("test error"))
+
+	// When
+	reqDelete, err := app.NewDeleteRequest(id.UUID())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = app.Delete(reqDelete, repo)
+
+	// Then
+	if err == nil {
+		t.Errorf("expected not nil, got nil")
+	}
 }

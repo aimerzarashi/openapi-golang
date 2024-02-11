@@ -26,12 +26,12 @@ openapi/internal/app/stock/location/create.go:41.2,43.34 2 1
 openapi/internal/app/stock/location/create.go:43.34,45.3 1 1
 openapi/internal/app/stock/location/create.go:47.2,48.17 2 1
 openapi/internal/app/stock/location/delete.go:13.60,15.16 2 1
-openapi/internal/app/stock/location/delete.go:15.16,17.3 1 0
+openapi/internal/app/stock/location/delete.go:15.16,17.3 1 1
 openapi/internal/app/stock/location/delete.go:19.2,21.8 1 1
 openapi/internal/app/stock/location/delete.go:24.62,26.16 2 1
 openapi/internal/app/stock/location/delete.go:26.16,28.3 1 1
 openapi/internal/app/stock/location/delete.go:30.2,33.16 3 1
-openapi/internal/app/stock/location/delete.go:33.16,35.3 1 0
+openapi/internal/app/stock/location/delete.go:33.16,35.3 1 1
 openapi/internal/app/stock/location/delete.go:37.2,37.12 1 1
 openapi/internal/app/stock/location/update.go:14.73,17.16 2 1
 openapi/internal/app/stock/location/update.go:17.16,19.3 1 1
@@ -43,9 +43,6 @@ openapi/internal/app/stock/location/update.go:36.16,38.3 1 1
 openapi/internal/app/stock/location/update.go:40.2,43.16 3 1
 openapi/internal/app/stock/location/update.go:43.16,45.3 1 1
 openapi/internal/app/stock/location/update.go:47.2,47.12 1 1
-openapi/internal/ui/hello/get.go:13.39,18.2 1 0
-openapi/internal/ui/hello/hello.go:11.37,13.2 1 0
-openapi/internal/ui/hello/hello.go:15.48,17.2 1 0
 openapi/internal/infra/repository/sqlboiler/stock/location/repository.go:26.53,27.15 1 1
 openapi/internal/infra/repository/sqlboiler/stock/location/repository.go:27.15,29.3 1 1
 openapi/internal/infra/repository/sqlboiler/stock/location/repository.go:30.2,32.8 1 1
@@ -66,6 +63,9 @@ openapi/internal/infra/repository/sqlboiler/stock/location/repository.go:84.26,8
 openapi/internal/infra/repository/sqlboiler/stock/location/repository.go:88.2,88.18 1 1
 openapi/internal/infra/repository/sqlboiler/stock/location/repository.go:88.18,90.3 1 1
 openapi/internal/infra/repository/sqlboiler/stock/location/repository.go:92.2,92.18 1 1
+openapi/internal/ui/hello/get.go:13.39,18.2 1 0
+openapi/internal/ui/hello/hello.go:11.37,13.2 1 0
+openapi/internal/ui/hello/hello.go:15.48,17.2 1 0
 openapi/internal/ui/stock/locations/delete.go:16.92,19.16 2 0
 openapi/internal/ui/stock/locations/delete.go:19.16,21.3 1 0
 openapi/internal/ui/stock/locations/delete.go:22.2,25.16 3 0
