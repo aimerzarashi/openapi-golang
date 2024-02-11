@@ -2,6 +2,7 @@ package locations_test
 
 import (
 	oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
+	"openapi/internal/ui/stock/locations"
 	"strings"
 	"testing"
 
@@ -11,6 +12,48 @@ import (
 
 	"net/http"
 )
+
+func TestPutOk2(t *testing.T) {
+	t.Parallel()
+
+	// Given
+	beforeReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+		Name: "test",
+	}
+
+	b := NewRequest("/stock/locations", beforeReqBody)
+	
+	if err := locations.Api.PostStockLocation(locations.Api{}, b.context); err != nil {
+		t.Fatal(err)
+	}
+	defer b.recorder.Result().Body.Close()
+
+	if b.recorder.Code != http.StatusCreated {
+		t.Fatal(b.recorder.Code)
+	}
+
+	postReqBody, err := Response[oapicodegen.Created](b.recorder.Result())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	afterReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+		Name: "test",
+	}
+
+	a := NewRequest("/stock/locations/" + postReqBody.Id.String(), afterReqBody)
+	
+	if err := locations.Api.PutStockLocation(locations.Api{}, a.context, postReqBody.Id); err != nil {
+		t.Fatal(err)
+	}
+	defer a.recorder.Result().Body.Close()
+
+	// Then
+	if a.recorder.Code != http.StatusOK {
+		t.Errorf("want %d, got %d", http.StatusOK, a.recorder.Code)
+	}
+}
 
 func TestPutOk(t *testing.T) {
 	// Setup

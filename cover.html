@@ -75,13 +75,13 @@
 				
 				<option value="file9">openapi/internal/ui/hello/hello.go (0.0%)</option>
 				
-				<option value="file10">openapi/internal/ui/stock/locations/delete.go (0.0%)</option>
+				<option value="file10">openapi/internal/ui/stock/locations/delete.go (66.7%)</option>
 				
 				<option value="file11">openapi/internal/ui/stock/locations/locations.go (0.0%)</option>
 				
-				<option value="file12">openapi/internal/ui/stock/locations/post.go (0.0%)</option>
+				<option value="file12">openapi/internal/ui/stock/locations/post.go (69.6%)</option>
 				
-				<option value="file13">openapi/internal/ui/stock/locations/put.go (0.0%)</option>
+				<option value="file13">openapi/internal/ui/stock/locations/put.go (66.7%)</option>
 				
 				</select>
 			</div>
@@ -98,11 +98,8 @@
 		<pre class="file" id="file0" style="display: none">package main
 
 import (
-        "net/http"
+        "openapi/internal/infra/validator"
 
-        _ "github.com/lib/pq"
-
-        "github.com/go-playground/validator"
         "github.com/labstack/echo/v4"
         "github.com/labstack/echo/v4/middleware"
 
@@ -110,26 +107,13 @@ import (
         locations "openapi/internal/ui/stock/locations"
 )
 
-
-type CustomValidator struct {
-        validator *validator.Validate
-}
-
-func (cv *CustomValidator) Validate(i interface{}) error <span class="cov0" title="0">{
-  if err := cv.validator.Struct(i); err != nil </span><span class="cov0" title="0">{
-    // Optionally, you could return the error to give each route more control over the status code
-    return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-  }</span>
-  <span class="cov0" title="0">return nil</span>
-}
-
 func main() <span class="cov0" title="0">{
         e := echo.New()
 
         e.Use(middleware.Logger())
         e.Use(middleware.Recover())
         
-        e.Validator = &amp;CustomValidator{validator: validator.New()}
+        e.Validator = validator.NewCustomValidator()
 
         hello.RegisterHandlers(e)
         locations.RegisterHandlers(e)
@@ -155,11 +139,13 @@ type(
 )
 
 func NewCreateRequest(name string) (createRequest, error) <span class="cov8" title="1">{
+        // validation
         validName, err := location.NewName(name)
         if err != nil </span><span class="cov8" title="1">{
                 return createRequest{}, err
         }</span>
 
+        // post processing
         <span class="cov8" title="1">return createRequest{
                 Name: validName,
         }, nil</span>
@@ -200,11 +186,13 @@ type deleteRequest struct {
 }
 
 func NewDeleteRequest(id uuid.UUID) (deleteRequest, error) <span class="cov8" title="1">{
+        // validation
         validId, err := location.NewId(id)
         if err != nil </span><span class="cov8" title="1">{
                 return deleteRequest{}, err
         }</span>
 
+        // post processing
         <span class="cov8" title="1">return deleteRequest{
                 Id: validId,
         }, nil</span>
@@ -513,13 +501,13 @@ import (
 )
 
 // Delete is a function that handles the HTTP DELETE request for deleting an existing stock item.
-func (Api) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov0" title="0">{
+func (Api) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov8" title="1">{
         // Precondition
         db, err := database.Open()
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
         }</span>
-        <span class="cov0" title="0">defer db.Close()
+        <span class="cov8" title="1">defer db.Close()
         
         repo, err := infra.NewRepository(db)
         if err != nil </span><span class="cov0" title="0">{
@@ -527,26 +515,26 @@ func (Api) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.U
         }</span>
 
         // Validation
-        <span class="cov0" title="0">reqDto, err := app.NewDeleteRequest(stockLocationId)
+        <span class="cov8" title="1">reqDto, err := app.NewDeleteRequest(stockLocationId)
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusBadRequest, err.Error())
         }</span>
 
-        <span class="cov0" title="0">found, err := repo.Find(reqDto.Id)
+        <span class="cov8" title="1">found, err := repo.Find(reqDto.Id)
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
         }</span>
-        <span class="cov0" title="0">if !found </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !found </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusNotFound, "stock location not found")
         }</span>
 
         // Main
-        <span class="cov0" title="0">if err := app.Delete(reqDto, repo); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := app.Delete(reqDto, repo); err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
         }</span>
 
         // Postcondition
-        <span class="cov0" title="0">return ctx.JSON(http.StatusOK, nil)</span>
+        <span class="cov8" title="1">return ctx.JSON(http.StatusOK, nil)</span>
 }</pre>
 		
 		<pre class="file" id="file11" style="display: none">package locations
@@ -581,13 +569,13 @@ import (
 )
 
 // PostStockLocation is a function that handles the HTTP POST request for creating a new stock item.
-func (Api) PostStockLocation(ctx echo.Context) error <span class="cov0" title="0">{
+func (Api) PostStockLocation(ctx echo.Context) error <span class="cov8" title="1">{
         // Precondition
         db, err := database.Open()
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
         }</span>
-        <span class="cov0" title="0">defer db.Close()
+        <span class="cov8" title="1">defer db.Close()
 
         repo, err := infra.NewRepository(db)
         if err != nil </span><span class="cov0" title="0">{
@@ -595,36 +583,36 @@ func (Api) PostStockLocation(ctx echo.Context) error <span class="cov0" title="0
         }</span>
 
         // Binding
-        <span class="cov0" title="0">req := &amp;oapicodegen.PostStockLocationJSONRequestBody{}
+        <span class="cov8" title="1">req := &amp;oapicodegen.PostStockLocationJSONRequestBody{}
         if err := ctx.Bind(&amp;req); err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusBadRequest, err.Error())
         }</span>
 
         // Validation
-        <span class="cov0" title="0">if err := ctx.Validate(req); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := ctx.Validate(req); err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusBadRequest, err.Error())
         }</span>
 
-        <span class="cov0" title="0">reqDto, err := app.NewCreateRequest(req.Name)
+        <span class="cov8" title="1">reqDto, err := app.NewCreateRequest(req.Name)
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusBadRequest, err.Error())
         }</span>
 
         // Main Process
-        <span class="cov0" title="0">newId := uuid.New()
+        <span class="cov8" title="1">newId := uuid.New()
         resDto, err := app.Create(reqDto, repo, newId)
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
         }</span>
 
-        <span class="cov0" title="0">res := &amp;oapicodegen.Created{Id: resDto.Id}
+        <span class="cov8" title="1">res := &amp;oapicodegen.Created{Id: resDto.Id}
 
         // Postcondition
         if err := ctx.Validate(res); err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
         }</span>
 
-        <span class="cov0" title="0">return ctx.JSON(http.StatusCreated, res)</span>
+        <span class="cov8" title="1">return ctx.JSON(http.StatusCreated, res)</span>
 }</pre>
 		
 		<pre class="file" id="file13" style="display: none">package locations
@@ -643,13 +631,13 @@ import (
 )
 
 // Put is a function that handles the HTTP PUT request for updating an existing stock location.
-func (Api) PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov0" title="0">{
+func (Api) PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov8" title="1">{
         // Precondition
         db, err := database.Open()
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
         }</span>
-        <span class="cov0" title="0">defer db.Close()
+        <span class="cov8" title="1">defer db.Close()
 
         repo, err := infra.NewRepository(db)
         if err != nil </span><span class="cov0" title="0">{
@@ -657,37 +645,37 @@ func (Api) PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID
         }</span> 
 
         // Binding
-        <span class="cov0" title="0">req := &amp;oapicodegen.PutStockLocationJSONRequestBody{}
+        <span class="cov8" title="1">req := &amp;oapicodegen.PutStockLocationJSONRequestBody{}
         if err := ctx.Bind(&amp;req); err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusBadRequest, err.Error())
         }</span>
 
         // Validation
-        <span class="cov0" title="0">if err := ctx.Validate(req); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := ctx.Validate(req); err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusBadRequest, err.Error())
         }</span>
 
-        <span class="cov0" title="0">reqDto, err := app.NewUpdateRequest(stockLocationId, req.Name)
+        <span class="cov8" title="1">reqDto, err := app.NewUpdateRequest(stockLocationId, req.Name)
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusBadRequest, err.Error())
         }</span>
 
-        <span class="cov0" title="0">found, err := repo.Find(reqDto.Id)
+        <span class="cov8" title="1">found, err := repo.Find(reqDto.Id)
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
         }</span>
-        <span class="cov0" title="0">if !found </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !found </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusNotFound, "stock location not found")
         }</span>
 
         // Main
-        <span class="cov0" title="0">err = app.Update(reqDto, repo)
+        <span class="cov8" title="1">err = app.Update(reqDto, repo)
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
         }</span>
 
         // Postcondition
-        <span class="cov0" title="0">return ctx.JSON(http.StatusOK, nil)</span>
+        <span class="cov8" title="1">return ctx.JSON(http.StatusOK, nil)</span>
 }</pre>
 		
 		</div>

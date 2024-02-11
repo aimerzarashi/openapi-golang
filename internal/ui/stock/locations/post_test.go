@@ -2,6 +2,7 @@ package locations_test
 
 import (
 	oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
+	"openapi/internal/ui/stock/locations"
 	"strings"
 	"testing"
 
@@ -13,31 +14,27 @@ import (
 )
 
 func TestPostCreated(t *testing.T) {
-	// Setup
-	rh := RequestHelper{
-		client: &http.Client{},
-	}
-	rch := ResponseConvertHelper{}
-
-	name := "test"
+	t.Parallel()
 
 	// When
-	postRes, err := rh.Post(
-		&oapicodegen.PostStockLocationJSONRequestBody{
-			Name: name,
-		},
-	)
+	reqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+		Name: "test",
+	}
+
+	r := NewRequest("/stock/locations", reqBody)
+	
+	err := locations.Api.PostStockLocation(locations.Api{}, r.context)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer postRes.Body.Close()
+	defer r.recorder.Result().Body.Close()
 
 	// Then
-	if postRes.StatusCode != http.StatusCreated {
-		t.Errorf("want %d, got %d", http.StatusCreated, postRes.StatusCode)
+	if r.recorder.Code != http.StatusCreated {
+		t.Errorf("want %d, got %d", http.StatusCreated, r.recorder.Code)
 	}
 
-	postResBody, err := rch.AsCreated(postRes)
+	postResBody, err := Response[oapicodegen.Created](r.recorder.Result())
 	if err != nil {
 		t.Fatal(err)
 	}

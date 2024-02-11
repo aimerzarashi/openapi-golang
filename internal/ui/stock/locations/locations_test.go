@@ -6,14 +6,48 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"openapi/internal/infra/env"
 	oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
+	"openapi/internal/infra/validator"
 
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 )
 
 type RequestHelper struct {
 	client *http.Client
+}
+
+type Request struct {
+	context echo.Context
+	recorder *httptest.ResponseRecorder
+}
+
+func NewRequest[I any](path string, reqBody *I) *Request {
+	reqBodyJson, _ := json.Marshal(reqBody)
+
+	e := echo.New()
+	e.Validator = validator.NewCustomValidator()
+	req := httptest.NewRequest(http.MethodPost, path, bytes.NewBuffer(reqBodyJson))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	return &Request{
+		context: ctx,
+		recorder: rec,
+	}
+}
+
+func Response[T any](res *http.Response) (*T, error){
+	resBodyByte, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	resBody := new(T)
+	json.Unmarshal(resBodyByte, resBody)
+	return resBody, nil
 }
 
 func (h *RequestHelper) Post(reqBody *oapicodegen.PostStockLocationJSONRequestBody) (*http.Response, error) {
