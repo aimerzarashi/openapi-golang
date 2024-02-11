@@ -474,7 +474,7 @@ import (
 // GetHello is a function that returns a JSON response with a message "Hello, World!".
 //
 // It takes in a parameter of type echo.Context and returns an error.
-func GetHello(ctx echo.Context) error <span class="cov0" title="0">{
+func (Api) GetHello(ctx echo.Context) error <span class="cov0" title="0">{
 
         return ctx.JSON(http.StatusOK, &amp;oapicodegen.Hello{
                 Message: "Hello, World!",
@@ -489,15 +489,14 @@ import (
         "github.com/labstack/echo/v4"
 )
 
-type Api struct {}
+type Api struct {
+        oapicodegen.ServerInterface
+}
 
 func RegisterHandlers(e *echo.Echo) <span class="cov0" title="0">{
         oapicodegen.RegisterHandlers(e, &amp;Api{})
 }</span>
-
-func (a *Api) GetHello(ctx echo.Context) error <span class="cov0" title="0">{
-        return GetHello(ctx)
-}</pre>
+</pre>
 		
 		<pre class="file" id="file10" style="display: none">package locations
 

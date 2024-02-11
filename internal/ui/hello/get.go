@@ -10,7 +10,7 @@ import (
 // GetHello is a function that returns a JSON response with a message "Hello, World!".
 //
 // It takes in a parameter of type echo.Context and returns an error.
-func GetHello(ctx echo.Context) error {
+func (Api) GetHello(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, &oapicodegen.Hello{
 		Message: "Hello, World!",
