@@ -16,11 +16,13 @@ type(
 )
 
 func NewCreateRequest(name string) (createRequest, error) {
+	// validation
 	validName, err := location.NewName(name)
 	if err != nil {
 		return createRequest{}, err
 	}
 
+	// post processing
 	return createRequest{
 		Name: validName,
 	}, nil

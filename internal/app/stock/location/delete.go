@@ -11,11 +11,13 @@ type deleteRequest struct {
 }
 
 func NewDeleteRequest(id uuid.UUID) (deleteRequest, error) {
+	// validation
 	validId, err := location.NewId(id)
 	if err != nil {
 		return deleteRequest{}, err
 	}
 
+	// post processing
 	return deleteRequest{
 		Id: validId,
 	}, nil
