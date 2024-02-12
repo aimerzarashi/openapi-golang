@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 
 	"github.com/google/uuid"
@@ -13,16 +14,14 @@ import (
 	"net/http"
 )
 
-func TestPutOk2(t *testing.T) {
+func TestPutOk(t *testing.T) {
 	t.Parallel()
 
 	// Given
 	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "test",
 	}
-
 	postReq := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
-	
 	err := locations.Api.PostStockLocation(locations.Api{}, postReq.context)
 	if err != nil {
 		t.Fatal(err)
@@ -35,12 +34,10 @@ func TestPutOk2(t *testing.T) {
 	}
 
 	// When
-	putReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
-		Name: "test",
+	putReqBody := &oapicodegen.PutStockLocationJSONRequestBody{
+		Name: "newTest",
 	}
-
 	putReq := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
-	
 	err = locations.Api.PutStockLocation(locations.Api{}, putReq.context, postResBody.Id)
 
 	// Then
@@ -52,160 +49,96 @@ func TestPutOk2(t *testing.T) {
 	if putReq.recorder.Code != http.StatusOK {
 		t.Errorf("%T %d want %d", putReq.recorder.Code, putReq.recorder.Code, http.StatusOK)
 	}
-
-	if postResBody.Id == uuid.Nil {
-		t.Errorf("expected not empty, actual empty")
-	}
-}
-
-func TestPutOk(t *testing.T) {
-	// Setup
-	rh := RequestHelper{
-		client: &http.Client{},
-	}
-	rch := ResponseConvertHelper{}
-	
-	bforeName := "test"
-	afterName := "newTest"
-
-	// Given
-	postRes, err := rh.Post(
-		&oapicodegen.PostStockLocationJSONRequestBody{
-			Name: bforeName,
-		},
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer postRes.Body.Close()
-
-	if postRes.StatusCode != http.StatusCreated {
-		t.Fatalf("want %d, got %d", http.StatusCreated, postRes.StatusCode)
-	}
-
-	postResBody, err := rch.AsCreated(postRes)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// When
-	putRes, err := rh.Put(
-		postResBody.Id,
-		&oapicodegen.PutStockLocationJSONRequestBody{
-			Name: afterName,
-		},
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer putRes.Body.Close()
-	
-	// Then
-	if putRes.StatusCode != http.StatusOK {
-		t.Errorf("want %d, got %d", http.StatusOK, putRes.StatusCode)
-	}
 }
 
 func TestPutNotFound(t *testing.T) {
-	// Setup
-	rh := RequestHelper{
-		client: &http.Client{},
-	}
+	t.Parallel()
 
-	name := uuid.NewString()
-
-	putRes, err := rh.Put(
-		uuid.New(),
-		&oapicodegen.PutStockLocationJSONRequestBody{
-			Name: name,
-		},
-	)
-	if err != nil {
-		t.Fatal(err)
+	putReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+		Name: "newTest",
 	}
-	defer putRes.Body.Close()
+	putReq := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
+	err := locations.Api.PutStockLocation(locations.Api{}, putReq.context, uuid.New())
 
 	// Then
-	if putRes.StatusCode != http.StatusNotFound {
-		t.Errorf("want %d, got %d", http.StatusNotFound, putRes.StatusCode)
+	if err == nil {
+		t.Fatalf("expected not nil, actual nil")
+	}
+	defer putReq.recorder.Result().Body.Close()
+
+	if err.(*echo.HTTPError).Code != http.StatusNotFound {
+		t.Errorf("%T %d want %d", err.(*echo.HTTPError).Code, err.(*echo.HTTPError).Code, http.StatusNotFound)
 	}
 }
 
-func TestPutBadRequest(t *testing.T) {
-	// Setup
-	rh := RequestHelper{
-		client: &http.Client{},
-	}
-	rch := ResponseConvertHelper{}
-	
-	zeroLenName := ""
-	overLenName := strings.Repeat("a", 101)
+func TestPutBadRequestNameEmpty(t *testing.T) {
+	t.Parallel()
 
 	// Given
-	postRes, err := rh.Post(
-		&oapicodegen.PostStockLocationJSONRequestBody{
-			Name: uuid.NewString(),
-		},
-	)
+	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+		Name: "test",
+	}
+	postReq := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
+	err := locations.Api.PostStockLocation(locations.Api{}, postReq.context)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer postRes.Body.Close()
+	defer postReq.recorder.Result().Body.Close()
 
-	if postRes.StatusCode != http.StatusCreated {
-		t.Fatalf("want %d, got %d", http.StatusCreated, postRes.StatusCode)
-	}
-
-	postResBody, err := rch.AsCreated(postRes)
+	postResBody, err := Response[oapicodegen.Created](postReq.recorder.Result())
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// When
-	putResZeroLen, err := rh.Put(
-		postResBody.Id,
-		&oapicodegen.PutStockLocationJSONRequestBody{
-			Name: zeroLenName,
-		},
-	)
-	if err != nil {
-		t.Fatal(err)
+	putReqBody := &oapicodegen.PutStockLocationJSONRequestBody{
+		Name: "",
 	}
-	defer putResZeroLen.Body.Close()
-
-	putResOverLen, err := rh.Put(
-		postResBody.Id,
-		&oapicodegen.PutStockLocationJSONRequestBody{
-			Name: overLenName,
-		},
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer putResOverLen.Body.Close()
+	req := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
+	err = locations.Api.PutStockLocation(locations.Api{}, req.context, postResBody.Id)
 
 	// Then
-	if putResZeroLen.StatusCode != http.StatusBadRequest {
-		t.Errorf("want %d, got %d", http.StatusBadRequest, putResZeroLen.StatusCode)
+	if err == nil {
+		t.Fatalf("expected not nil, actual nil")
 	}
 
-	putResBodyZeroLen, err := rch.AsBadRequest(putResZeroLen)
-	if err != nil {
-		t.Fatal(err)
+	if err.(*echo.HTTPError).Code != http.StatusBadRequest {
+		t.Errorf("%T %d want %d", err.(*echo.HTTPError).Code, err.(*echo.HTTPError).Code, http.StatusBadRequest)
 	}
-	if putResBodyZeroLen.Message == "" {
-		t.Errorf("expected not empty, actual empty")
-	}
+}
+
+func TestPutBadRequestNameMaxLengthOver(t *testing.T) {
+	t.Parallel()
+
+		// Given
+		postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+			Name: "test",
+		}
+		postReq := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
+		err := locations.Api.PostStockLocation(locations.Api{}, postReq.context)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer postReq.recorder.Result().Body.Close()
 	
-	if putResOverLen.StatusCode != http.StatusBadRequest {
-		t.Errorf("want %d, got %d", http.StatusBadRequest, putResOverLen.StatusCode)
+		postResBody, err := Response[oapicodegen.Created](postReq.recorder.Result())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+	// When
+	putReqBody := &oapicodegen.PutStockLocationJSONRequestBody{
+		Name: strings.Repeat("a", 101),
+	}
+	req := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
+	err = locations.Api.PutStockLocation(locations.Api{}, req.context, postResBody.Id)
+
+	// Then
+	if err == nil {
+		t.Fatalf("expected not nil, actual nil")
 	}
 
-	putResBodyOverLen, err := rch.AsBadRequest(putResOverLen)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if putResBodyOverLen.Message == "" {
-		t.Errorf("expected not empty, actual empty")
+	if err.(*echo.HTTPError).Code != http.StatusBadRequest {
+		t.Errorf("%T %d want %d", err.(*echo.HTTPError).Code, err.(*echo.HTTPError).Code, http.StatusBadRequest)
 	}
 }

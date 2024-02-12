@@ -21,9 +21,7 @@ func TestPostCreated(t *testing.T) {
 	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "test",
 	}
-
 	req := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
-	
 	err := locations.Api.PostStockLocation(locations.Api{}, req.context)
 
 	// Then
@@ -53,9 +51,7 @@ func TestPostBadRequestNameEmpty(t *testing.T) {
 	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "",
 	}
-
 	req := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
-
 	err := locations.Api.PostStockLocation(locations.Api{}, req.context)
 
 	// Then
@@ -75,9 +71,7 @@ func TestPostBadRequestNameMaxLengthOver(t *testing.T) {
 	reqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: strings.Repeat("a", 101),
 	}
-
 	req := NewRequest(http.MethodPost, "/stock/locations", reqBody)
-
 	err := locations.Api.PostStockLocation(locations.Api{}, req.context)
 
 	// Then
