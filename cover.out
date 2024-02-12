@@ -83,7 +83,7 @@ openapi/internal/ui/stock/locations/post.go:25.16,27.3 1 0
 openapi/internal/ui/stock/locations/post.go:30.2,31.39 2 1
 openapi/internal/ui/stock/locations/post.go:31.39,33.3 1 0
 openapi/internal/ui/stock/locations/post.go:36.2,36.42 1 1
-openapi/internal/ui/stock/locations/post.go:36.42,38.3 1 0
+openapi/internal/ui/stock/locations/post.go:36.42,38.3 1 1
 openapi/internal/ui/stock/locations/post.go:40.2,41.16 2 1
 openapi/internal/ui/stock/locations/post.go:41.16,43.3 1 0
 openapi/internal/ui/stock/locations/post.go:46.2,48.16 3 1

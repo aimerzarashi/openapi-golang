@@ -79,7 +79,7 @@
 				
 				<option value="file11">openapi/internal/ui/stock/locations/locations.go (0.0%)</option>
 				
-				<option value="file12">openapi/internal/ui/stock/locations/post.go (69.6%)</option>
+				<option value="file12">openapi/internal/ui/stock/locations/post.go (73.9%)</option>
 				
 				<option value="file13">openapi/internal/ui/stock/locations/put.go (66.7%)</option>
 				
@@ -589,7 +589,7 @@ func (Api) PostStockLocation(ctx echo.Context) error <span class="cov8" title="1
         }</span>
 
         // Validation
-        <span class="cov8" title="1">if err := ctx.Validate(req); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := ctx.Validate(req); err != nil </span><span class="cov8" title="1">{
                 return echo.NewHTTPError(http.StatusBadRequest, err.Error())
         }</span>
 

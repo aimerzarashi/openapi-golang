@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 
 	"github.com/google/uuid"
@@ -17,24 +18,25 @@ func TestPostCreated(t *testing.T) {
 	t.Parallel()
 
 	// When
-	reqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "test",
 	}
 
-	r := NewRequest("/stock/locations", reqBody)
+	req := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
 	
-	err := locations.Api.PostStockLocation(locations.Api{}, r.context)
+	err := locations.Api.PostStockLocation(locations.Api{}, req.context)
+
+	// Then
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer r.recorder.Result().Body.Close()
+	defer req.recorder.Result().Body.Close()
 
-	// Then
-	if r.recorder.Code != http.StatusCreated {
-		t.Errorf("want %d, got %d", http.StatusCreated, r.recorder.Code)
+	if req.recorder.Code != http.StatusCreated {
+		t.Errorf("%T %d want %d", err, req.recorder.Code, http.StatusCreated)
 	}
 
-	postResBody, err := Response[oapicodegen.Created](r.recorder.Result())
+	postResBody, err := Response[oapicodegen.Created](req.recorder.Result())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,59 +46,46 @@ func TestPostCreated(t *testing.T) {
 	}
 }
 
-func TestPostBadRequest(t *testing.T) {
-	// Setup
-	rh := RequestHelper{
-		client: &http.Client{},
-	}
-	rch := ResponseConvertHelper{}
-	
-	zeroLenName := ""
-	overLenName := strings.Repeat("a", 101)
+func TestPostBadRequestNameEmpty(t *testing.T) {
+	t.Parallel()
 
 	// When
-	postResZeroLen, err := rh.Post(
-		&oapicodegen.PostStockLocationJSONRequestBody{
-			Name: zeroLenName,
-		},
-	)
-	if err != nil {
-		t.Fatal(err)
+	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+		Name: "",
 	}
-	defer postResZeroLen.Body.Close()
 
-	postResOverLen, err := rh.Post(
-		&oapicodegen.PostStockLocationJSONRequestBody{
-			Name: overLenName,
-		},
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer postResOverLen.Body.Close()
+	req := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
+
+	err := locations.Api.PostStockLocation(locations.Api{}, req.context)
 
 	// Then
-	if postResZeroLen.StatusCode != http.StatusBadRequest {
-		t.Errorf("want %d, got %d", http.StatusBadRequest, postResZeroLen.StatusCode)
-	}	
+	if err == nil {
+		t.Fatalf("expected not nil, actual nil")
+	}
 
-	postResZeroLenBody, err := rch.AsBadRequest(postResZeroLen)
-	if err != nil {
-		t.Fatal(err)
+	if err.(*echo.HTTPError).Code != http.StatusBadRequest {
+		t.Errorf("%T %d want %d", err.(*echo.HTTPError).Code, err.(*echo.HTTPError).Code, http.StatusBadRequest)
 	}
-	if postResZeroLenBody.Message == "" {
-		t.Errorf("expected empty, actual %s", postResZeroLenBody.Message)
-	}
-	
-	if postResOverLen.StatusCode != http.StatusBadRequest {
-		t.Errorf("want %d, got %d", http.StatusBadRequest, postResOverLen.StatusCode)
-	}	
+}
 
-	postResOverLenBody, err := rch.AsBadRequest(postResOverLen)
-	if err != nil {
-		t.Fatal(err)
+func TestPostBadRequestNameMaxLengthOver(t *testing.T) {
+	t.Parallel()
+
+	// When
+	reqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+		Name: strings.Repeat("a", 101),
 	}
-	if postResOverLenBody.Message== "" {
-		t.Errorf("expected empty, actual %s", postResOverLenBody.Message)
+
+	req := NewRequest(http.MethodPost, "/stock/locations", reqBody)
+
+	err := locations.Api.PostStockLocation(locations.Api{}, req.context)
+
+	// Then
+	if err == nil {
+		t.Fatalf("expected not nil, actual nil")
+	}
+
+	if err.(*echo.HTTPError).Code != http.StatusBadRequest {
+		t.Errorf("%T %d want %d", err.(*echo.HTTPError).Code, err.(*echo.HTTPError).Code, http.StatusBadRequest)
 	}
 }

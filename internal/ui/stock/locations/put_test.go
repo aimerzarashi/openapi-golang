@@ -17,41 +17,44 @@ func TestPutOk2(t *testing.T) {
 	t.Parallel()
 
 	// Given
-	beforeReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "test",
 	}
 
-	b := NewRequest("/stock/locations", beforeReqBody)
+	postReq := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
 	
-	if err := locations.Api.PostStockLocation(locations.Api{}, b.context); err != nil {
+	err := locations.Api.PostStockLocation(locations.Api{}, postReq.context)
+	if err != nil {
 		t.Fatal(err)
 	}
-	defer b.recorder.Result().Body.Close()
+	defer postReq.recorder.Result().Body.Close()
 
-	if b.recorder.Code != http.StatusCreated {
-		t.Fatal(b.recorder.Code)
-	}
-
-	postReqBody, err := Response[oapicodegen.Created](b.recorder.Result())
+	postResBody, err := Response[oapicodegen.Created](postReq.recorder.Result())
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// When
-	afterReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+	putReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "test",
 	}
 
-	a := NewRequest("/stock/locations/" + postReqBody.Id.String(), afterReqBody)
+	putReq := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
 	
-	if err := locations.Api.PutStockLocation(locations.Api{}, a.context, postReqBody.Id); err != nil {
-		t.Fatal(err)
-	}
-	defer a.recorder.Result().Body.Close()
+	err = locations.Api.PutStockLocation(locations.Api{}, putReq.context, postResBody.Id)
 
 	// Then
-	if a.recorder.Code != http.StatusOK {
-		t.Errorf("want %d, got %d", http.StatusOK, a.recorder.Code)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer putReq.recorder.Result().Body.Close()
+
+	if putReq.recorder.Code != http.StatusOK {
+		t.Errorf("%T %d want %d", putReq.recorder.Code, putReq.recorder.Code, http.StatusOK)
+	}
+
+	if postResBody.Id == uuid.Nil {
+		t.Errorf("expected not empty, actual empty")
 	}
 }
 

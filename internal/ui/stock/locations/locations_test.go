@@ -24,14 +24,17 @@ type Request struct {
 	recorder *httptest.ResponseRecorder
 }
 
-func NewRequest[I any](path string, reqBody *I) *Request {
-	reqBodyJson, _ := json.Marshal(reqBody)
-
+func NewRequest[I any](method string, path string, reqBody *I) *Request {
 	e := echo.New()
+	
 	e.Validator = validator.NewCustomValidator()
-	req := httptest.NewRequest(http.MethodPost, path, bytes.NewBuffer(reqBodyJson))
+
+	reqBodyJson, _ := json.Marshal(reqBody)
+	req := httptest.NewRequest(method, path, bytes.NewBuffer(reqBodyJson))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
 	rec := httptest.NewRecorder()
+
 	ctx := e.NewContext(req, rec)
 	return &Request{
 		context: ctx,
