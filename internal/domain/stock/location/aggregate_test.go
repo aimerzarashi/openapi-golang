@@ -8,55 +8,88 @@ import (
 )
 
 func TestNewAggregate(t *testing.T) {
-	// When
-	name := "test"
-	a, err := location.New(name)
+	t.Parallel()
+
+	// Given
+	id, err := location.NewId(uuid.New())
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	name, err := location.NewName("TestName")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	a := location.NewAggregate(id, name)
+
 	// Then
-	if a.GetId().UUID() == uuid.Nil {
-		t.Errorf("expected %s, got %s", uuid.Nil, a.GetId().UUID())
+	if a.Id != id {
+		t.Errorf("%T %+v want %+v", a.Id, a.Id, id)
 	}
-	if a.GetName() != name {
-		t.Errorf("expected %s, got %s", name, a.GetName())
+
+	if a.Name != name {
+		t.Errorf("%T %+v want %+v", a.Name, a.Name, name)
 	}
+
 	if a.IsDeleted() != false {
-		t.Errorf("expected %t, got %t", false, a.IsDeleted())
+		t.Errorf("%T %+v want %+v", a.IsDeleted(), a.IsDeleted(), false)
 	}
 }
 
-func TestChangeName(t *testing.T) {
+func TestRestoreAggregate(t *testing.T) {
+	t.Parallel()
+
 	// Given
-	name := "test"
-	a, err := location.New(name)
+	id, err := location.NewId(uuid.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	name, err := location.NewName("TestName")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// When
-	a.ChangeName("test2")
+	a := location.RestoreAggregate(id, name, false)
 
 	// Then
-	if a.GetName() != "test2" {
-		t.Errorf("expected %s, got %s", "test2", a.GetName())
+	if a.Id != id {
+		t.Errorf("%T %+v want %+v", a.Id, a.Id, id)
+	}
+
+	if a.Name != name {
+		t.Errorf("%T %+v want %+v", a.Name, a.Name, name)
+	}
+
+	if a.IsDeleted() != false {
+		t.Errorf("%T %+v want %+v", a.IsDeleted(), a.IsDeleted(), false)
 	}
 }
 
 func TestDelete(t *testing.T) {
-	// When
-	name := "test"
-	a, err := location.New(name)
+	t.Parallel()
+
+	// Given
+	id, err := location.NewId(uuid.New())
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	name, err := location.NewName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a := location.NewAggregate(id, name)
 
 	// When
 	a.Delete()
 
 	// Then
 	if a.IsDeleted() != true {
-		t.Errorf("expected %t, got %t", true, a.IsDeleted())
+		t.Errorf("%T %+v want %+v", a.IsDeleted(), a.IsDeleted(), true)
 	}
 }

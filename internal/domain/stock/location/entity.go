@@ -1,9 +1,31 @@
 package location
 
-import "github.com/google/uuid"
+import (
+	"github.com/friendsofgo/errors"
+	"github.com/google/uuid"
+)
 
-type Id uuid.UUID
+type(
+	Id struct {
+		value uuid.UUID				
+	}
+)
 
-func (e Id) UUID() uuid.UUID {
-	return uuid.UUID(e)
+var (
+	ErrInvalidId = errors.New("invalid id")
+)
+
+func NewId(v uuid.UUID) (Id, error) {
+	if v == uuid.Nil {
+		return Id{}, ErrInvalidId
+	}
+	return Id{v}, nil
+}
+
+func (v Id) UUID() uuid.UUID {
+	return v.value
+}
+
+func (v Id) String() string {
+	return v.value.String()
 }

@@ -1,43 +1,31 @@
 package location
 
-import (
-	"fmt"
-
-	"github.com/google/uuid"
+type(
+	Aggregate struct {
+		Id   		Id
+		Name 		Name
+		deleted bool
+	}
 )
 
-type Aggregate struct {
-	id   		Id
-	name 		string
-	deleted bool
-}
-
-func New(name string) (*Aggregate, error) {
-	if name == "" {
-		return nil, fmt.Errorf("invalid name %s", name)
-	}
-
+func NewAggregate(id Id, name Name) *Aggregate {
 	return &Aggregate{
-		id:   Id(uuid.New()),
-		name: name,
+		Id:   id,
+		Name: name,
 		deleted: false,
-	}, nil
+	}
 }
 
-func (a Aggregate) GetId() Id {
-	return a.id
-}
-
-func (a Aggregate) GetName() string {
-	return a.name
+func RestoreAggregate(id Id, name Name, deleted bool) *Aggregate {
+	return &Aggregate{
+		Id:   id,
+		Name: name,
+		deleted: deleted,
+	}
 }
 
 func (a Aggregate) IsDeleted() bool {
 	return a.deleted
-}
-
-func (a *Aggregate) ChangeName(name string) {
-	a.name = name
 }
 
 func (a *Aggregate) Delete() {
