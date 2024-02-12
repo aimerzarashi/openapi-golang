@@ -81,7 +81,7 @@
 				
 				<option value="file12">openapi/internal/ui/stock/locations/post.go (73.9%)</option>
 				
-				<option value="file13">openapi/internal/ui/stock/locations/put.go (66.7%)</option>
+				<option value="file13">openapi/internal/ui/stock/locations/put.go (75.0%)</option>
 				
 				</select>
 			</div>
@@ -651,7 +651,7 @@ func (Api) PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID
         }</span>
 
         // Validation
-        <span class="cov8" title="1">if err := ctx.Validate(req); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := ctx.Validate(req); err != nil </span><span class="cov8" title="1">{
                 return echo.NewHTTPError(http.StatusBadRequest, err.Error())
         }</span>
 
@@ -664,7 +664,7 @@ func (Api) PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID
         if err != nil </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
         }</span>
-        <span class="cov8" title="1">if !found </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !found </span><span class="cov8" title="1">{
                 return echo.NewHTTPError(http.StatusNotFound, "stock location not found")
         }</span>
 

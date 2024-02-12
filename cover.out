@@ -98,13 +98,13 @@ openapi/internal/ui/stock/locations/put.go:26.16,28.3 1 0
 openapi/internal/ui/stock/locations/put.go:31.2,32.39 2 1
 openapi/internal/ui/stock/locations/put.go:32.39,34.3 1 0
 openapi/internal/ui/stock/locations/put.go:37.2,37.42 1 1
-openapi/internal/ui/stock/locations/put.go:37.42,39.3 1 0
+openapi/internal/ui/stock/locations/put.go:37.42,39.3 1 1
 openapi/internal/ui/stock/locations/put.go:41.2,42.16 2 1
 openapi/internal/ui/stock/locations/put.go:42.16,44.3 1 0
 openapi/internal/ui/stock/locations/put.go:46.2,47.16 2 1
 openapi/internal/ui/stock/locations/put.go:47.16,49.3 1 0
 openapi/internal/ui/stock/locations/put.go:50.2,50.12 1 1
-openapi/internal/ui/stock/locations/put.go:50.12,52.3 1 0
+openapi/internal/ui/stock/locations/put.go:50.12,52.3 1 1
 openapi/internal/ui/stock/locations/put.go:55.2,56.16 2 1
 openapi/internal/ui/stock/locations/put.go:56.16,58.3 1 0
 openapi/internal/ui/stock/locations/put.go:61.2,61.37 1 1
