@@ -542,11 +542,14 @@ func (h *Handler) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_
 import (
         oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
 
+        domain "openapi/internal/domain/stock/location"
+
         "github.com/labstack/echo/v4"
 )
 
 type Handler struct {
         oapicodegen.ServerInterface
+        Repository domain.IRepository
 }
 
 func RegisterHandlers(e *echo.Echo) <span class="cov0" title="0">{

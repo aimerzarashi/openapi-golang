@@ -7,9 +7,12 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"openapi/internal/infra/database"
 	"openapi/internal/infra/env"
 	oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
+	infra "openapi/internal/infra/repository/sqlboiler/stock/location"
 	"openapi/internal/infra/validator"
+	"openapi/internal/ui/stock/locations"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -22,6 +25,21 @@ type RequestHelper struct {
 type Request struct {
 	context echo.Context
 	recorder *httptest.ResponseRecorder
+}
+
+func NewHandler() (*locations.Handler, error) {
+	db, err := database.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	repo, err := infra.NewRepository(db)
+	if err != nil {
+		return nil, err
+	}	
+
+	return &locations.Handler{Repository: repo}, nil
 }
 
 func NewRequest[I any](method string, path string, reqBody *I) *Request {
