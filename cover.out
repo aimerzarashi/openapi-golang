@@ -62,7 +62,7 @@ openapi/internal/infra/repository/sqlboiler/stock/location/repository.go:88.18,9
 openapi/internal/infra/repository/sqlboiler/stock/location/repository.go:92.2,92.18 1 1
 openapi/internal/ui/hello/get.go:13.45,18.2 1 0
 openapi/internal/ui/hello/hello.go:13.37,15.2 1 0
-openapi/internal/ui/stock/locations/delete.go:16.92,19.16 2 1
+openapi/internal/ui/stock/locations/delete.go:16.99,19.16 2 1
 openapi/internal/ui/stock/locations/delete.go:19.16,21.3 1 0
 openapi/internal/ui/stock/locations/delete.go:22.2,25.16 3 1
 openapi/internal/ui/stock/locations/delete.go:25.16,27.3 1 0
@@ -76,7 +76,7 @@ openapi/internal/ui/stock/locations/delete.go:44.2,44.49 1 1
 openapi/internal/ui/stock/locations/delete.go:44.49,46.3 1 0
 openapi/internal/ui/stock/locations/delete.go:49.2,49.37 1 1
 openapi/internal/ui/stock/locations/locations.go:13.37,15.2 1 0
-openapi/internal/ui/stock/locations/post.go:16.54,19.16 2 1
+openapi/internal/ui/stock/locations/post.go:16.61,19.16 2 1
 openapi/internal/ui/stock/locations/post.go:19.16,21.3 1 0
 openapi/internal/ui/stock/locations/post.go:22.2,25.16 3 1
 openapi/internal/ui/stock/locations/post.go:25.16,27.3 1 0
@@ -91,7 +91,7 @@ openapi/internal/ui/stock/locations/post.go:48.16,50.3 1 0
 openapi/internal/ui/stock/locations/post.go:52.2,55.42 2 1
 openapi/internal/ui/stock/locations/post.go:55.42,57.3 1 0
 openapi/internal/ui/stock/locations/post.go:59.2,59.42 1 1
-openapi/internal/ui/stock/locations/put.go:17.89,20.16 2 1
+openapi/internal/ui/stock/locations/put.go:17.96,20.16 2 1
 openapi/internal/ui/stock/locations/put.go:20.16,22.3 1 0
 openapi/internal/ui/stock/locations/put.go:23.2,26.16 3 1
 openapi/internal/ui/stock/locations/put.go:26.16,28.3 1 0

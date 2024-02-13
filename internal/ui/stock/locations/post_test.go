@@ -17,12 +17,15 @@ import (
 func TestPostCreated(t *testing.T) {
 	t.Parallel()
 
+	// Setup
+	h := &locations.Handler{}
+
 	// When
 	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "test",
 	}
 	req := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
-	err := locations.Api.PostStockLocation(locations.Api{}, req.context)
+	err := h.PostStockLocation(req.context)
 
 	// Then
 	if err != nil {
@@ -47,12 +50,15 @@ func TestPostCreated(t *testing.T) {
 func TestPostBadRequestNameEmpty(t *testing.T) {
 	t.Parallel()
 
+	// Setup
+	h := &locations.Handler{}
+
 	// When
 	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "",
 	}
 	req := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
-	err := locations.Api.PostStockLocation(locations.Api{}, req.context)
+	err := h.PostStockLocation(req.context)
 
 	// Then
 	if err == nil {
@@ -72,12 +78,18 @@ func TestPostBadRequestNameMaxLengthOver(t *testing.T) {
 		Name: strings.Repeat("a", 101),
 	}
 	req := NewRequest(http.MethodPost, "/stock/locations", reqBody)
-	err := locations.Api.PostStockLocation(locations.Api{}, req.context)
+	h := &locations.Handler{}
 
 	// Then
+	err := h.PostStockLocation(req.context);
 	if err == nil {
 		t.Fatalf("expected not nil, actual nil")
 	}
+
+	// Then
+	// if err == nil {
+	// 	t.Fatalf("expected not nil, actual nil")
+	// }
 
 	if err.(*echo.HTTPError).Code != http.StatusBadRequest {
 		t.Errorf("%T %d want %d", err.(*echo.HTTPError).Code, err.(*echo.HTTPError).Code, http.StatusBadRequest)

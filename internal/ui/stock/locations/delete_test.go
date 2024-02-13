@@ -15,6 +15,9 @@ import (
 func TestDeleteOk2(t *testing.T) {
 	t.Parallel()
 
+	// Setup
+	h := &locations.Handler{}
+
 	// Given
 	beforeReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "test",
@@ -22,7 +25,7 @@ func TestDeleteOk2(t *testing.T) {
 
 	b := NewRequest(http.MethodPost, "/stock/locations", beforeReqBody)
 	
-	if err := locations.Api.PostStockLocation(locations.Api{}, b.context); err != nil {
+	if err := h.PostStockLocation(b.context); err != nil {
 		t.Fatal(err)
 	}
 	defer b.recorder.Result().Body.Close()
@@ -43,7 +46,7 @@ func TestDeleteOk2(t *testing.T) {
 
 	a := NewRequest(http.MethodDelete, "/stock/locations/" + postReqBody.Id.String(), afterReqBody)
 	
-	if err := locations.Api.DeleteStockLocation(locations.Api{}, a.context, postReqBody.Id); err != nil {
+	if err := h.DeleteStockLocation(a.context, postReqBody.Id); err != nil {
 		t.Fatal(err)
 	}
 	defer a.recorder.Result().Body.Close()

@@ -17,12 +17,15 @@ import (
 func TestPutOk(t *testing.T) {
 	t.Parallel()
 
+	// Setup
+	h := &locations.Handler{}
+
 	// Given
 	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "test",
 	}
 	postReq := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
-	err := locations.Api.PostStockLocation(locations.Api{}, postReq.context)
+	err := h.PostStockLocation(postReq.context)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +41,7 @@ func TestPutOk(t *testing.T) {
 		Name: "newTest",
 	}
 	putReq := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
-	err = locations.Api.PutStockLocation(locations.Api{}, putReq.context, postResBody.Id)
+	err = h.PutStockLocation(putReq.context, postResBody.Id)
 
 	// Then
 	if err != nil {
@@ -54,33 +57,39 @@ func TestPutOk(t *testing.T) {
 func TestPutNotFound(t *testing.T) {
 	t.Parallel()
 
+	// Setup
+	h := &locations.Handler{}
+
+	// When
 	putReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "newTest",
 	}
 	putReq := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
-	err := locations.Api.PutStockLocation(locations.Api{}, putReq.context, uuid.New())
+	
+	err := h.PutStockLocation(putReq.context, uuid.New())
 
 	// Then
 	if err == nil {
 		t.Fatalf("expected not nil, actual nil")
-	}
-	defer putReq.recorder.Result().Body.Close()
-
-	if err.(*echo.HTTPError).Code != http.StatusNotFound {
+	} else if err.(*echo.HTTPError).Code != http.StatusNotFound {
 		t.Errorf("%T %d want %d", err.(*echo.HTTPError).Code, err.(*echo.HTTPError).Code, http.StatusNotFound)
 	}
+	defer putReq.recorder.Result().Body.Close()	
 }
 
 func TestPutBadRequestNameEmpty(t *testing.T) {
 	t.Parallel()
+
+	// Setup
+	h := &locations.Handler{}
 
 	// Given
 	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
 		Name: "test",
 	}
 	postReq := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
-	err := locations.Api.PostStockLocation(locations.Api{}, postReq.context)
-	if err != nil {
+	
+	if err := h.PostStockLocation(postReq.context); err != nil {
 		t.Fatal(err)
 	}
 	defer postReq.recorder.Result().Body.Close()
@@ -95,50 +104,52 @@ func TestPutBadRequestNameEmpty(t *testing.T) {
 		Name: "",
 	}
 	req := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
-	err = locations.Api.PutStockLocation(locations.Api{}, req.context, postResBody.Id)
+	
+	err = h.PutStockLocation(req.context, postResBody.Id)
 
 	// Then
 	if err == nil {
 		t.Fatalf("expected not nil, actual nil")
-	}
-
-	if err.(*echo.HTTPError).Code != http.StatusBadRequest {
+	} else if err.(*echo.HTTPError).Code != http.StatusBadRequest {
 		t.Errorf("%T %d want %d", err.(*echo.HTTPError).Code, err.(*echo.HTTPError).Code, http.StatusBadRequest)
 	}
+
 }
 
 func TestPutBadRequestNameMaxLengthOver(t *testing.T) {
 	t.Parallel()
 
-		// Given
-		postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
-			Name: "test",
-		}
-		postReq := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
-		err := locations.Api.PostStockLocation(locations.Api{}, postReq.context)
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer postReq.recorder.Result().Body.Close()
+	// Setup
+	h := &locations.Handler{}
+
+	// Given
+	postReqBody := &oapicodegen.PostStockLocationJSONRequestBody{
+		Name: "test",
+	}
+	postReq := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
 	
-		postResBody, err := Response[oapicodegen.Created](postReq.recorder.Result())
-		if err != nil {
-			t.Fatal(err)
-		}
+	if err := h.PostStockLocation(postReq.context); err != nil {
+		t.Fatal(err)
+	}
+	defer postReq.recorder.Result().Body.Close()
+
+	postResBody, err := Response[oapicodegen.Created](postReq.recorder.Result())
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// When
 	putReqBody := &oapicodegen.PutStockLocationJSONRequestBody{
 		Name: strings.Repeat("a", 101),
 	}
 	req := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
-	err = locations.Api.PutStockLocation(locations.Api{}, req.context, postResBody.Id)
 
+	err = h.PutStockLocation(req.context, postResBody.Id)
+	
 	// Then
 	if err == nil {
 		t.Fatalf("expected not nil, actual nil")
-	}
-
-	if err.(*echo.HTTPError).Code != http.StatusBadRequest {
+	} else if err.(*echo.HTTPError).Code != http.StatusBadRequest {
 		t.Errorf("%T %d want %d", err.(*echo.HTTPError).Code, err.(*echo.HTTPError).Code, http.StatusBadRequest)
 	}
 }

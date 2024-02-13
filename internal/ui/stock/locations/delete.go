@@ -13,7 +13,7 @@ import (
 )
 
 // Delete is a function that handles the HTTP DELETE request for deleting an existing stock item.
-func (Api) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error {
+func (h *Handler) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error {
 	// Precondition
 	db, err := database.Open()
 	if err != nil {

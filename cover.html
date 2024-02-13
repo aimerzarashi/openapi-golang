@@ -501,7 +501,7 @@ import (
 )
 
 // Delete is a function that handles the HTTP DELETE request for deleting an existing stock item.
-func (Api) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov8" title="1">{
+func (h *Handler) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov8" title="1">{
         // Precondition
         db, err := database.Open()
         if err != nil </span><span class="cov0" title="0">{
@@ -545,12 +545,12 @@ import (
         "github.com/labstack/echo/v4"
 )
 
-type Api struct {
+type Handler struct {
         oapicodegen.ServerInterface
 }
 
 func RegisterHandlers(e *echo.Echo) <span class="cov0" title="0">{
-        oapicodegen.RegisterHandlers(e, &amp;Api{})
+        oapicodegen.RegisterHandlers(e, &amp;Handler{})
 }</span>
 </pre>
 		
@@ -569,7 +569,7 @@ import (
 )
 
 // PostStockLocation is a function that handles the HTTP POST request for creating a new stock item.
-func (Api) PostStockLocation(ctx echo.Context) error <span class="cov8" title="1">{
+func (h *Handler) PostStockLocation(ctx echo.Context) error <span class="cov8" title="1">{
         // Precondition
         db, err := database.Open()
         if err != nil </span><span class="cov0" title="0">{
@@ -631,7 +631,7 @@ import (
 )
 
 // Put is a function that handles the HTTP PUT request for updating an existing stock location.
-func (Api) PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov8" title="1">{
+func (h *Handler) PutStockLocation(ctx echo.Context, stockLocationId openapi_types.UUID) error <span class="cov8" title="1">{
         // Precondition
         db, err := database.Open()
         if err != nil </span><span class="cov0" title="0">{

@@ -6,10 +6,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type Api struct {
+type Handler struct {
 	oapicodegen.ServerInterface
 }
 
 func RegisterHandlers(e *echo.Echo) {
-	oapicodegen.RegisterHandlers(e, &Api{})
+	oapicodegen.RegisterHandlers(e, &Handler{})
 }
