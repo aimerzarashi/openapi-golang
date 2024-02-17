@@ -25,7 +25,7 @@ func (h *Handler) PutStockLocation(ctx echo.Context, stockLocationId openapi_typ
 	repo, err := infra.NewRepository(db)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	} 
+	}
 
 	// Binding
 	req := &oapicodegen.PutStockLocationJSONRequestBody{}

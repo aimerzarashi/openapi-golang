@@ -5,9 +5,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type(
+type (
 	Id struct {
-		value uuid.UUID				
+		value uuid.UUID
 	}
 )
 

@@ -15,7 +15,7 @@ import (
 
 func TestUpdateSuccess(t *testing.T) {
 	t.Parallel()
-	
+
 	// Setup
 	db, err := database.Open()
 	if err != nil {
@@ -88,7 +88,7 @@ func TestUpdateFailIdNil(t *testing.T) {
 
 func TestUpdateFailGetFail(t *testing.T) {
 	t.Parallel()
-	
+
 	// Setup
 	db, err := database.Open()
 	if err != nil {

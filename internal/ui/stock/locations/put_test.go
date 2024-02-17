@@ -65,7 +65,7 @@ func TestPutNotFound(t *testing.T) {
 		Name: "newTest",
 	}
 	putReq := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
-	
+
 	err := h.PutStockLocation(putReq.context, uuid.New())
 
 	// Then
@@ -74,7 +74,7 @@ func TestPutNotFound(t *testing.T) {
 	} else if err.(*echo.HTTPError).Code != http.StatusNotFound {
 		t.Errorf("%T %d want %d", err.(*echo.HTTPError).Code, err.(*echo.HTTPError).Code, http.StatusNotFound)
 	}
-	defer putReq.recorder.Result().Body.Close()	
+	defer putReq.recorder.Result().Body.Close()
 }
 
 func TestPutBadRequestNameEmpty(t *testing.T) {
@@ -88,7 +88,7 @@ func TestPutBadRequestNameEmpty(t *testing.T) {
 		Name: "test",
 	}
 	postReq := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
-	
+
 	if err := h.PostStockLocation(postReq.context); err != nil {
 		t.Fatal(err)
 	}
@@ -104,7 +104,7 @@ func TestPutBadRequestNameEmpty(t *testing.T) {
 		Name: "",
 	}
 	req := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
-	
+
 	err = h.PutStockLocation(req.context, postResBody.Id)
 
 	// Then
@@ -127,7 +127,7 @@ func TestPutBadRequestNameMaxLengthOver(t *testing.T) {
 		Name: "test",
 	}
 	postReq := NewRequest(http.MethodPost, "/stock/locations", postReqBody)
-	
+
 	if err := h.PostStockLocation(postReq.context); err != nil {
 		t.Fatal(err)
 	}
@@ -145,7 +145,7 @@ func TestPutBadRequestNameMaxLengthOver(t *testing.T) {
 	req := NewRequest(http.MethodPut, "/stock/locations", putReqBody)
 
 	err = h.PutStockLocation(req.context, postResBody.Id)
-	
+
 	// Then
 	if err == nil {
 		t.Fatalf("expected not nil, actual nil")

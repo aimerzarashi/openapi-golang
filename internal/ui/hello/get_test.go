@@ -13,7 +13,7 @@ import (
 )
 
 func TestGetSuccess(t *testing.T) {
-	res, err := http.Get(env.GetServiceUrl()+"/hello")
+	res, err := http.Get(env.GetServiceUrl() + "/hello")
 	if err != nil {
 		t.Fatal(err)
 	}

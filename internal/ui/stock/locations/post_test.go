@@ -89,7 +89,7 @@ func TestPostBadRequestNameMaxLengthOver(t *testing.T) {
 	req := NewRequest(http.MethodPost, "/stock/locations", reqBody)
 
 	// Then
-	err = h.PostStockLocation(req.context);
+	err = h.PostStockLocation(req.context)
 	if err == nil {
 		t.Fatalf("expected not nil, actual nil")
 	}

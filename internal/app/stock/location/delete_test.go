@@ -26,7 +26,7 @@ func TestDeleteSuccess(t *testing.T) {
 	repo, err := infra.NewRepository(db)
 	if err != nil {
 		t.Fatal(err)
-	} 
+	}
 
 	// Given
 	name := "TestName"
@@ -48,7 +48,7 @@ func TestDeleteSuccess(t *testing.T) {
 	}
 
 	if err := app.Delete(reqDelete, repo); err != nil {
-		t.Fatal(err)		
+		t.Fatal(err)
 	}
 
 	// Then
@@ -75,7 +75,7 @@ func TestDeleteFailIdNil(t *testing.T) {
 
 func TestDeleteFailGetFail(t *testing.T) {
 	t.Parallel()
-	
+
 	// Setup
 	db, err := database.Open()
 	if err != nil {

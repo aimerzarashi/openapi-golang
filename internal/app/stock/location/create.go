@@ -6,11 +6,11 @@ import (
 	"openapi/internal/domain/stock/location"
 )
 
-type(
+type (
 	createRequest struct {
-		Name location.Name	
+		Name location.Name
 	}
-  createResponse struct {
+	createResponse struct {
 		Id uuid.UUID
 	}
 )

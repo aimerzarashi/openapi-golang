@@ -119,7 +119,7 @@ func TestSave(t *testing.T) {
 	if beforeData.ID != id.String() {
 		t.Errorf("%T %+v want %+v", beforeData.ID, beforeData.ID, id)
 	}
-	
+
 	if beforeData.Name != name.String() {
 		t.Errorf("%T %+v want %+v", beforeData.Name, beforeData.Name, name)
 	}
@@ -147,7 +147,7 @@ func TestSave(t *testing.T) {
 	}
 
 	if afterData.Deleted != beforeData.Deleted {
-		t.Errorf("%T %+v want %+v", afterData.Deleted, afterData.Deleted, beforeData.Deleted)		
+		t.Errorf("%T %+v want %+v", afterData.Deleted, afterData.Deleted, beforeData.Deleted)
 	}
 
 	if afterData.CreatedAt != beforeData.CreatedAt {
@@ -178,7 +178,7 @@ func TestGet(t *testing.T) {
 	id, err := domain.NewId(uuid.New())
 	if err != nil {
 		t.Fatal(err)
-	}	
+	}
 
 	name, err := domain.NewName("test")
 	if err != nil {
@@ -362,8 +362,8 @@ func TestGetFailDataInvalid(t *testing.T) {
 	}
 
 	data := &sqlboiler.StockLocation{
-		ID:   id.String(),
-		Name: "",
+		ID:      id.String(),
+		Name:    "",
 		Deleted: false,
 	}
 
@@ -372,7 +372,7 @@ func TestGetFailDataInvalid(t *testing.T) {
 		db,
 		true,
 		[]string{"id"},
-		boil.Whitelist("name","deleted"),
+		boil.Whitelist("name", "deleted"),
 		boil.Infer(),
 	)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 
 type updateRequest struct {
 	Id   location.Id
-	Name location.Name	
+	Name location.Name
 }
 
 func NewUpdateRequest(id uuid.UUID, name string) (updateRequest, error) {
@@ -25,7 +25,7 @@ func NewUpdateRequest(id uuid.UUID, name string) (updateRequest, error) {
 
 	// post processing
 	return updateRequest{
-		Id: validId,
+		Id:   validId,
 		Name: validName,
 	}, nil
 }
@@ -43,6 +43,6 @@ func Update(req updateRequest, r location.IRepository) error {
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }

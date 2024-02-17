@@ -24,7 +24,7 @@ func TestDeleteOk2(t *testing.T) {
 	}
 
 	b := NewRequest(http.MethodPost, "/stock/locations", beforeReqBody)
-	
+
 	if err := h.PostStockLocation(b.context); err != nil {
 		t.Fatal(err)
 	}
@@ -44,8 +44,8 @@ func TestDeleteOk2(t *testing.T) {
 		Name: "test",
 	}
 
-	a := NewRequest(http.MethodDelete, "/stock/locations/" + postReqBody.Id.String(), afterReqBody)
-	
+	a := NewRequest(http.MethodDelete, "/stock/locations/"+postReqBody.Id.String(), afterReqBody)
+
 	if err := h.DeleteStockLocation(a.context, postReqBody.Id); err != nil {
 		t.Fatal(err)
 	}

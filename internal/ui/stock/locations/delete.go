@@ -20,7 +20,7 @@ func (h *Handler) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	defer db.Close()
-	
+
 	repo, err := infra.NewRepository(db)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
