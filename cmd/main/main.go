@@ -15,7 +15,7 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	
+
 	e.Validator = validator.NewCustomValidator()
 
 	hello.RegisterHandlers(e)

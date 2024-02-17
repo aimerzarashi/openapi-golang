@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 )
 
-
 func TestCreateFailNameInvalid(t *testing.T) {
 	t.Parallel()
 
@@ -68,7 +67,7 @@ func TestCreateSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	// Given
 	name := "test"
 	req, err := app.NewCreateRequest(name)
@@ -92,7 +91,7 @@ func TestCreateSuccess(t *testing.T) {
 		t.Errorf("%T %v, want %v", res.Id, res.Id, newId)
 	}
 
-	id, err := domain.NewId(res.Id) 
+	id, err := domain.NewId(res.Id)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -101,7 +100,7 @@ func TestCreateSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	if a.Name.String() != name {
 		t.Errorf("%T %v, want %v", a.Name.String(), a.Name.String(), name)
 	}

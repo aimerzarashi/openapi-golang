@@ -35,6 +35,6 @@ func Delete(req deleteRequest, r location.IRepository) error {
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }

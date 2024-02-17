@@ -4,13 +4,13 @@ import (
 	"errors"
 )
 
-type(
+type (
 	Name struct {
 		string
 	}
 )
 
-var(
+var (
 	ErrInvalidName = errors.New("invalid name")
 )
 

@@ -7,9 +7,12 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"openapi/internal/infra/database"
 	"openapi/internal/infra/env"
 	oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
+	infra "openapi/internal/infra/repository/sqlboiler/stock/location"
 	"openapi/internal/infra/validator"
+	"openapi/internal/ui/stock/locations"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -20,13 +23,28 @@ type RequestHelper struct {
 }
 
 type Request struct {
-	context echo.Context
+	context  echo.Context
 	recorder *httptest.ResponseRecorder
+}
+
+func NewHandler() (*locations.Handler, error) {
+	db, err := database.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	repo, err := infra.NewRepository(db)
+	if err != nil {
+		return nil, err
+	}
+
+	return &locations.Handler{Repository: repo}, nil
 }
 
 func NewRequest[I any](method string, path string, reqBody *I) *Request {
 	e := echo.New()
-	
+
 	e.Validator = validator.NewCustomValidator()
 
 	reqBodyJson, _ := json.Marshal(reqBody)
@@ -37,12 +55,12 @@ func NewRequest[I any](method string, path string, reqBody *I) *Request {
 
 	ctx := e.NewContext(req, rec)
 	return &Request{
-		context: ctx,
+		context:  ctx,
 		recorder: rec,
 	}
 }
 
-func Response[T any](res *http.Response) (*T, error){
+func Response[T any](res *http.Response) (*T, error) {
 	resBodyByte, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
@@ -73,7 +91,7 @@ func (h *RequestHelper) Post(reqBody *oapicodegen.PostStockLocationJSONRequestBo
 	return res, nil
 }
 
-func (h *RequestHelper) Put( stockLocationsId uuid.UUID, reqBody *oapicodegen.PutStockLocationJSONRequestBody) (*http.Response, error) {
+func (h *RequestHelper) Put(stockLocationsId uuid.UUID, reqBody *oapicodegen.PutStockLocationJSONRequestBody) (*http.Response, error) {
 	reqBodyJson, _ := json.Marshal(reqBody)
 	req, err := http.NewRequest(
 		http.MethodPut,
