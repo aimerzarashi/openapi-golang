@@ -122,12 +122,12 @@ type (
 )
 
 var (
-        ErrIdInvalid = errors.New("invalid id")
+        ErrIdNil = errors.New("Id: cannot be nil")
 )
 
 func NewId(v uuid.UUID) (Id, error) <span class="cov8" title="1">{
         if v == uuid.Nil </span><span class="cov8" title="1">{
-                return Id{}, ErrIdInvalid
+                return Id{}, ErrIdNil
         }</span>
         <span class="cov8" title="1">return Id{v}, nil</span>
 }
@@ -154,12 +154,12 @@ type (
 )
 
 var (
-        ErrNameInvalid = errors.New("invalid name")
+        ErrNameEmpty = errors.New("Name: cannot be empty")
 )
 
 func NewName(v string) (Name, error) <span class="cov8" title="1">{
         if v == "" </span><span class="cov8" title="1">{
-                return Name{}, ErrNameInvalid
+                return Name{}, ErrNameEmpty
         }</span>
         <span class="cov8" title="1">return Name{v}, nil</span>
 }

@@ -6,9 +6,9 @@ import (
 )
 
 func TestNewName(t *testing.T) {
+	// Setup
 	t.Parallel()
 
-	//Given
 	type args struct {
 		v string
 	}
@@ -40,18 +40,30 @@ func TestNewName(t *testing.T) {
 		},
 	}
 
-	//When & Then
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
+			// When
 			got, err := item.NewName(tt.args.v)
-			if (err != nil) != tt.wantErr && tt.errType != tt.errType {
+
+			// Then
+			if !tt.wantErr {
+				// 正常系
+				if err != nil {
+					t.Errorf("NewName() error = %v, wantErr %v", err, tt.wantErr)
+					return						
+				}
+				if got.String() != tt.want {
+					t.Errorf("NewName() = %v, want %v", got.String(), tt.want)
+				}	
+			}
+
+			// 異常系
+			if err != tt.errType {
 				t.Errorf("NewName() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if got.String() != tt.want {
-				t.Errorf("NewName() = %v, want %v", got, tt.want)
 			}
 		})
 	}

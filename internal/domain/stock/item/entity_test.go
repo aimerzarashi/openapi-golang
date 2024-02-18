@@ -8,6 +8,8 @@ import (
 )
 
 func TestNewId(t *testing.T) {
+	// Setup
+
 	t.Parallel()
 
 	// Given
@@ -43,19 +45,29 @@ func TestNewId(t *testing.T) {
 		},
 	}
 
-	// When & Then
+	// Run
 	for _, tt := range tests {
 		tt := tt // capture range variable
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
+			// When
 			got, err := item.NewId(tt.args.v)
-			if (err != nil) != tt.wantErr && tt.errType != tt.errType {
-				t.Errorf("NewId() error = %v, wantErr %v", err, tt.wantErr)
+
+			// Then
+			if !tt.wantErr {
+				// 正常系
+				if err != nil && tt.errType != tt.errType {
+					t.Errorf("NewId() error = %v, wantErr %v", err, tt.wantErr)
+				}
 				return
 			}
+
+			// 異常系
 			if got.UUID() != tt.want {
 				t.Errorf("NewId() = %v, want %v", got, tt.want)
 			}
+
 			if got.String() != tt.want.String() {
 				t.Errorf("NewId() = %v, want %v", got, tt.want)
 			}
