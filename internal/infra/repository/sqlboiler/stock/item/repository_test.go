@@ -443,7 +443,7 @@ func Test_repository_Find(t *testing.T) {
 			},
 			want:       false,
 			wantErr:    true,
-			errKeyword: "sql: database is closed",
+			errKeyword: domain.ErrIRepositoryUnexpected.Error(),
 		},
 		// 見つからない場合
 		{

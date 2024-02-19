@@ -12,4 +12,5 @@ var (
 	ErrIRepositoryDbEmpty     = errors.New("IRepository: db is empty")
 	ErrIRepositoryRowDeleted  = errors.New("IRepository: row deleted")
 	ErrIRepositoryInvalidData = errors.New("IRepository: invalid data")
+	ErrIRepositoryUnexpected  = errors.New("IRepository: unexpected error")
 )

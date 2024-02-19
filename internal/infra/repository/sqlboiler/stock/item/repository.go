@@ -52,15 +52,18 @@ func (r *repository) Save(a *item.Aggregate) error {
 func (r *repository) Get(id item.Id) (*item.Aggregate, error) {
 	data, err := sqlboiler.FindStockItem(context.Background(), r.db, id.UUID().String())
 	if err != nil {
-		return nil, err
+		// 想定外のエラー
+		return nil, errors.Join(item.ErrIRepositoryUnexpected, err)
 	}
 
 	if data.Deleted {
+		// 対象が削除されている	
 		return nil, item.ErrIRepositoryRowDeleted
 	}
 
 	name, err := item.NewName(data.Name)
 	if err != nil {
+		// データが不正
 		return nil, errors.Join(item.ErrIRepositoryInvalidData, err)
 	}
 
@@ -72,16 +75,20 @@ func (r *repository) Get(id item.Id) (*item.Aggregate, error) {
 func (r *repository) Find(id item.Id) (bool, error) {
 	data, err := sqlboiler.FindStockItem(context.Background(), r.db, id.UUID().String())
 	if err != nil && err != sql.ErrNoRows {
-		return false, err
+		// 想定外のエラー
+		return false, errors.Join(item.ErrIRepositoryUnexpected, err)
 	}
 
 	if err == sql.ErrNoRows {
+		// 対象が見つからない
 		return false, nil
 	}
 
 	if data.Deleted {
+		// 対象が削除されている
 		return false, nil
 	}
 
+	// 対象が見つかった
 	return true, nil
 }
