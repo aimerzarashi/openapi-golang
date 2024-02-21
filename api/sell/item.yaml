@@ -1,0 +1,336 @@
+openapi: 3.0.3
+info:
+  title: Sell API
+  version: 1.0.0
+  description: Sell API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://localhost:1323
+paths:
+  /sell/items:
+    post:
+      tags: ["Sell Item"]
+      summary: Create Sell Item
+      description: Create Sell Item
+      operationId: PostSellItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSellItem"
+      responses:
+        "201":
+          $ref: "#/components/responses/Created"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /sell/items/{itemId}:
+    put:
+      tags: ["Sell Item"]
+      summary: Update Sell Item
+      description: Update Sell Item
+      operationId: PutSellItem
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSellItem"
+      responses:
+        "200":
+          $ref: "#/components/responses/OK"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags: ["Sell Item"]
+      summary: Delete Sell Item
+      description: Delete Sell Item
+      operationId: DeleteSellItem
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          $ref: "#/components/responses/OK"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /sell/shops:
+    post:
+      tags: ["Sell Shop"]
+      summary: Create Sell Shop
+      description: Create Sell Shop
+      operationId: PostSellShop
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSellShop"
+      responses:
+        "201":
+          $ref: "#/components/responses/Created"
+  /sell/shops/{shopId}:
+    put:
+      tags: ["Sell Shop"]
+      summary: Update Sell Shop
+      description: Update Sell Shop
+      operationId: PutSellShop
+      parameters:
+        - in: path
+          name: shopId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSellShop"
+      responses:
+        "200":
+          $ref: "#/components/responses/OK"
+    delete:
+      tags: ["Sell Shop"]
+      summary: Delete Sell Shop
+      description: Delete Sell Shop
+      operationId: DeleteSellShop
+      parameters:
+        - in: path
+          name: shopId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          $ref: "#/components/responses/OK"
+  /sell/categories:
+    post:
+      tags: ["Sell Category"]
+      summary: Create Sell Category
+      description: Create Sell Category
+      operationId: PostSellCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSellCategory"
+      responses:
+        "201":
+          $ref: "#/components/responses/Created"
+  /sell/categories/{categoryId}:
+    put:
+      tags: ["Sell Category"]
+      summary: Update Sell Category
+      description: Update Sell Category
+      operationId: PutSellCategory
+      parameters:
+        - in: path
+          name: categoryId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSellCategory"
+      responses:
+        "200":
+          $ref: "#/components/responses/OK"
+    delete:
+      tags: ["Sell Category"]
+      summary: Delete Sell Category
+      description: Delete Sell Category
+      operationId: DeleteSellCategory
+      parameters:
+        - in: path
+          name: categoryId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          $ref: "#/components/responses/OK"  
+  /sell/items/{itemId}/prices:
+    post:
+      tags: ["Sell Item"]
+      summary: Create Sell Item Price
+      description: Create Sell Item Price
+      operationId: PostSellItemPrice
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSellItemPrice"
+      responses:
+        "201":
+          $ref: "#/components/responses/Created"
+  /sell/items/{itemId}/prices/{priceId}:
+    put:
+      tags: ["Sell Item"]
+      summary: Update Sell Item Price
+      description: Update Sell Item Price
+      operationId: PutSellItemPrice
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: priceId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSellItemPrice"
+      responses:
+        "200":
+          $ref: "#/components/responses/OK"
+    delete:
+      tags: ["Sell Item"]
+      summary: Delete Sell Item Price
+      description: Delete Sell Item Price
+      operationId: DeleteSellItemPrice
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: priceId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          $ref: "#/components/responses/OK"
+components:
+  responses:
+    Created:
+      description: Created
+      content:
+        application/json:
+          schema:
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                format: uuid
+                x-oapi-codegen-extra-tags:
+                  validate: required
+    OK:
+      description: OK
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BadRequestResponse"
+    NotFound:
+      description: Not Found
+    InternalServerError:
+      description: Internal Server Error
+  schemas:
+    BadRequestResponse:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    NewSellItem:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          maximum: 100
+          x-oapi-codegen-extra-tags:
+            validate: required,lt=100
+    NewSellItemPrice:
+      required:
+        - price
+        - duration
+      properties:
+        price:
+          type: number
+          x-oapi-codegen-extra-tags:
+            validate: required
+        currency:
+          type: string
+        duration:
+          type: object
+          required:
+            - startAt
+            - endAt
+          properties:
+            startAt:
+              type: string
+              format: date-time
+            endAt:
+              type: string
+              format: date-time
+    NewSellShop:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          maximum: 100
+          x-oapi-codegen-extra-tags:
+            validate: required,lt=100
+    NewSellCategory:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          maximum: 100
+          x-oapi-codegen-extra-tags:
+            validate: required,lt=100
