@@ -2,6 +2,7 @@ package value
 
 import (
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -26,7 +27,7 @@ func NewDuration (startAt, endAt time.Time) (Duration, error) {
 		return Duration{}, ErrDurationEndAtEmpty
 	}
 	if startAt.Compare(endAt) > 0 {
-		return Duration{}, ErrDurationInvalid
+		return Duration{}, fmt.Errorf("NewDuration: startAt (%v) cannot be after endAt (%v)", startAt.Format(time.RFC3339), endAt.Format(time.RFC3339))
 	}
 	return Duration{
 		startAt: startAt,
