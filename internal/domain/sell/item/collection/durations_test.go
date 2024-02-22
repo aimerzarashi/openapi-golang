@@ -2,7 +2,6 @@ package collection_test
 
 import (
 	"errors"
-	"fmt"
 	"openapi/internal/domain/sell/item/collection"
 	"openapi/internal/domain/sell/item/value"
 	"reflect"
@@ -101,36 +100,35 @@ func TestNewDurations(t *testing.T) {
 	}
 }
 
-func TestDurations_Add(t *testing.T) {
+func NewDuration(startAt, endAt time.Time) value.Duration {
+	duration, err := value.NewDuration(startAt, endAt)
+	if err != nil {
+		panic(err)
+	}
+	return duration
+}
+
+func NewDurations(startAt, endAt time.Time) ([]value.Duration) {
+	duration, err := value.NewDuration(startAt, endAt)
+	if err != nil {
+		panic(err)
+	}
+	var durations []value.Duration
+	durations = append(durations, duration)
+	return durations
+}
+
+func TestDurations_Merge(t *testing.T) {
 	// Setup
 	t.Parallel()
 
-	currentAt := time.Now()
-
-	var validDurations []value.Duration
-	for i := 0; i < 5; i++ {
-		startAt := currentAt.Add(time.Duration(i-2)*time.Hour)
-		endAt := currentAt.Add(time.Duration(i+1-2)*time.Hour-1*time.Second)
-		duration, err := value.NewDuration(startAt, endAt)
-		if err != nil {
-			t.Fatal(err)
-		}
-		validDurations = append(validDurations, duration)
-		fmt.Printf("got: %v %v\n", duration.StartAt().Format(time.RFC3339), duration.EndAt().Format(time.RFC3339))
-	}
-	fmt.Println("-----------------------")
-
-	startAt := currentAt.Add(0*time.Hour+20*time.Minute)
-	endAt := currentAt.Add(1*time.Hour+30*time.Minute-1*time.Second)
-	addDuration, err := value.NewDuration(startAt, endAt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	type args struct {
-		duration value.Duration
+		adding value.Duration
+		existing value.Duration
 	}
-	type want struct {}
+	type want struct {
+		durations []value.Duration
+	}
 	tests := []struct {
 		name    string
 		args    args
@@ -139,11 +137,92 @@ func TestDurations_Add(t *testing.T) {
 		errType error
 	}{
 		{
-			name: "success",
+			name: "1",
 			args: args{
-				duration: addDuration,
+				adding: NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				existing: NewDuration(time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 8, 59, 59, 0, time.UTC)),
 			},
-			want: want{},
+			want: want{
+				durations: []value.Duration{
+					NewDuration(time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 8, 59, 59, 0, time.UTC)),
+					NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				},
+			},
+			wantErr: false,
+			errType: nil,
+		},
+		{
+			name: "2",
+			args: args{
+				adding: NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				existing: NewDuration(time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []value.Duration{
+					NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewDuration(time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+				},
+			},
+			wantErr: false,
+			errType: nil,
+		},
+		{
+			name: "3",
+			args: args{
+				adding: NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				existing: NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []value.Duration{
+					NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				},
+			},
+			wantErr: false,
+			errType: nil,
+		},
+		{
+			name: "4",
+			args: args{
+				adding: NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				existing: NewDuration(time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []value.Duration{
+					NewDuration(time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 8, 59, 59, 0, time.UTC)),
+					NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewDuration(time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+				},
+			},
+			wantErr: false,
+			errType: nil,
+		},
+		{
+			name: "5",
+			args: args{
+				adding: NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				existing: NewDuration(time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 29, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []value.Duration{
+					NewDuration(time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 8, 59, 59, 0, time.UTC)),
+					NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				},
+			},
+			wantErr: false,
+			errType: nil,
+		},
+		{
+			name: "6",
+			args: args{
+				adding: NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				existing: NewDuration(time.Date(2024, 1, 1, 9, 30, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []value.Duration{
+					NewDuration(time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewDuration(time.Date(2024, 1, 1, 10, 00, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+				},
+			},
 			wantErr: false,
 			errType: nil,
 		},
@@ -155,21 +234,24 @@ func TestDurations_Add(t *testing.T) {
 			t.Parallel()
 
 			// Given
-			got, err := collection.NewDurations(validDurations)
+			durations := []value.Duration{tt.args.existing}
+			got, err := collection.NewDurations(durations)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			// When
-			err = got.Add(tt.args.duration)
+			err = got.Merge(tt.args.adding)
 
 			// Then
 			if !tt.wantErr {
 				if err != nil {
 					t.Errorf("NewDurations() error = %v, wantErr %v", err, tt.wantErr)
 				}
-				for _, v := range got.Durations() {
-					fmt.Printf("got: %v %v\n", v.StartAt().Format(time.RFC3339), v.EndAt().Format(time.RFC3339))
+				for i, v := range got.Durations() {
+					if !v.StartAt().Equal(tt.want.durations[i].StartAt()) || !v.EndAt().Equal(tt.want.durations[i].EndAt()) {
+						t.Errorf("NewDurations() value = %v, want %v", v, tt.want.durations[i])
+					}
 				}
 				return
 			}

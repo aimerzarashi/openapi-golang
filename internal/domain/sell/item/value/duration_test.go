@@ -93,7 +93,6 @@ func TestNewDuration(t *testing.T) {
 
 			if !errors.Is(err, tt.errType) {
 				t.Errorf("NewDuration() error = %v, wantErr %v", err, tt.errType)
-				return
 			}
 		})
 	}
