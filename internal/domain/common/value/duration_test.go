@@ -95,6 +95,14 @@ func TestNewDuration(t *testing.T) {
 				if got.EndAt().Equal(tt.want.endAt) {
 					t.Errorf("NewDuration() got = %v, want %v", got.EndAt(), tt.want.endAt)
 				}
+				valid, err := got.Contains(time.Now().Add(30 * time.Minute))
+				if err != nil || valid != tt.want.value {
+					t.Errorf("NewDuration() got = %v, want %v", got.EndAt(), tt.want.endAt)
+				}
+				_, err = got.Contains(time.Now().Add(2 * time.Hour))
+				if err == nil {
+					t.Errorf("NewDuration() got = %v, want %v", got.EndAt(), tt.want.endAt)
+				}
 				return
 			}
 

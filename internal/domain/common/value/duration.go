@@ -48,3 +48,11 @@ func (v Duration[T]) EndAt() time.Time {
 func (v Duration[T]) Value() T {
 	return v.value
 }
+
+func (v Duration[T]) Contains(target time.Time) (T, error) {
+	if target.Before(v.startAt) || target.After(v.endAt) {
+		return v.value, errors.New("Duration: invalid")
+	}
+
+	return v.value, nil
+}
