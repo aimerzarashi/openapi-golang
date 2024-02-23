@@ -30,6 +30,6 @@ func (t *Token) Decode(secret string, unsignedToken string) (*auth.AccessToken, 
 	}
 
 	return &auth.AccessToken{
-		UserId:   uuid.MustParse(token.Claims.(jwt.MapClaims)["user_id"].(string)),
+		UserId: uuid.MustParse(token.Claims.(jwt.MapClaims)["user_id"].(string)),
 	}, nil
 }

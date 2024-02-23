@@ -57,7 +57,7 @@ func (r *repository) Get(id item.Id) (*item.Aggregate, error) {
 	}
 
 	if data.Deleted {
-		// 対象が削除されている	
+		// 対象が削除されている
 		return nil, item.ErrIRepositoryRowDeleted
 	}
 

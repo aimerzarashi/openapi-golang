@@ -17,10 +17,10 @@ type (
 var (
 	ErrDurationStartAtEmpty = errors.New("Duration: startAt cannot be empty")
 	ErrDurationEndAtEmpty   = errors.New("Duration: endAt cannot be empty")
-	ErrDurationInvalid = errors.New("Duration: invalid")
+	ErrDurationInvalid      = errors.New("Duration: invalid")
 )
 
-func NewDuration[T any] (value T, startAt, endAt time.Time) (Duration[T], error) {
+func NewDuration[T any](value T, startAt, endAt time.Time) (Duration[T], error) {
 	if startAt.IsZero() {
 		return Duration[T]{}, ErrDurationStartAtEmpty
 	}

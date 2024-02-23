@@ -8,12 +8,11 @@ import (
 	"github.com/google/uuid"
 )
 
-
 func TestDecode(t *testing.T) {
 	t.Parallel()
 
 	type args struct {
-		secret        string	
+		secret        string
 		unsignedToken string
 	}
 	tests := []struct {
@@ -25,10 +24,10 @@ func TestDecode(t *testing.T) {
 		{
 			name: "success",
 			args: args{
-				secret: "your-256-bit-secret",
+				secret:        "your-256-bit-secret",
 				unsignedToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcl9pZCI6IjU1MGU4NDAwLWUyOWItNDFkNC1hNzE2LTQ0NjY1NTQ0MDAwMCIsImlhdCI6MTUxNjIzOTAyMn0.vJJHY6_UUYwOTcqsm2eyYiz96gcALF2BsZtuOIiVMcA",
 			},
-			want : domain.AccessToken{
+			want: domain.AccessToken{
 				UserId: uuid.MustParse("550e8400-e29b-41d4-a716-446655440000"),
 			},
 			wantErr: false,

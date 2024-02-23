@@ -17,26 +17,26 @@ func TestNewDurations(t *testing.T) {
 
 	var validDurations []value.Duration[string]
 	for i := 0; i < 3; i++ {
-		startAt := currentAt.Add(time.Duration(i)*time.Hour)
-		endAt := currentAt.Add(time.Duration(i+1)*time.Hour-1*time.Second)
+		startAt := currentAt.Add(time.Duration(i) * time.Hour)
+		endAt := currentAt.Add(time.Duration(i+1)*time.Hour - 1*time.Second)
 		duration, err := value.NewDuration("a", startAt, endAt)
 		if err != nil {
 			t.Fatal(err)
 		}
 		validDurations = append(validDurations, duration)
-//		fmt.Printf("got: %v %v\n", duration.StartAt().Format(time.RFC3339), duration.EndAt().Format(time.RFC3339))
+		//		fmt.Printf("got: %v %v\n", duration.StartAt().Format(time.RFC3339), duration.EndAt().Format(time.RFC3339))
 	}
 
 	var invalidDurations []value.Duration[string]
 	for i := 0; i < 3; i++ {
-		startAt := currentAt.Add(time.Duration(i)*time.Hour)
-		endAt := currentAt.Add(time.Duration(i+1)*time.Hour+1*time.Second)
+		startAt := currentAt.Add(time.Duration(i) * time.Hour)
+		endAt := currentAt.Add(time.Duration(i+1)*time.Hour + 1*time.Second)
 		duration, err := value.NewDuration("a", startAt, endAt)
 		if err != nil {
 			t.Fatal(err)
 		}
 		invalidDurations = append(invalidDurations, duration)
-//		fmt.Printf("got: %v %v\n", duration.StartAt().Format(time.RFC3339), duration.EndAt().Format(time.RFC3339))
+		//		fmt.Printf("got: %v %v\n", duration.StartAt().Format(time.RFC3339), duration.EndAt().Format(time.RFC3339))
 	}
 
 	type args struct {
@@ -123,7 +123,7 @@ func TestDurations_Merge(t *testing.T) {
 	t.Parallel()
 
 	type args struct {
-		adding value.Duration[string]
+		adding   value.Duration[string]
 		existing value.Duration[string]
 	}
 	type want struct {
@@ -139,7 +139,7 @@ func TestDurations_Merge(t *testing.T) {
 		{
 			name: "1",
 			args: args{
-				adding: NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				adding:   NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
 				existing: NewDuration("b", time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 8, 59, 59, 0, time.UTC)),
 			},
 			want: want{
@@ -154,7 +154,7 @@ func TestDurations_Merge(t *testing.T) {
 		{
 			name: "2",
 			args: args{
-				adding: NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				adding:   NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
 				existing: NewDuration("b", time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
 			},
 			want: want{
@@ -169,7 +169,7 @@ func TestDurations_Merge(t *testing.T) {
 		{
 			name: "3",
 			args: args{
-				adding: NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				adding:   NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
 				existing: NewDuration("b", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
 			},
 			want: want{
@@ -183,7 +183,7 @@ func TestDurations_Merge(t *testing.T) {
 		{
 			name: "4",
 			args: args{
-				adding: NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				adding:   NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
 				existing: NewDuration("b", time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
 			},
 			want: want{
@@ -199,7 +199,7 @@ func TestDurations_Merge(t *testing.T) {
 		{
 			name: "5",
 			args: args{
-				adding: NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				adding:   NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
 				existing: NewDuration("b", time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 29, 59, 0, time.UTC)),
 			},
 			want: want{
@@ -214,7 +214,7 @@ func TestDurations_Merge(t *testing.T) {
 		{
 			name: "6",
 			args: args{
-				adding: NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				adding:   NewDuration("a", time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
 				existing: NewDuration("b", time.Date(2024, 1, 1, 9, 30, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
 			},
 			want: want{

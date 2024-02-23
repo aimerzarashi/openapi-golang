@@ -53,11 +53,11 @@ func TestNewName(t *testing.T) {
 				// 正常系
 				if err != nil {
 					t.Errorf("NewName() error = %v, wantErr %v", err, tt.wantErr)
-					return						
+					return
 				}
 				if got.String() != tt.want {
 					t.Errorf("NewName() = %v, want %v", got.String(), tt.want)
-				}	
+				}
 			}
 
 			// 異常系

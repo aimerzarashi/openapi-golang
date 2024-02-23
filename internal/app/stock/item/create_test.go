@@ -182,7 +182,7 @@ func TestCreate(t *testing.T) {
 		db   *sql.DB
 		id   uuid.UUID
 		name string
-	}		
+	}
 	type want struct {
 		id uuid.UUID
 	}

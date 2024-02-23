@@ -14,7 +14,7 @@ type (
 )
 
 var (
-	ErrDurationsInvalid = errors.New("Durations: invalid")
+	ErrDurationsInvalid     = errors.New("Durations: invalid")
 	ErrDurationsUnexpection = errors.New("Durations: unexpection")
 )
 

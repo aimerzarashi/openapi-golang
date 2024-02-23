@@ -34,7 +34,7 @@ func NewCreateRequest(id uuid.UUID, name string) (createRequest, error) {
 		return createRequest{}, errors.Join(ErrValidation, err)
 	}
 
-	// post processing	
+	// post processing
 	return createRequest{
 		Id:   validId,
 		Name: validName,

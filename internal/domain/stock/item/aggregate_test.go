@@ -29,8 +29,8 @@ func TestNewAggregate(t *testing.T) {
 	}
 
 	type want struct {
-		id   item.Id
-		name item.Name
+		id      item.Id
+		name    item.Name
 		deleted bool
 	}
 
@@ -42,12 +42,12 @@ func TestNewAggregate(t *testing.T) {
 		{
 			name: "success",
 			args: args{
-				id: id,
+				id:   id,
 				name: name,
 			},
 			want: want{
-				id: id,
-				name: name,
+				id:      id,
+				name:    name,
 				deleted: false,
 			},
 		},
@@ -110,26 +110,26 @@ func TestRestoreAggregate(t *testing.T) {
 		{
 			name: "active",
 			args: args{
-				id: id,
-				name: name,
+				id:      id,
+				name:    name,
 				deleted: false,
 			},
 			want: &want{
-				Id: id,
-				Name: name,
+				Id:      id,
+				Name:    name,
 				deleted: false,
 			},
 		},
 		{
 			name: "deleted",
 			args: args{
-				id: id,
-				name: name,
+				id:      id,
+				name:    name,
 				deleted: true,
 			},
 			want: &want{
-				Id: id,
-				Name: name,
+				Id:      id,
+				Name:    name,
 				deleted: true,
 			},
 		},
@@ -185,8 +185,8 @@ func TestAggregate_Delete(t *testing.T) {
 		{
 			name: "success",
 			args: args{
-				Id: id,
-				Name: name,
+				Id:      id,
+				Name:    name,
 				deleted: false,
 			},
 			want: true,
@@ -194,8 +194,8 @@ func TestAggregate_Delete(t *testing.T) {
 		{
 			name: "no change",
 			args: args{
-				Id: id,
-				Name: name,
+				Id:      id,
+				Name:    name,
 				deleted: true,
 			},
 			want: true,

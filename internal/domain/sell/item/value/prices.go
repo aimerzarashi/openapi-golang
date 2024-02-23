@@ -4,19 +4,17 @@ import (
 	"errors"
 )
 
-
 type (
 	Price struct {
-		ammount float64
+		ammount  float64
 		currency string
 	}
 )
 
 var (
-	ErrPriceAmmount = errors.New("Price: ammount must be greater than 0")
+	ErrPriceAmmount  = errors.New("Price: ammount must be greater than 0")
 	ErrPriceCurrency = errors.New("Price: currency cannot be empty")
 )
-
 
 func NewPrice(ammount float64, currency string) (Price, error) {
 	if ammount <= 0 {
@@ -26,7 +24,7 @@ func NewPrice(ammount float64, currency string) (Price, error) {
 		return Price{}, err
 	}
 	return Price{
-		ammount: ammount,
+		ammount:  ammount,
 		currency: currency,
 	}, nil
 }
