@@ -73,49 +73,47 @@
 				
 				<option value="file8">openapi/internal/domain/sell/item/aggregate.go (0.0%)</option>
 				
-				<option value="file9">openapi/internal/domain/sell/item/collection/durations.go (88.9%)</option>
+				<option value="file9">openapi/internal/domain/sell/item/collection/durations.go (85.1%)</option>
 				
 				<option value="file10">openapi/internal/domain/sell/item/entity.go (0.0%)</option>
 				
-				<option value="file11">openapi/internal/domain/sell/item/value/duration.go (100.0%)</option>
+				<option value="file11">openapi/internal/domain/sell/item/value/duration.go (0.0%)</option>
 				
 				<option value="file12">openapi/internal/domain/sell/item/value/name.go (100.0%)</option>
 				
-				<option value="file13">openapi/internal/domain/sell/item/value/prices.go (100.0%)</option>
+				<option value="file13">openapi/internal/domain/stock/item/aggregate.go (100.0%)</option>
 				
-				<option value="file14">openapi/internal/domain/stock/item/aggregate.go (100.0%)</option>
+				<option value="file14">openapi/internal/domain/stock/item/entity.go (100.0%)</option>
 				
-				<option value="file15">openapi/internal/domain/stock/item/entity.go (100.0%)</option>
+				<option value="file15">openapi/internal/domain/stock/item/value.go (100.0%)</option>
 				
-				<option value="file16">openapi/internal/domain/stock/item/value.go (100.0%)</option>
+				<option value="file16">openapi/internal/domain/stock/location/aggregate.go (100.0%)</option>
 				
-				<option value="file17">openapi/internal/domain/stock/location/aggregate.go (100.0%)</option>
+				<option value="file17">openapi/internal/domain/stock/location/entity.go (100.0%)</option>
 				
-				<option value="file18">openapi/internal/domain/stock/location/entity.go (100.0%)</option>
+				<option value="file18">openapi/internal/domain/stock/location/value.go (100.0%)</option>
 				
-				<option value="file19">openapi/internal/domain/stock/location/value.go (100.0%)</option>
+				<option value="file19">openapi/internal/infra/auth/auth.go (75.0%)</option>
 				
-				<option value="file20">openapi/internal/infra/auth/auth.go (75.0%)</option>
+				<option value="file20">openapi/internal/infra/repository/sqlboiler/stock/item/repository.go (100.0%)</option>
 				
-				<option value="file21">openapi/internal/infra/repository/sqlboiler/stock/item/repository.go (100.0%)</option>
+				<option value="file21">openapi/internal/infra/repository/sqlboiler/stock/location/repository.go (100.0%)</option>
 				
-				<option value="file22">openapi/internal/infra/repository/sqlboiler/stock/location/repository.go (100.0%)</option>
+				<option value="file22">openapi/internal/ui/hello/get.go (0.0%)</option>
 				
-				<option value="file23">openapi/internal/ui/hello/get.go (0.0%)</option>
+				<option value="file23">openapi/internal/ui/hello/hello.go (0.0%)</option>
 				
-				<option value="file24">openapi/internal/ui/hello/hello.go (0.0%)</option>
+				<option value="file24">openapi/internal/ui/stock/items/items.go (100.0%)</option>
 				
-				<option value="file25">openapi/internal/ui/stock/items/items.go (100.0%)</option>
+				<option value="file25">openapi/internal/ui/stock/items/post.go (73.9%)</option>
 				
-				<option value="file26">openapi/internal/ui/stock/items/post.go (73.9%)</option>
+				<option value="file26">openapi/internal/ui/stock/locations/delete.go (66.7%)</option>
 				
-				<option value="file27">openapi/internal/ui/stock/locations/delete.go (66.7%)</option>
+				<option value="file27">openapi/internal/ui/stock/locations/locations.go (0.0%)</option>
 				
-				<option value="file28">openapi/internal/ui/stock/locations/locations.go (0.0%)</option>
+				<option value="file28">openapi/internal/ui/stock/locations/post.go (73.9%)</option>
 				
-				<option value="file29">openapi/internal/ui/stock/locations/post.go (73.9%)</option>
-				
-				<option value="file30">openapi/internal/ui/stock/locations/put.go (75.0%)</option>
+				<option value="file29">openapi/internal/ui/stock/locations/put.go (75.0%)</option>
 				
 				</select>
 			</div>
@@ -557,6 +555,14 @@ func (v Duration[T]) EndAt() time.Time <span class="cov8" title="1">{
 func (v Duration[T]) Value() T <span class="cov8" title="1">{
         return v.value
 }</span>
+
+func (v Duration[T]) Contains(target time.Time) (T, error) <span class="cov8" title="1">{
+        if target.Before(v.startAt) || target.After(v.endAt) </span><span class="cov8" title="1">{
+                return v.value, errors.New("Duration: invalid")
+        }</span>
+
+        <span class="cov8" title="1">return v.value, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file8" style="display: none">package item
@@ -608,85 +614,104 @@ import (
 )
 
 type (
-        Durations struct {
-                durations []value.Duration
+        Durations[T any] struct {
+                durations []value.Duration[T]
         }
 )
 
 var (
         ErrDurationsInvalid     = errors.New("Durations: invalid")
         ErrDurationsUnexpection = errors.New("Durations: unexpection")
+        ErrDurationNotFound     = errors.New("Durations: not found")
 )
 
-func NewDurations(durations []value.Duration) (*Durations, error) <span class="cov8" title="1">{
+func NewDurations[T any](durations ...value.Duration[T]) (*Durations[T], error) <span class="cov8" title="1">{
         // startAtで昇順ソート
         sort.Slice(durations, func(i, j int) bool </span><span class="cov8" title="1">{
                 return durations[i].StartAt().Before(durations[j].StartAt())
         }</span>)
 
-        // 該当の終了時刻と次の開始時刻が重複していないか確認
+        // 期間が重複していないか確認
         <span class="cov8" title="1">for i := 0; i &lt; len(durations)-1; i++ </span><span class="cov8" title="1">{
-                if durations[i].EndAt().Compare(durations[i+1].StartAt()) &gt; 0 </span><span class="cov8" title="1">{
-                        return &amp;Durations{}, ErrDurationsInvalid
+                if durations[i].EndAt().Compare(durations[i+1].StartAt()) &gt;= 0 </span><span class="cov8" title="1">{
+                        return nil, ErrDurationsInvalid
                 }</span>
         }
 
-        <span class="cov8" title="1">return &amp;Durations{
-                durations: durations,
-        }, nil</span>
+        <span class="cov8" title="1">return &amp;Durations[T]{durations: durations}, nil</span>
 }
 
-func (d Durations) Durations() []value.Duration <span class="cov8" title="1">{
+func (d Durations[T]) Durations() []value.Duration[T] <span class="cov8" title="1">{
         return d.durations
 }</span>
 
-func (d *Durations) Merge(a value.Duration) error <span class="cov8" title="1">{
-        buffer := make([]value.Duration, 0)
-        buffer = append(buffer, a)
+// 既存期間と追加期間が重複している場合は、追加期間を優先して既存期間を調整する
+func Adjust[T any](existing, adding value.Duration[T]) ([]value.Duration[T], error) <span class="cov8" title="1">{
+        // 追加期間に対し、既存期間は重複しない前方に位置するため、そのまま返す
+        if adding.StartAt().Compare(existing.EndAt()) &gt; 0 </span><span class="cov8" title="1">{
+                return []value.Duration[T]{existing}, nil
+        }</span>
+
+        // 追加期間に対し、既存期間は重複しない後方に位置するため、そのまま返す
+        <span class="cov8" title="1">if adding.EndAt().Compare(existing.StartAt()) &lt; 0 </span><span class="cov8" title="1">{
+                return []value.Duration[T]{existing}, nil
+        }</span>
+
+        // 追加期間が既存期間を包含するため、空で返す
+        <span class="cov8" title="1">if adding.StartAt().Compare(existing.StartAt()) &lt;= 0 &amp;&amp; adding.EndAt().Compare(existing.EndAt()) &gt;= 0 </span><span class="cov8" title="1">{
+                return []value.Duration[T]{}, nil
+        }</span>
+
+        // 追加期間が既存期間に包含されるため、追加期間を優先して前方と後方に分割して返す
+        <span class="cov8" title="1">if adding.StartAt().Compare(existing.StartAt()) &gt; 0 &amp;&amp; adding.EndAt().Compare(existing.EndAt()) &lt; 0 </span><span class="cov8" title="1">{
+
+                // 分割した既存期間の前方は、開始日時を調整して返す
+                foward, err := value.NewDuration(existing.Value(), existing.StartAt(), adding.StartAt().Add(-1*time.Second))
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, errors.Join(ErrDurationsUnexpection, err)
+                }</span>
+
+                // 分割した既存期間の後方は、終了日時を調整して返す
+                <span class="cov8" title="1">backward, err := value.NewDuration[T](existing.Value(), adding.EndAt().Add(1*time.Second), existing.EndAt())
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, errors.Join(ErrDurationsUnexpection, err)
+                }</span>
+
+                <span class="cov8" title="1">return []value.Duration[T]{foward, backward}, nil</span>
+        }
+
+        // 追加期間に対し、既存期間の終了日時が重複するため、既存期間の終了日時を調整して返す
+        <span class="cov8" title="1">if adding.StartAt().Compare(existing.EndAt()) &lt; 0 &amp;&amp; adding.EndAt().Compare(existing.EndAt()) &gt; 0 </span><span class="cov8" title="1">{
+                foward, err := value.NewDuration[T](existing.Value(), existing.StartAt(), adding.StartAt().Add(-1*time.Second))
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, errors.Join(ErrDurationsUnexpection, err)
+                }</span>
+                <span class="cov8" title="1">return []value.Duration[T]{foward}, nil</span>
+        }
+
+        // 追加期間に対し、既存期間の開始日時が重複するため、既存期間の開始日時を調整して返す
+        <span class="cov8" title="1">if adding.StartAt().Compare(existing.StartAt()) &lt; 0 &amp;&amp; adding.EndAt().Compare(existing.EndAt()) &lt; 0 </span><span class="cov8" title="1">{
+                backward, err := value.NewDuration[T](existing.Value(), adding.EndAt().Add(1*time.Second), existing.EndAt())
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, errors.Join(ErrDurationsUnexpection, err)
+                }</span>
+                <span class="cov8" title="1">return []value.Duration[T]{backward}, nil</span>
+        }
+
+        <span class="cov0" title="0">return nil, ErrDurationsUnexpection</span>
+}
+
+func (d *Durations[T]) Merge(adding value.Duration[T]) error <span class="cov8" title="1">{
+        buffer := make([]value.Duration[T], 0)
+        buffer = append(buffer, adding)
 
         // 追加する期間が重複している場合は、追加する期間を優先して既存の期間を調整する
         for _, v := range d.durations </span><span class="cov8" title="1">{
-                if a.StartAt().Compare(v.EndAt()) &gt; 0 </span><span class="cov8" title="1">{
-                        buffer = append(buffer, v)
-                        continue</span>
-                }
-                <span class="cov8" title="1">if a.EndAt().Compare(v.StartAt()) &lt; 0 </span><span class="cov8" title="1">{
-                        buffer = append(buffer, v)
-                        continue</span>
-                }
-                <span class="cov8" title="1">if a.StartAt().Compare(v.StartAt()) &lt;= 0 &amp;&amp; a.EndAt().Compare(v.EndAt()) &gt;= 0 </span><span class="cov8" title="1">{
-                        continue</span>
-                }
-                <span class="cov8" title="1">if a.StartAt().Compare(v.StartAt()) &gt; 0 &amp;&amp; a.EndAt().Compare(v.EndAt()) &lt; 0 </span><span class="cov8" title="1">{
-                        b, err := value.NewDuration(v.StartAt(), a.StartAt().Add(-1*time.Second))
-                        if err != nil </span><span class="cov0" title="0">{
-                                return errors.Join(ErrDurationsUnexpection, err)
-                        }</span>
-                        <span class="cov8" title="1">buffer = append(buffer, b)
-                        c, err := value.NewDuration(a.EndAt().Add(1*time.Second), v.EndAt())
-                        if err != nil </span><span class="cov0" title="0">{
-                                return errors.Join(ErrDurationsUnexpection, err)
-                        }</span>
-                        <span class="cov8" title="1">buffer = append(buffer, c)
-                        continue</span>
-                }
-                <span class="cov8" title="1">if a.StartAt().Compare(v.EndAt()) &lt; 0 &amp;&amp; a.EndAt().Compare(v.EndAt()) &gt; 0 </span><span class="cov8" title="1">{
-                        b, err := value.NewDuration(v.StartAt(), a.StartAt().Add(-1*time.Second))
-                        if err != nil </span><span class="cov0" title="0">{
-                                return errors.Join(ErrDurationsUnexpection, err)
-                        }</span>
-                        <span class="cov8" title="1">buffer = append(buffer, b)
-                        continue</span>
-                }
-                <span class="cov8" title="1">if a.StartAt().Compare(v.StartAt()) &lt; 0 &amp;&amp; a.EndAt().Compare(v.EndAt()) &lt; 0 </span><span class="cov8" title="1">{
-                        b, err := value.NewDuration(a.EndAt().Add(1*time.Second), v.EndAt())
-                        if err != nil </span><span class="cov0" title="0">{
-                                return errors.Join(ErrDurationsUnexpection, err)
-                        }</span>
-                        <span class="cov8" title="1">buffer = append(buffer, b)
-                        continue</span>
-                }
-                <span class="cov0" title="0">return ErrDurationsUnexpection</span>
+                adjusting, err := Adjust(v, adding)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov8" title="1">buffer = append(buffer, adjusting...)</span>
         }
 
         // startAtで昇順ソートする
@@ -697,6 +722,16 @@ func (d *Durations) Merge(a value.Duration) error <span class="cov8" title="1">{
         // 調整済みの期間に置き換える
         <span class="cov8" title="1">d.durations = buffer
         return nil</span>
+}
+
+func (d *Durations[T]) Find(criteria time.Time) (value.Duration[T], error) <span class="cov8" title="1">{
+        for _, v := range d.durations </span><span class="cov8" title="1">{
+                if v.StartAt().Compare(criteria) &lt;= 0 &amp;&amp; v.EndAt().Compare(criteria) &gt;= 0 </span><span class="cov8" title="1">{
+                        return v, nil
+                }</span>
+        }
+
+        <span class="cov0" title="0">return value.Duration[T]{}, ErrDurationNotFound</span>
 }
 </pre>
 		
@@ -742,9 +777,10 @@ import (
 )
 
 type (
-        Duration struct {
+        Duration[T any] struct {
                 startAt time.Time
                 endAt   time.Time
+                value   *T
         }
 )
 
@@ -754,29 +790,42 @@ var (
         ErrDurationInvalid      = errors.New("Duration: invalid")
 )
 
-func NewDuration(startAt, endAt time.Time) (Duration, error) <span class="cov8" title="1">{
-        if startAt.IsZero() </span><span class="cov8" title="1">{
-                return Duration{}, ErrDurationStartAtEmpty
+func NewDuration[T any](value *T, startAt, endAt time.Time) (Duration[T], error) <span class="cov0" title="0">{
+        if startAt.IsZero() </span><span class="cov0" title="0">{
+                return Duration[T]{}, ErrDurationStartAtEmpty
         }</span>
-        <span class="cov8" title="1">if endAt.IsZero() </span><span class="cov8" title="1">{
-                return Duration{}, ErrDurationEndAtEmpty
+        <span class="cov0" title="0">if endAt.IsZero() </span><span class="cov0" title="0">{
+                return Duration[T]{}, ErrDurationEndAtEmpty
         }</span>
-        <span class="cov8" title="1">if startAt.Compare(endAt) &gt; 0 </span><span class="cov8" title="1">{
-                return Duration{}, errors.Join(ErrDurationInvalid, fmt.Errorf(" want startAt: %s &lt;= endAt: %s", startAt.Format(time.RFC3339), endAt.Format(time.RFC3339)))
+        <span class="cov0" title="0">if startAt.Compare(endAt) &gt; 0 </span><span class="cov0" title="0">{
+                return Duration[T]{}, errors.Join(ErrDurationInvalid, fmt.Errorf(" want startAt: %s &lt;= endAt: %s", startAt.Format(time.RFC3339), endAt.Format(time.RFC3339)))
         }</span>
-        <span class="cov8" title="1">return Duration{
+        <span class="cov0" title="0">return Duration[T]{
                 startAt: startAt,
                 endAt:   endAt,
+                value:   value,
         }, nil</span>
 }
 
-func (v Duration) StartAt() time.Time <span class="cov8" title="1">{
+func (v Duration[T]) StartAt() time.Time <span class="cov0" title="0">{
         return v.startAt
 }</span>
 
-func (v Duration) EndAt() time.Time <span class="cov8" title="1">{
+func (v Duration[T]) EndAt() time.Time <span class="cov0" title="0">{
         return v.endAt
 }</span>
+
+func (v Duration[T]) Value() *T <span class="cov0" title="0">{
+        return v.value
+}</span>
+
+func (v Duration[T]) Contains(target time.Time) (*T, error) <span class="cov0" title="0">{
+        if target.Before(v.startAt) || target.After(v.endAt) </span><span class="cov0" title="0">{
+                return v.value, errors.New("Duration: invalid")
+        }</span>
+
+        <span class="cov0" title="0">return v.value, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file12" style="display: none">package value
@@ -807,51 +856,7 @@ func (v Name) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file13" style="display: none">package value
-
-import (
-        "errors"
-)
-
-type (
-        Price struct {
-                ammount  float64
-                currency string
-        }
-)
-
-var (
-        ErrPriceAmmount  = errors.New("Price: ammount must be greater than 0")
-        ErrPriceCurrency = errors.New("Price: currency cannot be empty")
-)
-
-func NewPrice(ammount float64, currency string) (Price, error) <span class="cov8" title="1">{
-        if ammount &lt;= 0 </span><span class="cov8" title="1">{
-                return Price{}, ErrPriceAmmount
-        }</span>
-        <span class="cov8" title="1">if err := valideteCurrency(currency); err != nil </span><span class="cov8" title="1">{
-                return Price{}, err
-        }</span>
-        <span class="cov8" title="1">return Price{
-                ammount:  ammount,
-                currency: currency,
-        }, nil</span>
-}
-
-func valideteCurrency(currency string) error <span class="cov8" title="1">{
-        code := []string{"JPY"}
-
-        for _, v := range code </span><span class="cov8" title="1">{
-                if currency == v </span><span class="cov8" title="1">{
-                        return nil
-                }</span>
-        }
-
-        <span class="cov8" title="1">return ErrPriceCurrency</span>
-}
-</pre>
-		
-		<pre class="file" id="file14" style="display: none">package item
+		<pre class="file" id="file13" style="display: none">package item
 
 type (
         Aggregate struct {
@@ -886,7 +891,7 @@ func (a *Aggregate) Delete() <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file15" style="display: none">package item
+		<pre class="file" id="file14" style="display: none">package item
 
 import (
         "github.com/friendsofgo/errors"
@@ -919,7 +924,7 @@ func (v Id) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file16" style="display: none">package item
+		<pre class="file" id="file15" style="display: none">package item
 
 import (
         "errors"
@@ -947,7 +952,7 @@ func (v Name) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file17" style="display: none">package location
+		<pre class="file" id="file16" style="display: none">package location
 
 type (
         Aggregate struct {
@@ -982,7 +987,7 @@ func (a *Aggregate) Delete() <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file18" style="display: none">package location
+		<pre class="file" id="file17" style="display: none">package location
 
 import (
         "github.com/friendsofgo/errors"
@@ -1015,7 +1020,7 @@ func (v Id) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file19" style="display: none">package location
+		<pre class="file" id="file18" style="display: none">package location
 
 import (
         "errors"
@@ -1043,7 +1048,7 @@ func (v Name) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file20" style="display: none">package auth
+		<pre class="file" id="file19" style="display: none">package auth
 
 import (
         "errors"
@@ -1080,7 +1085,7 @@ func (t *Token) Decode(secret string, unsignedToken string) (*auth.AccessToken, 
 }
 </pre>
 		
-		<pre class="file" id="file21" style="display: none">package item
+		<pre class="file" id="file20" style="display: none">package item
 
 import (
         "context"
@@ -1176,7 +1181,7 @@ func (r *repository) Find(id item.Id) (bool, error) <span class="cov8" title="1"
 }
 </pre>
 		
-		<pre class="file" id="file22" style="display: none">package location
+		<pre class="file" id="file21" style="display: none">package location
 
 import (
         "context"
@@ -1270,7 +1275,7 @@ func (r *Repository) Find(id location.Id) (bool, error) <span class="cov8" title
 }
 </pre>
 		
-		<pre class="file" id="file23" style="display: none">package hello
+		<pre class="file" id="file22" style="display: none">package hello
 
 import (
         "net/http"
@@ -1290,7 +1295,7 @@ func (Api) GetHello(ctx echo.Context) error <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file24" style="display: none">package hello
+		<pre class="file" id="file23" style="display: none">package hello
 
 import (
         oapicodegen "openapi/internal/infra/oapicodegen/hello"
@@ -1307,7 +1312,7 @@ func RegisterHandlers(e *echo.Echo) <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file25" style="display: none">package items
+		<pre class="file" id="file24" style="display: none">package items
 
 import (
         oapicodegen "openapi/internal/infra/oapicodegen/stock/item"
@@ -1327,7 +1332,7 @@ func RegisterHandlers(e *echo.Echo) <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file26" style="display: none">package items
+		<pre class="file" id="file25" style="display: none">package items
 
 import (
         "net/http"
@@ -1389,7 +1394,7 @@ func (h *Handler) PostStockItem(ctx echo.Context) error <span class="cov8" title
 }
 </pre>
 		
-		<pre class="file" id="file27" style="display: none">package locations
+		<pre class="file" id="file26" style="display: none">package locations
 
 import (
         "net/http"
@@ -1441,7 +1446,7 @@ func (h *Handler) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_
 }
 </pre>
 		
-		<pre class="file" id="file28" style="display: none">package locations
+		<pre class="file" id="file27" style="display: none">package locations
 
 import (
         oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
@@ -1461,7 +1466,7 @@ func RegisterHandlers(e *echo.Echo) <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file29" style="display: none">package locations
+		<pre class="file" id="file28" style="display: none">package locations
 
 import (
         "net/http"
@@ -1523,7 +1528,7 @@ func (h *Handler) PostStockLocation(ctx echo.Context) error <span class="cov8" t
 }
 </pre>
 		
-		<pre class="file" id="file30" style="display: none">package locations
+		<pre class="file" id="file29" style="display: none">package locations
 
 import (
         "net/http"
