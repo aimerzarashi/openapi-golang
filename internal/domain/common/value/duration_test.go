@@ -2,22 +2,27 @@ package value_test
 
 import (
 	"errors"
-	"openapi/internal/domain/common/value"
 	"testing"
 	"time"
+
+	"openapi/internal/domain/common/value"
 )
 
 func TestNewDuration(t *testing.T) {
 	// Setup
 	t.Parallel()
 
+	attribute := "value"
+	startAt := time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC)
+	endAt := time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)
+
 	type args struct {
-		value   string
+		value   *string
 		startAt time.Time
 		endAt   time.Time
 	}
 	type want struct {
-		value   string
+		value   *string
 		startAt time.Time
 		endAt   time.Time
 	}
@@ -31,14 +36,14 @@ func TestNewDuration(t *testing.T) {
 		{
 			name: "success",
 			args: args{
-				value:   "value",
-				startAt: time.Now(),
-				endAt:   time.Now().Add(1 * time.Hour),
+				value:   &attribute,
+				startAt: startAt,
+				endAt:   endAt,
 			},
 			want: want{
-				value:   "value",
-				startAt: time.Now(),
-				endAt:   time.Now().Add(1 * time.Hour),
+				value:   &attribute,
+				startAt: startAt,
+				endAt:   endAt,
 			},
 			wantErr: false,
 			errType: nil,
@@ -47,7 +52,7 @@ func TestNewDuration(t *testing.T) {
 			name: "fail/startAtEmpty",
 			args: args{
 				startAt: time.Time{},
-				endAt:   time.Now().Add(1 * time.Hour),
+				endAt:   endAt,
 			},
 			want:    want{},
 			wantErr: true,
@@ -56,7 +61,7 @@ func TestNewDuration(t *testing.T) {
 		{
 			name: "fail/endAtEmpty",
 			args: args{
-				startAt: time.Now(),
+				startAt: startAt,
 				endAt:   time.Time{},
 			},
 			want:    want{},
@@ -66,8 +71,8 @@ func TestNewDuration(t *testing.T) {
 		{
 			name: "fail/invalid",
 			args: args{
-				startAt: time.Now(),
-				endAt:   time.Now().Add(-1 * time.Hour),
+				startAt: endAt,
+				endAt:   startAt,
 			},
 			want:    want{},
 			wantErr: true,
@@ -80,28 +85,26 @@ func TestNewDuration(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := value.NewDuration(tt.args.value, tt.args.startAt, tt.args.endAt)
+			got, err := value.NewDuration(&tt.args.value, tt.args.startAt, tt.args.endAt)
 
 			if !tt.wantErr {
 				if err != nil {
 					t.Errorf("NewDuration() error = %v, wantErr %v", err, tt.wantErr)
 				}
-				if got.Value() != tt.want.value {
+				if *got.Value() != tt.want.value {
 					t.Errorf("NewDuration() got = %v, want %v", got.Value(), tt.want.value)
 				}
-				if got.StartAt().Equal(tt.want.startAt) {
+				if !got.StartAt().Equal(tt.want.startAt) {
 					t.Errorf("NewDuration() got = %v, want %v", got.StartAt(), tt.want.startAt)
 				}
-				if got.EndAt().Equal(tt.want.endAt) {
+				if !got.EndAt().Equal(tt.want.endAt) {
 					t.Errorf("NewDuration() got = %v, want %v", got.EndAt(), tt.want.endAt)
 				}
-				valid, err := got.Contains(time.Now().Add(30 * time.Minute))
-				if err != nil || valid != tt.want.value {
-					t.Errorf("NewDuration() got = %v, want %v", got.EndAt(), tt.want.endAt)
+				if !got.Contains(startAt.Add(30 * time.Minute)) {
+					t.Errorf("NewDuration() got = %v, want %v", true, got.Contains(startAt.Add(30 * time.Minute)))
 				}
-				_, err = got.Contains(time.Now().Add(2 * time.Hour))
-				if err == nil {
-					t.Errorf("NewDuration() got = %v, want %v", got.EndAt(), tt.want.endAt)
+				if got.Contains(endAt.Add(30 * time.Minute)) {
+					t.Errorf("NewDuration() got = %v, want %v", false, got.Contains(endAt.Add(30 * time.Minute)))
 				}
 				return
 			}

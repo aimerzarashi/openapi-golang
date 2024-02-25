@@ -10,7 +10,7 @@ type (
 	Duration[T any] struct {
 		startAt time.Time
 		endAt   time.Time
-		value   T
+		value   *T
 	}
 )
 
@@ -20,7 +20,7 @@ var (
 	ErrDurationInvalid      = errors.New("Duration: invalid")
 )
 
-func NewDuration[T any](value T, startAt, endAt time.Time) (Duration[T], error) {
+func NewDuration[T any](value *T, startAt, endAt time.Time) (Duration[T], error) {
 	if startAt.IsZero() {
 		return Duration[T]{}, ErrDurationStartAtEmpty
 	}
@@ -45,14 +45,14 @@ func (v Duration[T]) EndAt() time.Time {
 	return v.endAt
 }
 
-func (v Duration[T]) Value() T {
+func (v Duration[T]) Value() *T {
 	return v.value
 }
 
-func (v Duration[T]) Contains(target time.Time) (T, error) {
+func (v Duration[T]) Contains(target time.Time) bool {
 	if target.Before(v.startAt) || target.After(v.endAt) {
-		return v.value, errors.New("Duration: invalid")
+		return false
 	}
 
-	return v.value, nil
+	return true
 }
