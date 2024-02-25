@@ -120,7 +120,7 @@ func (d *Durations[T]) Merge(adding value.Duration[T]) error {
 
 func (d *Durations[T]) Find(criteria time.Time) (value.Duration[T], error) {
 	for _, v := range d.durations {
-		if v.StartAt().Compare(criteria) <= 0 && v.EndAt().Compare(criteria) >= 0 {
+		if v.Contains(criteria) {
 			return v, nil
 		}
 	}

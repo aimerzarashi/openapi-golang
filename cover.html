@@ -65,7 +65,7 @@
 				
 				<option value="file4">openapi/internal/app/stock/location/update.go (100.0%)</option>
 				
-				<option value="file5">openapi/internal/domain/common/collection/durations.go (88.9%)</option>
+				<option value="file5">openapi/internal/domain/common/collection/durations.go (87.2%)</option>
 				
 				<option value="file6">openapi/internal/domain/common/value/currency.go (100.0%)</option>
 				
@@ -73,47 +73,43 @@
 				
 				<option value="file8">openapi/internal/domain/sell/item/aggregate.go (0.0%)</option>
 				
-				<option value="file9">openapi/internal/domain/sell/item/collection/durations.go (87.2%)</option>
+				<option value="file9">openapi/internal/domain/sell/item/entity.go (0.0%)</option>
 				
-				<option value="file10">openapi/internal/domain/sell/item/entity.go (0.0%)</option>
+				<option value="file10">openapi/internal/domain/sell/item/value/name.go (100.0%)</option>
 				
-				<option value="file11">openapi/internal/domain/sell/item/value/duration.go (0.0%)</option>
+				<option value="file11">openapi/internal/domain/stock/item/aggregate.go (100.0%)</option>
 				
-				<option value="file12">openapi/internal/domain/sell/item/value/name.go (100.0%)</option>
+				<option value="file12">openapi/internal/domain/stock/item/entity.go (100.0%)</option>
 				
-				<option value="file13">openapi/internal/domain/stock/item/aggregate.go (100.0%)</option>
+				<option value="file13">openapi/internal/domain/stock/item/value.go (100.0%)</option>
 				
-				<option value="file14">openapi/internal/domain/stock/item/entity.go (100.0%)</option>
+				<option value="file14">openapi/internal/domain/stock/location/aggregate.go (100.0%)</option>
 				
-				<option value="file15">openapi/internal/domain/stock/item/value.go (100.0%)</option>
+				<option value="file15">openapi/internal/domain/stock/location/entity.go (100.0%)</option>
 				
-				<option value="file16">openapi/internal/domain/stock/location/aggregate.go (100.0%)</option>
+				<option value="file16">openapi/internal/domain/stock/location/value.go (100.0%)</option>
 				
-				<option value="file17">openapi/internal/domain/stock/location/entity.go (100.0%)</option>
+				<option value="file17">openapi/internal/infra/auth/auth.go (75.0%)</option>
 				
-				<option value="file18">openapi/internal/domain/stock/location/value.go (100.0%)</option>
+				<option value="file18">openapi/internal/infra/repository/sqlboiler/stock/item/repository.go (100.0%)</option>
 				
-				<option value="file19">openapi/internal/infra/auth/auth.go (75.0%)</option>
+				<option value="file19">openapi/internal/infra/repository/sqlboiler/stock/location/repository.go (100.0%)</option>
 				
-				<option value="file20">openapi/internal/infra/repository/sqlboiler/stock/item/repository.go (100.0%)</option>
+				<option value="file20">openapi/internal/ui/hello/get.go (0.0%)</option>
 				
-				<option value="file21">openapi/internal/infra/repository/sqlboiler/stock/location/repository.go (100.0%)</option>
+				<option value="file21">openapi/internal/ui/hello/hello.go (0.0%)</option>
 				
-				<option value="file22">openapi/internal/ui/hello/get.go (0.0%)</option>
+				<option value="file22">openapi/internal/ui/stock/items/items.go (100.0%)</option>
 				
-				<option value="file23">openapi/internal/ui/hello/hello.go (0.0%)</option>
+				<option value="file23">openapi/internal/ui/stock/items/post.go (73.9%)</option>
 				
-				<option value="file24">openapi/internal/ui/stock/items/items.go (100.0%)</option>
+				<option value="file24">openapi/internal/ui/stock/locations/delete.go (66.7%)</option>
 				
-				<option value="file25">openapi/internal/ui/stock/items/post.go (73.9%)</option>
+				<option value="file25">openapi/internal/ui/stock/locations/locations.go (0.0%)</option>
 				
-				<option value="file26">openapi/internal/ui/stock/locations/delete.go (66.7%)</option>
+				<option value="file26">openapi/internal/ui/stock/locations/post.go (73.9%)</option>
 				
-				<option value="file27">openapi/internal/ui/stock/locations/locations.go (0.0%)</option>
-				
-				<option value="file28">openapi/internal/ui/stock/locations/post.go (73.9%)</option>
-				
-				<option value="file29">openapi/internal/ui/stock/locations/put.go (75.0%)</option>
+				<option value="file27">openapi/internal/ui/stock/locations/put.go (75.0%)</option>
 				
 				</select>
 			</div>
@@ -381,247 +377,6 @@ type (
 var (
         ErrDurationsInvalid     = errors.New("Durations: invalid")
         ErrDurationsUnexpection = errors.New("Durations: unexpection")
-)
-
-func NewDurations[T any](durations []value.Duration[T]) (*Durations[T], error) <span class="cov8" title="1">{
-        // startAtで昇順ソート
-        sort.Slice(durations, func(i, j int) bool </span><span class="cov8" title="1">{
-                return durations[i].StartAt().Before(durations[j].StartAt())
-        }</span>)
-
-        // 該当の終了時刻と次の開始時刻が重複していないか確認
-        <span class="cov8" title="1">for i := 0; i &lt; len(durations)-1; i++ </span><span class="cov8" title="1">{
-                if durations[i].EndAt().Compare(durations[i+1].StartAt()) &gt; 0 </span><span class="cov8" title="1">{
-                        return &amp;Durations[T]{}, ErrDurationsInvalid
-                }</span>
-        }
-
-        <span class="cov8" title="1">return &amp;Durations[T]{
-                durations: durations,
-        }, nil</span>
-}
-
-func (d Durations[T]) Durations() []value.Duration[T] <span class="cov8" title="1">{
-        return d.durations
-}</span>
-
-func (d *Durations[T]) Merge(a value.Duration[T]) error <span class="cov8" title="1">{
-        buffer := make([]value.Duration[T], 0)
-        buffer = append(buffer, a)
-
-        // 追加する期間が重複している場合は、追加する期間を優先して既存の期間を調整する
-        for _, v := range d.durations </span><span class="cov8" title="1">{
-                if a.StartAt().Compare(v.EndAt()) &gt; 0 </span><span class="cov8" title="1">{
-                        buffer = append(buffer, v)
-                        continue</span>
-                }
-                <span class="cov8" title="1">if a.EndAt().Compare(v.StartAt()) &lt; 0 </span><span class="cov8" title="1">{
-                        buffer = append(buffer, v)
-                        continue</span>
-                }
-                <span class="cov8" title="1">if a.StartAt().Compare(v.StartAt()) &lt;= 0 &amp;&amp; a.EndAt().Compare(v.EndAt()) &gt;= 0 </span><span class="cov8" title="1">{
-                        continue</span>
-                }
-                <span class="cov8" title="1">if a.StartAt().Compare(v.StartAt()) &gt; 0 &amp;&amp; a.EndAt().Compare(v.EndAt()) &lt; 0 </span><span class="cov8" title="1">{
-                        b, err := value.NewDuration(v.Value(), v.StartAt(), a.StartAt().Add(-1*time.Second))
-                        if err != nil </span><span class="cov0" title="0">{
-                                return errors.Join(ErrDurationsUnexpection, err)
-                        }</span>
-                        <span class="cov8" title="1">buffer = append(buffer, b)
-                        c, err := value.NewDuration[T](v.Value(), a.EndAt().Add(1*time.Second), v.EndAt())
-                        if err != nil </span><span class="cov0" title="0">{
-                                return errors.Join(ErrDurationsUnexpection, err)
-                        }</span>
-                        <span class="cov8" title="1">buffer = append(buffer, c)
-                        continue</span>
-                }
-                <span class="cov8" title="1">if a.StartAt().Compare(v.EndAt()) &lt; 0 &amp;&amp; a.EndAt().Compare(v.EndAt()) &gt; 0 </span><span class="cov8" title="1">{
-                        b, err := value.NewDuration[T](v.Value(), v.StartAt(), a.StartAt().Add(-1*time.Second))
-                        if err != nil </span><span class="cov0" title="0">{
-                                return errors.Join(ErrDurationsUnexpection, err)
-                        }</span>
-                        <span class="cov8" title="1">buffer = append(buffer, b)
-                        continue</span>
-                }
-                <span class="cov8" title="1">if a.StartAt().Compare(v.StartAt()) &lt; 0 &amp;&amp; a.EndAt().Compare(v.EndAt()) &lt; 0 </span><span class="cov8" title="1">{
-                        b, err := value.NewDuration[T](v.Value(), a.EndAt().Add(1*time.Second), v.EndAt())
-                        if err != nil </span><span class="cov0" title="0">{
-                                return errors.Join(ErrDurationsUnexpection, err)
-                        }</span>
-                        <span class="cov8" title="1">buffer = append(buffer, b)
-                        continue</span>
-                }
-                <span class="cov0" title="0">return ErrDurationsUnexpection</span>
-        }
-
-        // startAtで昇順ソートする
-        <span class="cov8" title="1">sort.Slice(buffer, func(i, j int) bool </span><span class="cov8" title="1">{
-                return buffer[i].StartAt().Before(buffer[j].StartAt())
-        }</span>)
-
-        // 調整済みの期間に置き換える
-        <span class="cov8" title="1">d.durations = buffer
-        return nil</span>
-}
-</pre>
-		
-		<pre class="file" id="file6" style="display: none">package value
-
-import (
-        "errors"
-)
-
-type (
-        Currency struct {
-                ammount float64
-                unit    string
-        }
-)
-
-var (
-        ErrCurrencyUnitInvalid = errors.New("Currency: unit cannot be empty")
-)
-
-func NewCurrency(ammount float64, unit string) (Currency, error) <span class="cov8" title="1">{
-        if err := valideteUnit(unit); err != nil </span><span class="cov8" title="1">{
-                return Currency{}, err
-        }</span>
-        <span class="cov8" title="1">return Currency{
-                ammount: ammount,
-                unit:    unit,
-        }, nil</span>
-}
-
-func valideteUnit(unit string) error <span class="cov8" title="1">{
-        code := []string{"JPY"}
-
-        for _, v := range code </span><span class="cov8" title="1">{
-                if unit == v </span><span class="cov8" title="1">{
-                        return nil
-                }</span>
-        }
-
-        <span class="cov8" title="1">return ErrCurrencyUnitInvalid</span>
-}
-</pre>
-		
-		<pre class="file" id="file7" style="display: none">package value
-
-import (
-        "errors"
-        "fmt"
-        "time"
-)
-
-type (
-        Duration[T any] struct {
-                startAt time.Time
-                endAt   time.Time
-                value   T
-        }
-)
-
-var (
-        ErrDurationStartAtEmpty = errors.New("Duration: startAt cannot be empty")
-        ErrDurationEndAtEmpty   = errors.New("Duration: endAt cannot be empty")
-        ErrDurationInvalid      = errors.New("Duration: invalid")
-)
-
-func NewDuration[T any](value T, startAt, endAt time.Time) (Duration[T], error) <span class="cov8" title="1">{
-        if startAt.IsZero() </span><span class="cov8" title="1">{
-                return Duration[T]{}, ErrDurationStartAtEmpty
-        }</span>
-        <span class="cov8" title="1">if endAt.IsZero() </span><span class="cov8" title="1">{
-                return Duration[T]{}, ErrDurationEndAtEmpty
-        }</span>
-        <span class="cov8" title="1">if startAt.Compare(endAt) &gt; 0 </span><span class="cov8" title="1">{
-                return Duration[T]{}, errors.Join(ErrDurationInvalid, fmt.Errorf(" want startAt: %s &lt;= endAt: %s", startAt.Format(time.RFC3339), endAt.Format(time.RFC3339)))
-        }</span>
-        <span class="cov8" title="1">return Duration[T]{
-                startAt: startAt,
-                endAt:   endAt,
-                value:   value,
-        }, nil</span>
-}
-
-func (v Duration[T]) StartAt() time.Time <span class="cov8" title="1">{
-        return v.startAt
-}</span>
-
-func (v Duration[T]) EndAt() time.Time <span class="cov8" title="1">{
-        return v.endAt
-}</span>
-
-func (v Duration[T]) Value() T <span class="cov8" title="1">{
-        return v.value
-}</span>
-
-func (v Duration[T]) Contains(target time.Time) (T, error) <span class="cov8" title="1">{
-        if target.Before(v.startAt) || target.After(v.endAt) </span><span class="cov8" title="1">{
-                return v.value, errors.New("Duration: invalid")
-        }</span>
-
-        <span class="cov8" title="1">return v.value, nil</span>
-}
-</pre>
-		
-		<pre class="file" id="file8" style="display: none">package item
-
-import (
-        "openapi/internal/domain/sell/item/value"
-)
-
-type (
-        Aggregate struct {
-                Id      Id
-                Name    value.Name
-                deleted bool
-        }
-)
-
-func NewAggregate(id Id, name value.Name) *Aggregate <span class="cov0" title="0">{
-        return &amp;Aggregate{
-                Id:      id,
-                Name:    name,
-                deleted: false,
-        }
-}</span>
-
-func RestoreAggregate(id Id, name value.Name, deleted bool) *Aggregate <span class="cov0" title="0">{
-        return &amp;Aggregate{
-                Id:      id,
-                Name:    name,
-                deleted: deleted,
-        }
-}</span>
-
-func (a Aggregate) IsDeleted() bool <span class="cov0" title="0">{
-        return a.deleted
-}</span>
-
-func (a *Aggregate) Delete() <span class="cov0" title="0">{
-        a.deleted = true
-}</span>
-</pre>
-		
-		<pre class="file" id="file9" style="display: none">package collection
-
-import (
-        "errors"
-        "openapi/internal/domain/sell/item/value"
-        "sort"
-        "time"
-)
-
-type (
-        Durations[T any] struct {
-                durations []value.Duration[T]
-        }
-)
-
-var (
-        ErrDurationsInvalid     = errors.New("Durations: invalid")
-        ErrDurationsUnexpection = errors.New("Durations: unexpection")
         ErrDurationNotFound     = errors.New("Durations: not found")
 )
 
@@ -726,7 +481,7 @@ func (d *Durations[T]) Merge(adding value.Duration[T]) error <span class="cov8" 
 
 func (d *Durations[T]) Find(criteria time.Time) (value.Duration[T], error) <span class="cov8" title="1">{
         for _, v := range d.durations </span><span class="cov8" title="1">{
-                if v.StartAt().Compare(criteria) &lt;= 0 &amp;&amp; v.EndAt().Compare(criteria) &gt;= 0 </span><span class="cov8" title="1">{
+                if v.Contains(criteria) </span><span class="cov8" title="1">{
                         return v, nil
                 }</span>
         }
@@ -735,7 +490,146 @@ func (d *Durations[T]) Find(criteria time.Time) (value.Duration[T], error) <span
 }
 </pre>
 		
-		<pre class="file" id="file10" style="display: none">package item
+		<pre class="file" id="file6" style="display: none">package value
+
+import (
+        "errors"
+)
+
+type (
+        Currency struct {
+                ammount float64
+                unit    string
+        }
+)
+
+var (
+        ErrCurrencyUnitInvalid = errors.New("Currency: unit cannot be empty")
+)
+
+func NewCurrency(ammount float64, unit string) (Currency, error) <span class="cov8" title="1">{
+        if err := valideteUnit(unit); err != nil </span><span class="cov8" title="1">{
+                return Currency{}, err
+        }</span>
+        <span class="cov8" title="1">return Currency{
+                ammount: ammount,
+                unit:    unit,
+        }, nil</span>
+}
+
+func valideteUnit(unit string) error <span class="cov8" title="1">{
+        code := []string{"JPY"}
+
+        for _, v := range code </span><span class="cov8" title="1">{
+                if unit == v </span><span class="cov8" title="1">{
+                        return nil
+                }</span>
+        }
+
+        <span class="cov8" title="1">return ErrCurrencyUnitInvalid</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package value
+
+import (
+        "errors"
+        "fmt"
+        "time"
+)
+
+type (
+        Duration[T any] struct {
+                startAt time.Time
+                endAt   time.Time
+                value   *T
+        }
+)
+
+var (
+        ErrDurationStartAtEmpty = errors.New("Duration: startAt cannot be empty")
+        ErrDurationEndAtEmpty   = errors.New("Duration: endAt cannot be empty")
+        ErrDurationInvalid      = errors.New("Duration: invalid")
+)
+
+func NewDuration[T any](value *T, startAt, endAt time.Time) (Duration[T], error) <span class="cov8" title="1">{
+        if startAt.IsZero() </span><span class="cov8" title="1">{
+                return Duration[T]{}, ErrDurationStartAtEmpty
+        }</span>
+        <span class="cov8" title="1">if endAt.IsZero() </span><span class="cov8" title="1">{
+                return Duration[T]{}, ErrDurationEndAtEmpty
+        }</span>
+        <span class="cov8" title="1">if startAt.Compare(endAt) &gt; 0 </span><span class="cov8" title="1">{
+                return Duration[T]{}, errors.Join(ErrDurationInvalid, fmt.Errorf(" want startAt: %s &lt;= endAt: %s", startAt.Format(time.RFC3339), endAt.Format(time.RFC3339)))
+        }</span>
+        <span class="cov8" title="1">return Duration[T]{
+                startAt: startAt,
+                endAt:   endAt,
+                value:   value,
+        }, nil</span>
+}
+
+func (v Duration[T]) StartAt() time.Time <span class="cov8" title="1">{
+        return v.startAt
+}</span>
+
+func (v Duration[T]) EndAt() time.Time <span class="cov8" title="1">{
+        return v.endAt
+}</span>
+
+func (v Duration[T]) Value() *T <span class="cov8" title="1">{
+        return v.value
+}</span>
+
+func (v Duration[T]) Contains(target time.Time) bool <span class="cov8" title="1">{
+        if target.Before(v.startAt) || target.After(v.endAt) </span><span class="cov8" title="1">{
+                return false
+        }</span>
+
+        <span class="cov8" title="1">return true</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package item
+
+import (
+        "openapi/internal/domain/sell/item/value"
+)
+
+type (
+        Aggregate struct {
+                Id      Id
+                Name    value.Name
+                deleted bool
+        }
+)
+
+func NewAggregate(id Id, name value.Name) *Aggregate <span class="cov0" title="0">{
+        return &amp;Aggregate{
+                Id:      id,
+                Name:    name,
+                deleted: false,
+        }
+}</span>
+
+func RestoreAggregate(id Id, name value.Name, deleted bool) *Aggregate <span class="cov0" title="0">{
+        return &amp;Aggregate{
+                Id:      id,
+                Name:    name,
+                deleted: deleted,
+        }
+}</span>
+
+func (a Aggregate) IsDeleted() bool <span class="cov0" title="0">{
+        return a.deleted
+}</span>
+
+func (a *Aggregate) Delete() <span class="cov0" title="0">{
+        a.deleted = true
+}</span>
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package item
 
 import (
         "github.com/friendsofgo/errors"
@@ -768,67 +662,7 @@ func (v Id) String() string <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file11" style="display: none">package value
-
-import (
-        "errors"
-        "fmt"
-        "time"
-)
-
-type (
-        Duration[T any] struct {
-                startAt time.Time
-                endAt   time.Time
-                value   *T
-        }
-)
-
-var (
-        ErrDurationStartAtEmpty = errors.New("Duration: startAt cannot be empty")
-        ErrDurationEndAtEmpty   = errors.New("Duration: endAt cannot be empty")
-        ErrDurationInvalid      = errors.New("Duration: invalid")
-)
-
-func NewDuration[T any](value *T, startAt, endAt time.Time) (Duration[T], error) <span class="cov0" title="0">{
-        if startAt.IsZero() </span><span class="cov0" title="0">{
-                return Duration[T]{}, ErrDurationStartAtEmpty
-        }</span>
-        <span class="cov0" title="0">if endAt.IsZero() </span><span class="cov0" title="0">{
-                return Duration[T]{}, ErrDurationEndAtEmpty
-        }</span>
-        <span class="cov0" title="0">if startAt.Compare(endAt) &gt; 0 </span><span class="cov0" title="0">{
-                return Duration[T]{}, errors.Join(ErrDurationInvalid, fmt.Errorf(" want startAt: %s &lt;= endAt: %s", startAt.Format(time.RFC3339), endAt.Format(time.RFC3339)))
-        }</span>
-        <span class="cov0" title="0">return Duration[T]{
-                startAt: startAt,
-                endAt:   endAt,
-                value:   value,
-        }, nil</span>
-}
-
-func (v Duration[T]) StartAt() time.Time <span class="cov0" title="0">{
-        return v.startAt
-}</span>
-
-func (v Duration[T]) EndAt() time.Time <span class="cov0" title="0">{
-        return v.endAt
-}</span>
-
-func (v Duration[T]) Value() *T <span class="cov0" title="0">{
-        return v.value
-}</span>
-
-func (v Duration[T]) Contains(target time.Time) (*T, error) <span class="cov0" title="0">{
-        if target.Before(v.startAt) || target.After(v.endAt) </span><span class="cov0" title="0">{
-                return v.value, errors.New("Duration: invalid")
-        }</span>
-
-        <span class="cov0" title="0">return v.value, nil</span>
-}
-</pre>
-		
-		<pre class="file" id="file12" style="display: none">package value
+		<pre class="file" id="file10" style="display: none">package value
 
 import (
         "errors"
@@ -856,7 +690,7 @@ func (v Name) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file13" style="display: none">package item
+		<pre class="file" id="file11" style="display: none">package item
 
 type (
         Aggregate struct {
@@ -891,7 +725,7 @@ func (a *Aggregate) Delete() <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file14" style="display: none">package item
+		<pre class="file" id="file12" style="display: none">package item
 
 import (
         "github.com/friendsofgo/errors"
@@ -924,7 +758,7 @@ func (v Id) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file15" style="display: none">package item
+		<pre class="file" id="file13" style="display: none">package item
 
 import (
         "errors"
@@ -952,7 +786,7 @@ func (v Name) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file16" style="display: none">package location
+		<pre class="file" id="file14" style="display: none">package location
 
 type (
         Aggregate struct {
@@ -987,7 +821,7 @@ func (a *Aggregate) Delete() <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file17" style="display: none">package location
+		<pre class="file" id="file15" style="display: none">package location
 
 import (
         "github.com/friendsofgo/errors"
@@ -1020,7 +854,7 @@ func (v Id) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file18" style="display: none">package location
+		<pre class="file" id="file16" style="display: none">package location
 
 import (
         "errors"
@@ -1048,7 +882,7 @@ func (v Name) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file19" style="display: none">package auth
+		<pre class="file" id="file17" style="display: none">package auth
 
 import (
         "errors"
@@ -1085,7 +919,7 @@ func (t *Token) Decode(secret string, unsignedToken string) (*auth.AccessToken, 
 }
 </pre>
 		
-		<pre class="file" id="file20" style="display: none">package item
+		<pre class="file" id="file18" style="display: none">package item
 
 import (
         "context"
@@ -1181,7 +1015,7 @@ func (r *repository) Find(id item.Id) (bool, error) <span class="cov8" title="1"
 }
 </pre>
 		
-		<pre class="file" id="file21" style="display: none">package location
+		<pre class="file" id="file19" style="display: none">package location
 
 import (
         "context"
@@ -1275,7 +1109,7 @@ func (r *Repository) Find(id location.Id) (bool, error) <span class="cov8" title
 }
 </pre>
 		
-		<pre class="file" id="file22" style="display: none">package hello
+		<pre class="file" id="file20" style="display: none">package hello
 
 import (
         "net/http"
@@ -1295,7 +1129,7 @@ func (Api) GetHello(ctx echo.Context) error <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file23" style="display: none">package hello
+		<pre class="file" id="file21" style="display: none">package hello
 
 import (
         oapicodegen "openapi/internal/infra/oapicodegen/hello"
@@ -1312,7 +1146,7 @@ func RegisterHandlers(e *echo.Echo) <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file24" style="display: none">package items
+		<pre class="file" id="file22" style="display: none">package items
 
 import (
         oapicodegen "openapi/internal/infra/oapicodegen/stock/item"
@@ -1332,7 +1166,7 @@ func RegisterHandlers(e *echo.Echo) <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file25" style="display: none">package items
+		<pre class="file" id="file23" style="display: none">package items
 
 import (
         "net/http"
@@ -1394,7 +1228,7 @@ func (h *Handler) PostStockItem(ctx echo.Context) error <span class="cov8" title
 }
 </pre>
 		
-		<pre class="file" id="file26" style="display: none">package locations
+		<pre class="file" id="file24" style="display: none">package locations
 
 import (
         "net/http"
@@ -1446,7 +1280,7 @@ func (h *Handler) DeleteStockLocation(ctx echo.Context, stockLocationId openapi_
 }
 </pre>
 		
-		<pre class="file" id="file27" style="display: none">package locations
+		<pre class="file" id="file25" style="display: none">package locations
 
 import (
         oapicodegen "openapi/internal/infra/oapicodegen/stock/location"
@@ -1466,7 +1300,7 @@ func RegisterHandlers(e *echo.Echo) <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file28" style="display: none">package locations
+		<pre class="file" id="file26" style="display: none">package locations
 
 import (
         "net/http"
@@ -1528,7 +1362,7 @@ func (h *Handler) PostStockLocation(ctx echo.Context) error <span class="cov8" t
 }
 </pre>
 		
-		<pre class="file" id="file29" style="display: none">package locations
+		<pre class="file" id="file27" style="display: none">package locations
 
 import (
         "net/http"
