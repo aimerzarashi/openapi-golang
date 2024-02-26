@@ -36,3 +36,11 @@ func valideteUnit(unit string) error {
 
 	return ErrCurrencyUnitInvalid
 }
+
+func (v Currency) Ammount() float64 {
+	return v.ammount
+}
+
+func (v Currency) Unit() string {
+	return v.unit
+}
