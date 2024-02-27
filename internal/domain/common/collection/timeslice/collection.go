@@ -58,16 +58,17 @@ func (d Collection[T]) Find(criteria time.Time) (Item[T], error) {
 }
 
 func (d *Collection[T]) Add(adding *Item[T]) (*Collection[T], error) {
-	buffer := make([]*Item[T], len(d.items))
+	buffer := make([]*Item[T], 0)
 	buffer = append(buffer, adding)
 
 	// 追加する期間が重複している場合は、追加する期間を優先して既存の期間を調整する
 	for _, v := range d.items {
-		adjusting, err := v.Adjust(adding)
+		adjusted, err := v.Adjust(adding)
 		if err != nil {
 			return nil, err
 		}
-		buffer = append(buffer, adjusting...)
+		
+		buffer = append(buffer, adjusted...)
 	}
 
 	// startAtで昇順ソートする

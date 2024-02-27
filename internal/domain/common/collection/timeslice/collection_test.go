@@ -254,3 +254,89 @@ func TestCollection_Find(t *testing.T) {
 		})
 	}
 }
+
+
+func TestCollection_Add(t *testing.T) {
+	// Setup
+	t.Parallel()
+
+	type T = string
+
+	adding := "adding"
+
+	type args struct {
+		existing []*timeslice.Item[T]
+		adding   []*timeslice.Item[T]
+	}
+	type want struct {
+		items []*timeslice.Item[T]
+		err       error
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    want
+		wantErr bool
+	}{
+		{
+			name: "success",
+			args: args{
+				existing: []*timeslice.Item[T]{
+					NewItem(&adding, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
+				},
+				adding: []*timeslice.Item[T]{
+					NewItem(&adding, time.Date(2024, 1, 1, 9, 20, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 39, 59, 0, time.UTC)),
+				},
+			},
+			want: want{
+				items: []*timeslice.Item[T]{
+					NewItem(&adding, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 19, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 9, 20, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 39, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 9, 40, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
+				},
+				err: nil,
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			// Given
+			items, err := timeslice.NewCollection(tt.args.existing...)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// When
+			got, err := items.Add(tt.args.adding[0])
+
+			// Then
+			if !tt.wantErr {
+				if err != nil {
+					t.Errorf("Add() error = %v, wantErr %v", err, tt.wantErr)
+				}
+				for i, v := range got.Items() {
+					if v.StartAt() != tt.want.items[i].StartAt() {
+						t.Errorf("Add() got = %v, want %v", got.Items(), tt.want.items)
+					}
+					if v.EndAt() != tt.want.items[i].EndAt() {
+						t.Errorf("Add() got = %v, want %v", got.Items(), tt.want.items)
+					}
+				}
+				return
+			}
+
+			if !errors.Is(err, tt.want.err) {
+				t.Errorf("Add() error = %v, wantErr %v", err, tt.want.err)
+			}
+		})
+	}
+}
