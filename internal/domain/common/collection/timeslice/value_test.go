@@ -2,6 +2,7 @@ package timeslice_test
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 	"time"
 
@@ -106,6 +107,144 @@ func TestNewItem(t *testing.T) {
 				return
 			}
 			t.Errorf("NewItem() error = %v, wantErr %v", err, tt.wantErr)
+		})
+	}
+}
+
+func TestItem_Adjust(t *testing.T) {
+	// Setup
+	t.Parallel()
+
+	type T = string
+
+	existing := "existing"
+	adding := "adding"
+
+	type args struct {
+		existing *timeslice.Item[T]
+		adding   *timeslice.Item[T]
+	}
+	type want struct {
+		durations []*timeslice.Item[T]
+		err       error
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    want
+		wantErr bool
+	}{
+		{
+			name: "success/1",
+			args: args{
+				existing: NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				adding:   NewItem(&adding, time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 8, 59, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				},
+				err: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name: "success/2",
+			args: args{
+				existing: NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				adding:   NewItem(&adding, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				},
+				err: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name: "success/3",
+			args: args{
+				existing: NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+				adding:   NewItem(&adding, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []*timeslice.Item[T]{},
+				err:       nil,
+			},
+			wantErr: false,
+		},
+		{
+			name: "success/4",
+			args: args{
+				existing: NewItem(&existing, time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+				adding:   NewItem(&adding, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 8, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+				},
+				err: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name: "success/5",
+			args: args{
+				existing: NewItem(&existing, time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 29, 59, 0, time.UTC)),
+				adding:   NewItem(&adding, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 8, 59, 59, 0, time.UTC)),
+				},
+				err: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name: "success/6",
+			args: args{
+				existing: NewItem(&existing, time.Date(2024, 1, 1, 9, 30, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+				adding:   NewItem(&adding, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+			},
+			want: want{
+				durations: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 10, 00, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+				},
+				err: nil,
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			// When
+			got, err := tt.args.existing.Adjust(tt.args.adding)
+
+			// Then
+			if !tt.wantErr {
+				if err != nil {
+					t.Errorf("Adjust() error = %v, wantErr %v", err, tt.wantErr)
+				}
+
+				if !reflect.DeepEqual(got, tt.want.durations) {
+					t.Errorf("Adjust() = %v, want %v", got, tt.want.durations)
+				}
+				return
+			}
+
+			if err != nil {
+				if !errors.Is(err, tt.want.err) {
+					t.Errorf("Adjust() error = %v, wantErr %v", err, tt.want.err)
+				}
+				return
+			}
 		})
 	}
 }
