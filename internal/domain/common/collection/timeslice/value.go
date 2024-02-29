@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type(
+type (
 	Item[T any] struct {
 		value   *T
 		startAt time.Time
@@ -15,9 +15,10 @@ type(
 )
 
 var (
-	ErrItemStartAtEmpty = errors.New("Item: startAt cannot be empty")
-	ErrItemEndAtEmpty   = errors.New("Item: endAt cannot be empty")
-	ErrItemInvalid      = errors.New("Item: invalid")
+	ErrItemStartAtEmpty      = errors.New("Item: startAt cannot be empty")
+	ErrItemEndAtEmpty        = errors.New("Item: endAt cannot be empty")
+	ErrItemInvalid           = errors.New("Item: invalid")
+	ErrCollectionUnexpection = errors.New("Collection: unexpection")
 )
 
 func NewItem[T any](value *T, startAt, endAt time.Time) (*Item[T], error) {
@@ -34,7 +35,7 @@ func NewItem[T any](value *T, startAt, endAt time.Time) (*Item[T], error) {
 		value:   value,
 		startAt: startAt,
 		endAt:   endAt,
-	},nil
+	}, nil
 }
 
 func (i Item[T]) Value() T {
@@ -53,7 +54,7 @@ func (i Item[T]) Contains(t time.Time) bool {
 	return i.startAt.Compare(t) <= 0 && i.endAt.Compare(t) >= 0
 }
 
-// 既存期間と追加期間が重複している場合は、追加期間を優先して既存期間を調整する
+// 既存期間と追加期間が重複している場合は、追加期間を優先して調整した既存期間を返す
 func (i Item[T]) Adjust(adding *Item[T]) ([]*Item[T], error) {
 	// 追加期間に対し、既存期間は重複しない前方に位置するため、そのまま返す
 	if adding.startAt.Compare(i.endAt) > 0 {

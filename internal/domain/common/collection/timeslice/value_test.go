@@ -21,7 +21,7 @@ func TestNewItem(t *testing.T) {
 		endAt   time.Time
 	}
 	type want struct {
-		err       error
+		err error
 	}
 	tests := []struct {
 		name    string
@@ -62,6 +62,18 @@ func TestNewItem(t *testing.T) {
 			},
 			want: want{
 				err: timeslice.ErrItemEndAtEmpty,
+			},
+			wantErr: true,
+		},
+		{
+			name: "fail/3",
+			args: args{
+				value:   &value,
+				startAt: time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC),
+				endAt:   time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC),
+			},
+			want: want{
+				err: timeslice.ErrItemInvalid,
 			},
 			wantErr: true,
 		},

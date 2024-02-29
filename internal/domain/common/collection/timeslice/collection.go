@@ -6,36 +6,35 @@ import (
 	"time"
 )
 
-type(
+type (
 	Collection[T any] struct {
 		items []*Item[T]
 	}
 )
 
 var (
-	ErrCollectionInvalid     = errors.New("Collection: invalid")
-	ErrCollectionNotFound    = errors.New("Collection: not found")
-	ErrCollectionUnexpection = errors.New("Collection: unexpection")
+	ErrCollectionInvalid  = errors.New("Collection: invalid")
+	ErrCollectionNotFound = errors.New("Collection: not found")
 )
 
-func NewCollection[T any](timeslices ...*Item[T]) (*Collection[T], error) {
+func NewCollection[T any](initItems ...*Item[T]) (*Collection[T], error) {
 	// startAtで昇順ソート
-	sort.Slice(timeslices, func(i, j int) bool {
-		return timeslices[i].StartAt().Before(timeslices[j].StartAt())
+	sort.Slice(initItems, func(i, j int) bool {
+		return initItems[i].StartAt().Before(initItems[j].StartAt())
 	})
-	
+
 	// 期間が重複していないか確認
-	for i := 0; i < len(timeslices)-1; i++ {
-		if timeslices[i].EndAt().Compare(timeslices[i+1].StartAt()) >= 0 {
+	for i := 0; i < len(initItems)-1; i++ {
+		if initItems[i].EndAt().Compare(initItems[i+1].StartAt()) >= 0 {
 			return nil, ErrCollectionInvalid
 		}
 	}
 
 	var items []*Item[T]
-	if len(timeslices) == 0 {
-		items = make([]*Item[T], len(timeslices))
+	if len(initItems) == 0 {
+		items = make([]*Item[T], len(initItems))
 	} else {
-		items = timeslices
+		items = initItems
 	}
 
 	return &Collection[T]{
@@ -67,7 +66,7 @@ func (d *Collection[T]) Add(adding *Item[T]) (*Collection[T], error) {
 		if err != nil {
 			return nil, err
 		}
-		
+
 		buffer = append(buffer, adjusted...)
 	}
 

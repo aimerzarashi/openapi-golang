@@ -33,9 +33,9 @@ func TestNewCollection(t *testing.T) {
 		err error
 	}
 	tests := []struct {
-		name string
-		args args
-		want want
+		name    string
+		args    args
+		want    want
 		wantErr bool
 	}{
 		{
@@ -126,12 +126,12 @@ func TestCollection_Find(t *testing.T) {
 	}
 	type want struct {
 		item *timeslice.Item[T]
-		err error
+		err  error
 	}
 	tests := []struct {
-		name string
-		args args
-		want want
+		name    string
+		args    args
+		want    want
 		wantErr bool
 	}{
 		{
@@ -141,7 +141,7 @@ func TestCollection_Find(t *testing.T) {
 			},
 			want: want{
 				item: items[0],
-				err: nil,
+				err:  nil,
 			},
 			wantErr: false,
 		},
@@ -152,7 +152,7 @@ func TestCollection_Find(t *testing.T) {
 			},
 			want: want{
 				item: items[0],
-				err: nil,
+				err:  nil,
 			},
 			wantErr: false,
 		},
@@ -163,7 +163,7 @@ func TestCollection_Find(t *testing.T) {
 			},
 			want: want{
 				item: items[1],
-				err: nil,
+				err:  nil,
 			},
 			wantErr: false,
 		},
@@ -174,7 +174,7 @@ func TestCollection_Find(t *testing.T) {
 			},
 			want: want{
 				item: items[1],
-				err: nil,
+				err:  nil,
 			},
 			wantErr: false,
 		},
@@ -185,7 +185,7 @@ func TestCollection_Find(t *testing.T) {
 			},
 			want: want{
 				item: items[2],
-				err: nil,
+				err:  nil,
 			},
 			wantErr: false,
 		},
@@ -196,7 +196,7 @@ func TestCollection_Find(t *testing.T) {
 			},
 			want: want{
 				item: items[2],
-				err: nil,
+				err:  nil,
 			},
 			wantErr: false,
 		},
@@ -207,7 +207,7 @@ func TestCollection_Find(t *testing.T) {
 			},
 			want: want{
 				item: nil,
-				err: timeslice.ErrCollectionNotFound,
+				err:  timeslice.ErrCollectionNotFound,
 			},
 			wantErr: true,
 		},
@@ -218,7 +218,7 @@ func TestCollection_Find(t *testing.T) {
 			},
 			want: want{
 				item: nil,
-				err: timeslice.ErrCollectionNotFound,
+				err:  timeslice.ErrCollectionNotFound,
 			},
 			wantErr: true,
 		},
@@ -255,14 +255,13 @@ func TestCollection_Find(t *testing.T) {
 	}
 }
 
-
 func TestCollection_Add(t *testing.T) {
 	// Setup
 	t.Parallel()
-
 	type T = string
 
 	adding := "adding"
+	existing := "existing"
 
 	type args struct {
 		existing []*timeslice.Item[T]
@@ -270,7 +269,7 @@ func TestCollection_Add(t *testing.T) {
 	}
 	type want struct {
 		items []*timeslice.Item[T]
-		err       error
+		err   error
 	}
 	tests := []struct {
 		name    string
@@ -279,24 +278,91 @@ func TestCollection_Add(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "success",
+			name: "success/1",
 			args: args{
 				existing: []*timeslice.Item[T]{
-					NewItem(&adding, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
-					NewItem(&adding, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
-					NewItem(&adding, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
 				},
 				adding: []*timeslice.Item[T]{
-					NewItem(&adding, time.Date(2024, 1, 1, 9, 20, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 39, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 8, 59, 59, 0, time.UTC)),
 				},
 			},
 			want: want{
 				items: []*timeslice.Item[T]{
-					NewItem(&adding, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 19, 59, 0, time.UTC)),
-					NewItem(&adding, time.Date(2024, 1, 1, 9, 20, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 39, 59, 0, time.UTC)),
-					NewItem(&adding, time.Date(2024, 1, 1, 9, 40, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 8, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 8, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
+				},
+				err: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name: "success/2",
+			args: args{
+				existing: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
+				},
+				adding: []*timeslice.Item[T]{
+					NewItem(&adding, time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 12, 59, 59, 0, time.UTC)),
+				},
+			},
+			want: want{
+				items: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 12, 59, 59, 0, time.UTC)),
+				},
+				err: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name: "success/3",
+			args: args{
+				existing: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
+				},
+				adding: []*timeslice.Item[T]{
 					NewItem(&adding, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
-					NewItem(&adding, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
+				},
+			},
+			want: want{
+				items: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
+				},
+				err: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name: "success/4",
+			args: args{
+				existing: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
+				},
+				adding: []*timeslice.Item[T]{
+					NewItem(&adding, time.Date(2024, 1, 1, 9, 30, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 29, 59, 0, time.UTC)),
+				},
+			},
+			want: want{
+				items: []*timeslice.Item[T]{
+					NewItem(&existing, time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 9, 29, 59, 0, time.UTC)),
+					NewItem(&adding, time.Date(2024, 1, 1, 9, 30, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 29, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 10, 30, 0, 0, time.UTC), time.Date(2024, 1, 1, 10, 59, 59, 0, time.UTC)),
+					NewItem(&existing, time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), time.Date(2024, 1, 1, 11, 59, 59, 0, time.UTC)),
 				},
 				err: nil,
 			},
