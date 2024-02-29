@@ -1,8 +1,10 @@
-package value
+package currency_test
 
 import (
 	"reflect"
 	"testing"
+
+	"openapi/internal/domain/common/value/currency"
 )
 
 func TestNewCurrency(t *testing.T) {
@@ -13,10 +15,17 @@ func TestNewCurrency(t *testing.T) {
 		ammount float64
 		unit    string
 	}
+	type want struct {
+		currency struct {
+			ammount float64
+			unit    string
+		}
+		err error
+	}
 	tests := []struct {
 		name    string
 		args    args
-		want    Currency
+		want    want
 		wantErr bool
 	}{
 		{
@@ -25,9 +34,15 @@ func TestNewCurrency(t *testing.T) {
 				ammount: 100,
 				unit:    "JPY",
 			},
-			want: Currency{
-				ammount: 100,
-				unit:    "JPY",
+			want: want{
+				currency: struct {
+					ammount float64
+					unit    string
+				}{
+					ammount: 100,
+					unit:    "JPY",
+				},
+				err: nil,
 			},
 			wantErr: false,
 		},
@@ -37,7 +52,16 @@ func TestNewCurrency(t *testing.T) {
 				ammount: 100,
 				unit:    "",
 			},
-			want:    Currency{},
+			want: want{
+				currency: struct {
+					ammount float64
+					unit    string
+				}{
+					ammount: 0,
+					unit:    "",
+				},
+				err: currency.ErrCurrencyUnitInvalid,
+			},
 			wantErr: true,
 		},
 	}
@@ -48,7 +72,7 @@ func TestNewCurrency(t *testing.T) {
 			t.Parallel()
 
 			// When
-			got, err := NewCurrency(tt.args.ammount, tt.args.unit)
+			got, err := currency.NewCurrency(tt.args.ammount, tt.args.unit)
 
 			// Then
 			if (err != nil) != tt.wantErr {
