@@ -1,7 +1,8 @@
 package item
 
 import (
-	"github.com/friendsofgo/errors"
+	"errors"
+
 	"github.com/google/uuid"
 )
 
