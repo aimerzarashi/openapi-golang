@@ -1,12 +1,16 @@
 package item_test
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
+	"time"
 
+	"github.com/aimerzarashi/timeslice"
 	"github.com/google/uuid"
 
-	"openapi/internal/domain/stock/item"
+	"openapi/internal/domain/sell/item"
+	"openapi/internal/domain/sell/item/value"
 )
 
 func TestNewAggregate(t *testing.T) {
@@ -18,19 +22,19 @@ func TestNewAggregate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name, err := item.NewName("test")
+	name, err := value.NewName("test")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	type args struct {
 		id   item.Id
-		name item.Name
+		name value.Name
 	}
 
 	type want struct {
 		id      item.Id
-		name    item.Name
+		name    value.Name
 		deleted bool
 	}
 
@@ -60,20 +64,36 @@ func TestNewAggregate(t *testing.T) {
 			t.Parallel()
 
 			// When
-			got := item.NewAggregate(tt.args.id, tt.args.name)
+			got, err := item.NewAggregate(tt.args.id, tt.args.name)
 
 			// Then
-			if !reflect.DeepEqual(got.Id, tt.want.id) {
-				t.Errorf("NewAggregate() = %v, want %v", got.Id, tt.want.id)
+			if err != nil {
+				t.Errorf("NewAggregate() error = %v", err)
+				return
 			}
 
-			if !reflect.DeepEqual(got.Name, tt.want.name) {
-				t.Errorf("NewAggregate() = %v, want %v", got.Name, tt.want.name)
+			if got.Id 				 != tt.want.id || 
+				 got.Name 			!= tt.want.name || 
+				 got.IsDeleted() != tt.want.deleted {
+				t.Errorf("NewAggregate() = %v, want %v", got, tt.want)
 			}
 
-			if !reflect.DeepEqual(got.IsDeleted(), tt.want.deleted) {
-				t.Errorf("NewAggregate() = %v, want %v", got.IsDeleted(), tt.want.deleted)
+			price, err := value.NewPrice(100, "JPY")
+			if err != nil {
+				t.Fatal(err)
 			}
+			item, err := timeslice.NewItem(price, time.Now(), time.Now().Add(time.Minute*10))
+			if err != nil {
+				t.Fatal(err)
+			}
+			prices, err := got.Prices.Add(item)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, p := range prices.Items() {
+				fmt.Printf("%+v, %+v, %+v\n", p.Value(), p.StartAt(), p.EndAt())				
+			}
+
 		})
 	}
 }
@@ -87,19 +107,19 @@ func TestRestoreAggregate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name, err := item.NewName("test")
+	name, err := value.NewName("test")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	type args struct {
 		id      item.Id
-		name    item.Name
+		name    value.Name
 		deleted bool
 	}
 	type want struct {
 		Id      item.Id
-		Name    item.Name
+		Name    value.Name
 		deleted bool
 	}
 	tests := []struct {
@@ -167,14 +187,14 @@ func TestAggregate_Delete(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name, err := item.NewName("test")
+	name, err := value.NewName("test")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	type args struct {
 		Id      item.Id
-		Name    item.Name
+		Name    value.Name
 		deleted bool
 	}
 	tests := []struct {

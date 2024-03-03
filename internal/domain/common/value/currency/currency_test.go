@@ -1,7 +1,6 @@
 package currency_test
 
 import (
-	"reflect"
 	"testing"
 
 	"openapi/internal/domain/common/value/currency"
@@ -79,7 +78,8 @@ func TestNewCurrency(t *testing.T) {
 				t.Errorf("NewCurrency() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if got.Ammount() != tt.want.currency.ammount ||
+			   got.Unit()    != tt.want.currency.unit {
 				t.Errorf("NewCurrency() = %v, want %v", got, tt.want)
 			}
 		})

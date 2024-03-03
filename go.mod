@@ -3,6 +3,7 @@ module openapi
 go 1.21.6
 
 require (
+	github.com/aimerzarashi/timeslice v0.0.0-20240303055352-309cc83c61af
 	github.com/friendsofgo/errors v0.9.2
 	github.com/getkin/kin-openapi v0.123.0
 	github.com/go-playground/validator v9.31.0+incompatible
